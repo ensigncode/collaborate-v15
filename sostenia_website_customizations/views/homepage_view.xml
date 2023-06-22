@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="homepage2_custom_buttons" inherit_id="__export__.ir_ui_view_3624_376abe61" priority="29">
+            <xpath expr="//p[@data-original-title and a[@class='btn btn-custom text-o-color-3 btn-lg']]" position="replace">
+                <p style="text-align: center;" data-original-title="" title="" aria-describedby="tooltip769637">
+                    <a href="#" data-tf-slider="hsNRaP" data-tf-position="right" data-tf-opacity="100"
+                        data-tf-iframe-props="title=Calificare Consultatie Gratuita"
+                        data-tf-transitive-search-params="" data-tf-medium="snippet"
+                        class="mb-2 btn btn-custom text-o-color-3 btn-lg" data-original-title="" title=""
+                        style="border-width: 1px; border-style: solid; background-color: rgb(223, 6, 6);">
+                        <strong data-original-title="" title="" aria-describedby="tooltip39530">CLICK AICI SĂ VEZI DACĂ TE CALIFICI</strong>
+                    </a>
+                </p>
+                <script src="//embed.typeform.com/next/embed.js"></script>
+            </xpath>
+        </template>
+    </data>
+</odoo>

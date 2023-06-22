@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sostenia_auto_invoicing_shipping_sostenia_auto_invoicing_shipping,sostenia_auto_invoicing_shipping.sostenia_auto_invoicing_shipping,model_sostenia_auto_invoicing_shipping_sostenia_auto_invoicing_shipping,base.group_user,1,1,1,1

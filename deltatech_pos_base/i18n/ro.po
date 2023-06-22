@@ -1,0 +1,104 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* deltatech_pos_base
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-05-16 13:48+0000\n"
+"PO-Revision-Date: 2022-05-16 13:48+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: deltatech_pos_base
+#: model:ir.model.fields,field_description:deltatech_pos_base.field_pos_payment_method__cod_ecr
+msgid "Cod ECR"
+msgstr ""
+
+#. module: deltatech_pos_base
+#: model:ir.model.fields.selection,name:deltatech_pos_base.selection__pos_config__ecr_type__daisy
+msgid "Daisy"
+msgstr ""
+
+#. module: deltatech_pos_base
+#: model_terms:ir.ui.view,arch_db:deltatech_pos_base.pos_config_view_form
+msgid "ECR"
+msgstr "Casa de marcat"
+
+#. module: deltatech_pos_base
+#: model:ir.model.fields,field_description:deltatech_pos_base.field_pos_config__ecr_trim_to
+msgid "Ecr Trim To"
+msgstr ""
+
+#. module: deltatech_pos_base
+#: model:ir.model.fields,field_description:deltatech_pos_base.field_pos_config__ecr_type
+msgid "Ecr Type"
+msgstr "Tip casa marcat"
+
+#. module: deltatech_pos_base
+#: model:ir.model.fields,field_description:deltatech_pos_base.field_pos_config__file_ext
+#: model_terms:ir.ui.view,arch_db:deltatech_pos_base.pos_config_view_form
+msgid "File extension"
+msgstr ""
+
+#. module: deltatech_pos_base
+#: model:ir.model.fields,field_description:deltatech_pos_base.field_pos_config__file_prefix
+#: model_terms:ir.ui.view,arch_db:deltatech_pos_base.pos_config_view_form
+msgid "File prefix"
+msgstr ""
+
+#. module: deltatech_pos_base
+#: model:ir.model.fields.selection,name:deltatech_pos_base.selection__pos_config__ecr_type__fiscalnet
+msgid "FiscalNet"
+msgstr ""
+
+#. module: deltatech_pos_base
+#: model:ir.model.fields.selection,name:deltatech_pos_base.selection__pos_config__ecr_type__datecs18
+msgid "FiscalWire"
+msgstr ""
+
+#. module: deltatech_pos_base
+#: model:ir.model.fields.selection,name:deltatech_pos_base.selection__pos_config__ecr_type__incotex
+msgid "Incotex"
+msgstr ""
+
+#. module: deltatech_pos_base
+#: model:ir.model.fields.selection,name:deltatech_pos_base.selection__pos_config__ecr_type__optima
+msgid "Optima"
+msgstr ""
+
+#. module: deltatech_pos_base
+#: model:ir.model,name:deltatech_pos_base.model_pos_config
+msgid "Point of Sale Configuration"
+msgstr "Configurarea Punctului de Vânzare"
+
+#. module: deltatech_pos_base
+#: model:ir.model,name:deltatech_pos_base.model_pos_payment_method
+msgid "Point of Sale Payment Methods"
+msgstr "Metode plată Punct de Vânzare"
+
+#. module: deltatech_pos_base
+#: model:ir.model.fields.selection,name:deltatech_pos_base.selection__pos_config__ecr_type__succes
+msgid "Succes"
+msgstr ""
+
+#. module: deltatech_pos_base
+#: model:ir.model.fields,field_description:deltatech_pos_base.field_pos_config__ecr_trim
+#: model_terms:ir.ui.view,arch_db:deltatech_pos_base.pos_config_view_form
+msgid "Trim long product name"
+msgstr "Trunchere nume lung produse"
+
+#. module: deltatech_pos_base
+#: model_terms:ir.ui.view,arch_db:deltatech_pos_base.pos_config_view_form
+msgid "Trim to"
+msgstr "Trunchere la"
+
+#. module: deltatech_pos_base
+#: model_terms:ir.ui.view,arch_db:deltatech_pos_base.pos_config_view_form
+msgid "Type of electronic cash register"
+msgstr "Tipul de casa de marcat fiscala"

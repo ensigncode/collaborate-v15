@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template">
+
+    <t t-name="PaymentScreen" t-inherit="point_of_sale.PaymentScreen" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('payment-controls')]" position="inside">
+            <t t-if="env.pos.config.iface_cash_in_out">
+
+                    <div class='button js_cash_box_in' t-on-click="cash_box_in">
+                        <i class='fa fa-sign-in' />
+                        Cash collection
+                    </div>
+                    <div class='button js_cash_box_out' t-on-click="cash_box_out">
+                        <i class='fa fa-sign-out' />
+                        Payment disposal
+                    </div>
+
+            </t>
+            <div class="order-note-button">
+                <div class='button js_order_note' t-on-click="order_note">
+                    <i class="fa fa-sticky-note" />
+                    Note
+                </div>
+            </div>
+        </xpath>
+        <xpath expr="//div[hasclass('payment-buttons-container')]" position="after">
+            <div class="order-note">
+             <div t-esc="currentOrder.note" />
+            </div>
+        </xpath>
+        <xpath expr="//div[@class='button next']" position="before">
+            <div class='button js_print_the_receipt' t-att-class="{ highlight: currentOrder.is_paid() }"
+                 t-on-click="print_the_receipt">
+                <i class="fa fa-print" />
+                Printează bonul
+            </div>
+        </xpath>
+
+
+    </t>
+
+    <t t-name="OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension" owl="1">
+         <xpath expr="//div[hasclass('pos-receipt-contact')]" position="after">
+             <t t-if="receipt.partner_id">
+                 <div><t t-esc="receipt.partner_id[1]" /></div>
+             </t>
+             <t t-if="receipt.note">
+                 <div><t t-esc="receipt.note" /></div>
+             </t>
+         </xpath>
+    </t>
+
+
+
+    <t t-name="deltatech_pos.ClosePosPopup" t-inherit="point_of_sale.ClosePosPopup" t-inherit-mode="extension" owl="1">
+         <xpath expr="//footer" position="inside">
+             <div class="button" t-on-click="printX()">Print X</div>
+             <div class="button" t-on-click="printZ()">Print Z</div>
+         </xpath>
+    </t>
+
+
+</templates>
