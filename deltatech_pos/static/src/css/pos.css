@@ -1,0 +1,22 @@
+.pos {
+    font-family: "Roboto", "Lucida Grande", Helvetica, Verdana, Arial;
+}
+
+.pos .modal-dialog .popup {
+    font-family: "Roboto", "Lucida Grande", Helvetica, Verdana, Arial;
+}
+
+.payment-screen .payment-cash {
+    margin-top: 10px;
+}
+
+.payment-screen .order-note {
+    box-sizing: border-box;
+    margin: 16px;
+    text-align: center;
+    flex-grow: 1;
+}
+
+.pos .close-pos-popup .footer .button {
+    width: 130px;
+}
