@@ -9,11 +9,12 @@
     'category': 'web',
     'version': '15.0.1.0.0',
 
-    'depends': ['base', 'auth_signup'],
+    'depends': ['base', 'auth_signup', 'portal'],
 
     'data': [
         'views/auth_oauth_templates.xml',
         'views/partner_views.xml',
+        'views/customer_portal.xml',
     ],
 
     'assets': {

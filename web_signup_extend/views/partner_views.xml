@@ -11,4 +11,18 @@
             </xpath>
         </field>
     </record>
+
+    <record id="res_partner_view_search_newsletter" model="ir.ui.view">
+        <field name="name">res.partner.view.search.inherit.sms.newsletter</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter" position="after">
+                <filter string="Subscribed To Newsletter"
+                        name="is_subscribed_to_newsletter" domain="[('subscribed_to_newsletter', '=', True)]"/>
+                <filter string="Subscribed To SMS"
+                        name="is_subscribed_to_sms" domain="[('subscribed_to_sms', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>
