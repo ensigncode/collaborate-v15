@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_details_newsletter" inherit_id="portal.portal_my_details"
+              name="Newsletter Signup checkboxes Client">
+        <xpath expr="//form//div[hasclass('o_portal_details')]//div[hasclass('row')]/div[last()]" position="after">
+            <div t-attf-class="form-group #{error.get('subscribed_to_newsletter') and 'o_has_error' or ''} col-xl-6">
+                <label class="col-form-label label-optional" for="zipcode">
+                    <input type="checkbox" name="subscribed_to_newsletter" t-attf-class="custom-form-control"
+                           t-att-value="partner.subscribed_to_newsletter"
+                           t-att-checked="partner.subscribed_to_newsletter"/> &amp;nbsp;
+                    Subscribed To Newsletter?
+                </label>
+            </div>
+            <div t-attf-class="form-group #{error.get('subscribed_to_sms') and 'o_has_error' or ''} col-xl-6">
+                <label class="col-form-label label-optional" for="zipcode">
+                    <input type="checkbox" name="subscribed_to_sms"
+                           t-attf-class="custom-form-control #{error.get('subscribed_to_sms') and 'is-invalid' or ''}"
+                           t-att-value="partner.subscribed_to_sms" t-att-checked="partner.subscribed_to_sms"/> &amp;nbsp;
+                    Subscribed To SMS?
+                </label>
+            </div>
+        </xpath>
+    </template>
+</odoo>
