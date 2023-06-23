@@ -31,14 +31,24 @@ class CustomerPortalNewsLetter(CustomerPortal):
 			request.env.user.partner_id.sudo().write(values)
 		return response
 
-	@route('/my/account/delete', type="json", auth="user", website=True)
+	@route('/my/account/delete', type="http", auth="user", website=True)
 	def delete_my_account(self):
 		"""
 		Delete the user's account
 		:return: response
 		"""
 		# Delete user's account
-		user_id = request.env.user.id
+		user_id = request.env.user
+		user_id.partner_id.sudo().write({
+			'subscribed_to_newsletter': False,
+			'subscribed_to_sms': False,
+			'account_deleted': True,
+		})
+		request.env.cr.commit()
 		request.session.logout()
-		request.env.cr.execute(f"""DELETE from res_users where id={user_id};""")
-		return request.redirect('/web/login', 303)
+		request.env.cr.execute(f"""DELETE from res_users where id={user_id.id};""")
+		return request.redirect('/my/account/delete/success')
+
+	@route('/my/account/delete/success', type="http", auth="public", website=True, csrf=False)
+	def delete_account_success(self):
+		return request.render('web_signup_extend.account_deleted_successfully')
