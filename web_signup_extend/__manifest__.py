@@ -7,7 +7,7 @@
     """,
 
     'category': 'web',
-    'version': '15.0.1.1.0',
+    'version': '15.0.1.1.1',
 
     'depends': ['base', 'auth_signup', 'portal', 'website'],
 
