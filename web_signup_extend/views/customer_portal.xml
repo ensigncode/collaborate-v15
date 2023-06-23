@@ -41,16 +41,28 @@
                             Are you sure?
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" id="confirmOk">Yes</button>
+                            <a type="button" class="btn btn-primary" href='/my/account/delete' id="confirmOk">Yes</a>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
                         </div>
                     </div>
                 </div>
             </div>
             <br/>
-            <a id="delete_my_account" style="color:red;cursor: pointer;"><i class="fa fa-trash mx-1"/>Delete
-                Account
+            <a id="delete_my_account" data-toggle="modal" data-target="#confirmModal" style="color:red;cursor: pointer;"><i class="fa fa-trash mx-1"/>
+                Delete Account
             </a>
         </xpath>
+    </template>
+
+    <template id="account_deleted_successfully" name="Account Deleted">
+        <t t-call="website.layout">
+            <div class="success_card">
+                <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;">
+                    <i class="checkmark">✓</i>
+                </div>
+                <h1>Success</h1>
+                <p>Account deleted successfully!</p>
+            </div>
+        </t>
     </template>
 </odoo>

@@ -9,20 +9,33 @@ odoo.define('web_signup_extend.portal', function (require) {
 
     publicWidget.registry.portalDetailsAccount = publicWidget.Widget.extend({
         selector: '.o_portal_my_security',
-        events: {
-            'click a#delete_my_account': '_onDeleteAccount',
-        },
-
-       _onDeleteAccount: function(ev){
-			ev.preventDefault();
-			$('#confirmModal').modal({
-				backdrop: 'static',
-				keyboard: false
-			})
-			.on('click', '#confirmOk', function(e) {
-				ajax.jsonRpc('/my/account/delete', 'call', {}).then((result) => {});
-				window.location = '/web/login';
-			});
-       },
+//        events: {
+//            'click a#delete_my_account': '_onDeleteAccount',
+//        },
+//
+//       _onDeleteAccount: function(ev){
+//			ev.preventDefault();
+//			$('#confirmModal').modal({
+//				backdrop: 'static',
+//				keyboard: false
+//			})
+//			.on('click', '#confirmOk', function(e) {
+////				$.ajax({
+////					url: "/my/account/delete",
+////					data: {},
+////					type: 'POST',
+////					processData: false,
+////					contentType: false,
+////					success: function(result) {
+////						return result
+////					}
+////
+////				});
+//				return ajax.rpc('/my/account/delete', {}).then((result) => {
+//					console.log("result", result);
+//					return result
+//				});
+//			});
+//       },
     });
 });
