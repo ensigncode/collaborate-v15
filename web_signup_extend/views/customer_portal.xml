@@ -21,4 +21,36 @@
             </div>
         </xpath>
     </template>
+
+    <template id="portal_layout_delete_user" inherit_id="portal.portal_layout"
+              name="Delete Account">
+        <xpath expr="//div[hasclass('o_portal_wrap')]//div[@id='o_my_sidebar']//div[hasclass('o_portal_my_security')]"
+               position="inside">
+            <!-- Modal -->
+            <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModal"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Confirmation</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&amp;times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="confirmOk">Yes</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <a id="delete_my_account" style="color:red;cursor: pointer;"><i class="fa fa-trash mx-1"/>Delete
+                Account
+            </a>
+        </xpath>
+    </template>
 </odoo>

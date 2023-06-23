@@ -16,6 +16,12 @@ class CustomerPortalNewsLetter(CustomerPortal):
 
 	@route(['/my/account'], type='http', auth='user', website=True)
 	def account(self, redirect=None, **post):
+		"""
+		Add two fields to partner
+		:param redirect: redirecting to the other route
+		:param post: post values dict
+		:return: response
+		"""
 		response = super(CustomerPortalNewsLetter, self).account(redirect, **post)
 		if post and request.httprequest.method == 'POST':
 			values = {
@@ -24,3 +30,15 @@ class CustomerPortalNewsLetter(CustomerPortal):
 			}
 			request.env.user.partner_id.sudo().write(values)
 		return response
+
+	@route('/my/account/delete', type="json", auth="user", website=True)
+	def delete_my_account(self):
+		"""
+		Delete the user's account
+		:return: response
+		"""
+		# Delete user's account
+		user_id = request.env.user.id
+		request.session.logout()
+		request.env.cr.execute(f"""DELETE from res_users where id={user_id};""")
+		return request.redirect('/web/login', 303)
