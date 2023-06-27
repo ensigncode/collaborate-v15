@@ -29,7 +29,7 @@ class AuthSignupHomeNewsletter(AuthSignupHome):
 			'subscribed_to_sms': qcontext.get('subscribed_to_sms', False) or False,
 		})
 		request.env.user.partner_id.sudo().write({
-			'lang': request.env.user.lang,
+			'lang': request._context.get('lang'),
 		})
 
 	def _prepare_signup_values(self, qcontext):
