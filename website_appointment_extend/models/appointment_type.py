@@ -73,13 +73,17 @@ class CalendarAppointmentType(models.Model):
                 if is_work_available(slot['UTC'][0], slot['UTC'][1], workhours[0]):
                     if 0 not in meetings:
                         # note: no check is made on the attendee's status (accepted/declined/...)
-                        meetings[0] = self.env['calendar.event'].search([
+                        events = self.env['calendar.event'].search([
                             ('partner_ids.user_ids', 'in', [empl.user_id.id for empl in available_employees]),
                             ('start', '<', fields.Datetime.to_string(last_day.replace(hour=23, minute=59, second=59))),
                             ('stop', '>', fields.Datetime.to_string(first_day.replace(hour=0, minute=0, second=0)))
                         ])
+                        if len(events) >= self.employee_appointment_limit:
+                            meetings[0] = events
+
                     for emp in available_employees:
-                        if emp.user_partner_id.calendar_verify_availability(slot['UTC'][0], slot['UTC'][1]):
+                        if emp.user_partner_id.with_context(
+                                employee_appointment_limit=self.employee_appointment_limit).calendar_verify_availability(slot['UTC'][0], slot['UTC'][1]):
                             slot['employee_id'] = emp
                             break
 
