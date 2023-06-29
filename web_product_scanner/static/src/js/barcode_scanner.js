@@ -31,6 +31,9 @@ odoo.define('web_product_scanner.barcode_scanner', function(require) {
 	                productInfo.find('.product-price').text(result.product_price);
 	                productInfo.find('.product-barcode').text(result.product_barcode);
 	                $('#productInfoModal').modal('show');
+	                setTimeout(function() {
+					    $('#productInfoModal').modal('hide');
+				    }, 60000); // 1 minute = 60,000 milliseconds
 	            }
 	        });
 	    },
