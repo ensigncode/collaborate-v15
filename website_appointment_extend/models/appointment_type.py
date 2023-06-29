@@ -86,13 +86,3 @@ class CalendarAppointmentType(models.Model):
                                 employee_appointment_limit=self.employee_appointment_limit).calendar_verify_availability(slot['UTC'][0], slot['UTC'][1]):
                             slot['employee_id'] = emp
                             break
-
-    def _slots_generate(self, first_day, last_day, timezone, reference_date=None):
-        slots = super(CalendarAppointmentType, self)._slots_generate(first_day, last_day, timezone, reference_date)
-        calendar_event_ids = self.env['calendar.event'].sudo().search([
-            ('user_id', 'in', self.employee_ids.mapped('user_id.id')),
-            ('appointment_type_id', '=', self.id),
-        ])
-        for slot in slots:
-            pass
-        return slots

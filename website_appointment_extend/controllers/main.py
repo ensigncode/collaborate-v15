@@ -57,14 +57,14 @@ class AppointmentExtend(Appointment):
 			raise NotFound()
 		if employee.user_id and employee.user_id.partner_id:
 			if not employee.user_id.partner_id.with_context(
-					employee_appointment_limit=self.employee_appointment_limit).calendar_verify_availability(date_start, date_end):
+					employee_appointment_limit=appointment_type.employee_appointment_limit).calendar_verify_availability(date_start, date_end):
 				return request.redirect('/calendar/%s/appointment?state=failed-employee' % slug(appointment_type))
 
 		Partner = self._get_customer_partner() or request.env['res.partner'].sudo().search([('email', '=like', email)],
 		                                                                                   limit=1)
 		if Partner:
 			if not Partner.with_context(
-					employee_appointment_limit=self.employee_appointment_limit).calendar_verify_availability(date_start, date_end):
+					employee_appointment_limit=appointment_type.employee_appointment_limit).calendar_verify_availability(date_start, date_end):
 				return request.redirect('/calendar/%s/appointment?state=failed-partner' % appointment_type.id)
 			if not Partner.mobile:
 				Partner.write({'mobile': phone})
