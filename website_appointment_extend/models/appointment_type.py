@@ -86,3 +86,27 @@ class CalendarAppointmentType(models.Model):
                                 employee_appointment_limit=self.employee_appointment_limit).calendar_verify_availability(slot['UTC'][0], slot['UTC'][1]):
                             slot['employee_id'] = emp
                             break
+
+    def _slots_generate(self, first_day, last_day, timezone, reference_date=None):
+        """
+        Override to filter out slots if any employees are not available
+        :param first_day: First day of the slot
+        :param last_day: Last day of the slot
+        :param timezone: TimeZone
+        :param reference_date: Ref Date
+        :return: Slots
+        """
+        slots = super(CalendarAppointmentType, self)._slots_generate(first_day, last_day, timezone, reference_date)
+        available_employees = [emp.with_context(tz=emp.user_id.tz) for emp in self.employee_ids]
+
+        def is_slot_available(slot):
+            """
+            Return Slot If it's available in the slot's timeframe
+            :param slot: Slot
+            :return: Updated slots
+            """
+            return any(em.user_partner_id.with_context(
+                                employee_appointment_limit=self.employee_appointment_limit).calendar_verify_availability(slot['UTC'][0], slot['UTC'][1]) for em in available_employees)
+
+        slots = list(filter(lambda x: is_slot_available(x), slots))
+        return slots

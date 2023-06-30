@@ -50,21 +50,25 @@ class AppointmentExtend(Appointment):
 		date_start = tz_session.localize(fields.Datetime.from_string(datetime_str)).astimezone(pytz.utc)
 		duration = float(duration_str)
 		date_end = date_start + relativedelta(hours=duration)
-
 		# check availability of the employee again (in case someone else booked while the client was entering the form)
 		employee = request.env['hr.employee'].sudo().browse(int(employee_id)).exists()
 		if employee not in appointment_type.sudo().employee_ids:
 			raise NotFound()
-		if employee.user_id and employee.user_id.partner_id:
-			if not employee.user_id.partner_id.with_context(
-					employee_appointment_limit=appointment_type.employee_appointment_limit).calendar_verify_availability(date_start, date_end):
-				return request.redirect('/calendar/%s/appointment?state=failed-employee' % slug(appointment_type))
+		# Fetch next employee which is available
+		available_employee = appointment_type.sudo().employee_ids.filtered(
+			lambda e: e.user_partner_id.with_context(
+					employee_appointment_limit=appointment_type.employee_appointment_limit).calendar_verify_availability(date_start, date_end)
+		)
+		if available_employee:
+			employee = available_employee[0]
+		else:
+			return request.redirect('/calendar/%s/appointment?state=failed-employee' % slug(appointment_type))
 
 		Partner = self._get_customer_partner() or request.env['res.partner'].sudo().search([('email', '=like', email)],
 		                                                                                   limit=1)
+		Partner = employee.user_id.partner_id or Partner
 		if Partner:
-			if not Partner.with_context(
-					employee_appointment_limit=appointment_type.employee_appointment_limit).calendar_verify_availability(date_start, date_end):
+			if not Partner.calendar_verify_availability(date_start, date_end):
 				return request.redirect('/calendar/%s/appointment?state=failed-partner' % appointment_type.id)
 			if not Partner.mobile:
 				Partner.write({'mobile': phone})
