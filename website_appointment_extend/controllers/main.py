@@ -68,7 +68,8 @@ class AppointmentExtend(Appointment):
 		                                                                                   limit=1)
 		Partner = employee.user_id.partner_id or Partner
 		if Partner:
-			if not Partner.calendar_verify_availability(date_start, date_end):
+			if not Partner.with_context(
+					employee_appointment_limit=appointment_type.employee_appointment_limit).calendar_verify_availability(date_start, date_end):
 				return request.redirect('/calendar/%s/appointment?state=failed-partner' % appointment_type.id)
 			if not Partner.mobile:
 				Partner.write({'mobile': phone})
