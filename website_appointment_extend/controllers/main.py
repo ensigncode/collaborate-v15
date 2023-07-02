@@ -59,9 +59,7 @@ class AppointmentExtend(Appointment):
 			lambda e: e.user_partner_id.with_context(
 					employee_appointment_limit=appointment_type.employee_appointment_limit).calendar_verify_availability(date_start, date_end)
 		)
-		if available_employee:
-			employee = available_employee[0]
-		else:
+		if not available_employee:
 			return request.redirect('/calendar/%s/appointment?state=failed-employee' % slug(appointment_type))
 
 		Partner = self._get_customer_partner() or request.env['res.partner'].sudo().search([('email', '=like', email)],

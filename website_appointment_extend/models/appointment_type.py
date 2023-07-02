@@ -107,6 +107,9 @@ class CalendarAppointmentType(models.Model):
             """
             return any(em.user_partner_id.with_context(
                                 employee_appointment_limit=self.employee_appointment_limit).calendar_verify_availability(slot['UTC'][0], slot['UTC'][1]) for em in available_employees)
-
-        slots = list(filter(lambda x: is_slot_available(x), slots))
+        slots = list(map(
+            lambda sl: {**sl, 'employee_id': self.env['res.partner'].get_available_next_employee(
+                available_employees=available_employees, appointment_type_id=self)},
+            filter(lambda x: is_slot_available(x), slots)
+        ))
         return slots

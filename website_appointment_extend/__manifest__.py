@@ -4,7 +4,7 @@
 
 {
     'name': 'Website Appointments Extension',
-    'version': '15.0.1.0.4',
+    'version': '15.0.1.0.5',
     'category': 'Marketing/Online Appointment',
     'sequence': 216,
     'description': """
