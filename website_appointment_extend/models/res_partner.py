@@ -12,6 +12,7 @@ class Partner(models.Model):
             Override to check the limit of employee's appointment
         """
         employee_appointment_limit = self._context.get('employee_appointment_limit', 0)
+        available_employees = self._context.get('available_employees', [False])
         events = self.env['calendar.event'].search_count([
             ('partner_ids', 'in', self.ids),
             '|', '&', ('start', '<', fields.Datetime.to_string(date_end)),
@@ -20,7 +21,7 @@ class Partner(models.Model):
                       '|', ('start_date', '=', fields.Date.to_string(date_end)),
                            ('start_date', '=', fields.Date.to_string(date_start))])
         if employee_appointment_limit:
-            if (events/employee_appointment_limit) >= employee_appointment_limit:
+            if events >= (employee_appointment_limit * len(available_employees)):
                 return False
             return True
         else:
@@ -28,14 +29,31 @@ class Partner(models.Model):
                 return False
             return True
 
-    def get_available_next_employee(self, available_employees, appointment_type_id):
+    def calendar_verify_same_slot_availability(self, date_start, date_end):
+        """
+            Check the slot is still available to book appointment
+        """
+        employee_appointment_limit = self._context.get('employee_appointment_limit', 0)
+        available_employees = self._context.get('available_employees', False)
+        events = self.env['calendar.event'].search_count([
+            ('partner_ids', 'in', self.ids),
+            ('start', '=', fields.Datetime.to_string(date_start)),
+            ('stop', '=', fields.Datetime.to_string(date_end))
+        ])
+        if employee_appointment_limit:
+            if events < (employee_appointment_limit * len(available_employees)):
+                return True
+            return False
+        return True
+
+    def get_available_next_employee(self, start_date, end_date, available_employees, events, employee_partner_dict):
         """
         Method to get next available employee, ordering by meetings
         :return: Available Partner
         """
-        employee_partner_dict = dict(map(lambda avl: (avl.user_partner_id.id, avl), available_employees))
-        events = self.env['calendar.event'].search([('appointment_type_id', '=', appointment_type_id.id)])
-        partner_wise_meeting = dict(events.mapped(lambda x: (x.partner_id.id, len(events.filtered(lambda ev: ev.partner_id.id == x.id)))))
+        events = events.filtered(lambda e: e.start < end_date and e.stop > start_date)
+        partner_wise_meeting = dict(events.mapped(
+            lambda x: (x.partner_id.id, len(events.filtered(lambda ev: ev.partner_id.id == x.id)))))
         sorted_partner_meetings = sorted(partner_wise_meeting.items(), key=lambda x: x[1])
         remaining_employees = dict(filter(
             lambda remp: remp[0] not in list(map(

@@ -63,8 +63,7 @@ class AppointmentExtend(Appointment):
 			return request.redirect('/calendar/%s/appointment?state=failed-employee' % slug(appointment_type))
 
 		Partner = self._get_customer_partner() or request.env['res.partner'].sudo().search([('email', '=like', email)],
-		                                                                                   limit=1)
-		Partner = employee.user_id.partner_id or Partner
+		                                                                                      limit=1)
 		if Partner:
 			if not Partner.with_context(
 					employee_appointment_limit=appointment_type.employee_appointment_limit).calendar_verify_availability(date_start, date_end):

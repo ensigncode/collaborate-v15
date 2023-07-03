@@ -4,6 +4,7 @@ from odoo import api, fields, models
 from datetime import datetime, timedelta, time
 import random
 import pytz
+from functools import reduce
 
 
 class CalendarAppointmentType(models.Model):
@@ -105,11 +106,19 @@ class CalendarAppointmentType(models.Model):
             :param slot: Slot
             :return: Updated slots
             """
-            return any(em.user_partner_id.with_context(
-                                employee_appointment_limit=self.employee_appointment_limit).calendar_verify_availability(slot['UTC'][0], slot['UTC'][1]) for em in available_employees)
+            partner_ids = reduce(lambda x, y: x.union(y), [em.user_partner_id for em in available_employees])
+            return partner_ids.with_context(
+                    employee_appointment_limit=self.employee_appointment_limit,
+                    available_employees=available_employees).calendar_verify_same_slot_availability(
+                    slot['UTC'][0], slot['UTC'][1]
+                )
+
+        events = self.env['calendar.event'].search([('appointment_type_id', '=', self.id)])
+        employee_partner_dict = dict(map(lambda avl: (avl.user_partner_id.id, avl), available_employees))
         slots = list(map(
             lambda sl: {**sl, 'employee_id': self.env['res.partner'].get_available_next_employee(
-                available_employees=available_employees, appointment_type_id=self)},
+                start_date=sl['UTC'][0], end_date=sl['UTC'][1],
+                available_employees=available_employees, events=events, employee_partner_dict=employee_partner_dict)},
             filter(lambda x: is_slot_available(x), slots)
         ))
         return slots
