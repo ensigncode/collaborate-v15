@@ -113,12 +113,16 @@ class CalendarAppointmentType(models.Model):
                     slot['UTC'][0], slot['UTC'][1]
                 )
 
-        events = self.env['calendar.event'].search([('appointment_type_id', '=', self.id)])
-        employee_partner_dict = dict(map(lambda avl: (avl.user_partner_id.id, avl), available_employees))
+        events = self.env['calendar.event'].search([('appointment_type_id', '=', self.id)], order="id asc")
+        if events:
+            last_event_employee_id = self.employee_ids.filtered(lambda e: e.user_id.id == events[-1].user_id.id)
+            last_event_employee_id = last_event_employee_id[0]
+            employee_index = (available_employees.index(last_event_employee_id) + 1) % len(available_employees)
+            next_employee_id = available_employees[employee_index]
+        else:
+            next_employee_id = available_employees[0]
         slots = list(map(
-            lambda sl: {**sl, 'employee_id': self.env['res.partner'].get_available_next_employee(
-                start_date=sl['UTC'][0], end_date=sl['UTC'][1],
-                available_employees=available_employees, events=events, employee_partner_dict=employee_partner_dict)},
+            lambda sl: {**sl, 'employee_id': next_employee_id},
             filter(lambda x: is_slot_available(x), slots)
         ))
         return slots

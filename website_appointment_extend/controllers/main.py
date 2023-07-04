@@ -59,6 +59,7 @@ class AppointmentExtend(Appointment):
 			lambda e: e.user_partner_id.with_context(
 					employee_appointment_limit=appointment_type.employee_appointment_limit).calendar_verify_availability(date_start, date_end)
 		)
+
 		if not available_employee:
 			return request.redirect('/calendar/%s/appointment?state=failed-employee' % slug(appointment_type))
 
