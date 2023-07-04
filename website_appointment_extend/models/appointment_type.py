@@ -5,6 +5,9 @@ from datetime import datetime, timedelta, time
 import random
 import pytz
 from functools import reduce
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class CalendarAppointmentType(models.Model):
@@ -113,12 +116,16 @@ class CalendarAppointmentType(models.Model):
                     slot['UTC'][0], slot['UTC'][1]
                 )
 
-        events = self.env['calendar.event'].search([('appointment_type_id', '=', self.id)], order="id asc")
+        events = self.env['calendar.event'].search([('appointment_type_id', '=', self.id)], order="id desc")
+        _logger.info(f">>>>>>>>>>>>>>>>>>>>>> {events}")
         if events:
-            last_event_employee_id = self.employee_ids.filtered(lambda e: e.user_id.id == events[-1].user_id.id)
+            last_event_employee_id = self.employee_ids.filtered(lambda e: e.user_id.id == events[0].user_id.id)
+            _logger.info(f">>>>>>>>>>>>>>>>>>>>>> last_event_employee_id: {last_event_employee_id}")
             last_event_employee_id = last_event_employee_id[0]
             employee_index = (available_employees.index(last_event_employee_id) + 1) % len(available_employees)
+            _logger.info(f">>>>>>>>>>>>>>>>>>>>>> employee_index: {employee_index}, available_employees: {available_employees}")
             next_employee_id = available_employees[employee_index]
+            _logger.info(f">>>>>>>>>>>>>>>>>>>>>> next_employee_id: {next_employee_id}")
         else:
             next_employee_id = available_employees[0]
         slots = list(map(
