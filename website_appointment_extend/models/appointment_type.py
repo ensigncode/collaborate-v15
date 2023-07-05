@@ -116,7 +116,6 @@ class CalendarAppointmentType(models.Model):
                     available_employees=available_employees).calendar_verify_same_slot_availability(
                     slot['UTC'][0], slot['UTC'][1]
                 )
-
         events = self.env['calendar.event'].search([('appointment_type_id', '=', self.id)], order="id desc")
         if events:
             last_event_employee_id = self.employee_ids.filtered(lambda e: e.user_id.id == events[0].user_id.id)
@@ -126,7 +125,7 @@ class CalendarAppointmentType(models.Model):
         else:
             next_employee_id = available_employees[0]
         slots = list(map(
-            lambda sl: {**sl, 'employee_id': next_employee_id},
+            lambda sl: {**sl} if sl[timezone][0] < first_day else {**sl, 'employee_id': next_employee_id},
             filter(lambda x: is_slot_available(x), slots)
         ))
         return slots
