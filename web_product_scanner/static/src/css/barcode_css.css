@@ -1,0 +1,31 @@
+.o_product_scan_barcode_main_menu_container{
+	display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.o_product_scan_barcode_main_menu_container h1 {
+	text-align: center;
+}
+
+.product-info {
+  text-align: center;
+}
+
+.product-image {
+  width: 200px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.product-title {
+  font-size: 24px;
+  margin-top: 10px;
+}
+
+.product-price,
+.product-barcode {
+  font-size: 18px;
+  margin-top: 5px;
+}

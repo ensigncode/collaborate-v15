@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="scan_product_barcode">
+        <t t-call="website.layout">
+            <div class="o_product_scan_barcode_main_menu_container">
+                <div class="o_stock_barcode_main_menu position-relative">
+                    <h1 class="mb-4">Scan Product</h1>
+                    <div class="o_stock_barcode_container position-relative d-inline-block mt-4 mb-5">
+                        <img src="/barcodes/static/img/barcode.png" alt="Barcode" class="img-fluid mb-1 mt-1"/>
+                        <span class="o_stock_barcode_laser"/>
+                    </div>
+                    <hr class="mb-4 d-none d-sm-block"/>
+                </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="productInfoModal" tabindex="-1" role="dialog"
+                 aria-labelledby="productInfo" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Product's Info</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&amp;times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="product-info">
+                                <img src="path/to/product-image.jpg" alt="Product Image" class="product-image"/>
+                                <h1 class="product-title">Product's Name</h1>
+                                <p class="product-price">Product's Price</p>
+                                <p class="product-barcode">Product's Barcode</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
