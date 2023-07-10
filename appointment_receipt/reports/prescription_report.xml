@@ -17,7 +17,7 @@
             <t t-call="web.external_layout">
                 <t t-foreach="docs" t-as="event">
                     <div class="page" style="font-size: 22px;">
-                        <h2 class="text-muted" style="text-align: -webkit-center;font-size: 30px;">Lensa RO <span class="col-5 p-2" style="width: auto;" t-field="event.location"/></h2>
+                        <h2 class="text-muted" style="text-align: -webkit-center;font-size: 30px;">Lensa <span class="col-5 p-2" style="width: auto;" t-field="event.location"/></h2>
                         <h1 style="text-align: -webkit-center;font-size: 35px;">PRESCRIPTIE OPTOMETRICA
                             <span t-field="event.prescription_code"/>
                         </h1>
@@ -147,12 +147,16 @@
                                         <span class="ml-1 col-6" t-esc="event.recomandare"/>
                                     </div>
                                     <div class="w-100"></div>
-                                    <div class="col m-2">Date:
-                                        <span class="ml-1 col-6" t-esc="event.prescription_date"/>
+                                    <div class="col m-2">Data:
+                                        <span class="ml-1 col-6" t-field="event.prescription_date" t-options='{"widget": "date"}'/>
                                     </div>
                                     <div class="col m-2">Optometrist:
                                         <span class="ml-1 col-6" t-field="event.optometrist_id"/>
                                     </div>
+
+                                </div>
+                                <div class="m-2">Observatii:
+                                    <span class="ml-1 col-6" t-field="event.observation"/>
                                 </div>
                             </div>
                             <div class="col-1"></div>

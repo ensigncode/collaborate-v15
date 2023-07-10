@@ -96,11 +96,16 @@
                                 <div class="col m-2">DIAGNOSTIC: <field class="ml-1 col-6" name="diagnostic"/></div>
                                 <div class="col m-2">RECOMANDARE: <field class="ml-1 col-6" name="recomandare"/></div>
                                 <div class="w-100"></div>
-                                <div class="col m-2">Date: <field class="ml-1 col-6" name="prescription_date"/></div>
+                                <div class="col m-2">Data: <field class="ml-1 col-6" name="prescription_date" t-options="{'format':'dd/mm/yyyy'}"/></div>
                                 <div class="col m-2">Optometrist: <field class="ml-1 col-6" name="optometrist_id" options="{'no_create_edit': True}"/></div>
                               </div>
                             </div>
                             <div class="col-1"></div>
+                        </div>
+                        <div class="row ml-1"  style="font-size: 18px;">
+                            <div class="col-1"></div>
+                            <label for="observation" string="Observatii:" style="opacity: 0.9;font-weight: 400;line-height: 1.5;color: #444B5A;font-size:21px;"/>
+                            <div class="col-md-8"><field class="col-8" name="observation" /></div>
                         </div>
                     </page>
                 </xpath>

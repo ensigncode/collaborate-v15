@@ -63,7 +63,7 @@ class Event(models.Model):
 		return [(str(j), str(j)) for j in range(45, 76)]
 
 	def _get_av_selection(self):
-		return [(str(round(x * 0.1, 2)), str(x * 0.1)) for x in range(1, 11)]
+		return [(str(round(x * 0.1, 2)), str(round(x * 0.1, 2))) for x in range(1, 11)]
 
 	varsta = fields.Selection([
 		('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'), ('5', '5'), ('6', '6'), ('7', '7'),
@@ -124,6 +124,7 @@ class Event(models.Model):
 	], string="Diagnostic")
 	prescription_date = fields.Date(string="Date", compute="_compute_prescription_date")
 	attendee_id = fields.Many2one('res.partner', string="Attendee", compute="_compute_single_attendee")
+	observation = fields.Text(string="Observatii")
 
 	def _compute_single_attendee(self):
 		for rec in self:
