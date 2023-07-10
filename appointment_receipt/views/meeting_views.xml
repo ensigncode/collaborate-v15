@@ -13,7 +13,7 @@
                         <button name="print_prescription"
                                 style="background-color: lightblue;border-block-color: black;width: 13%;font-size: 132%;"
                                 string="Print" type="object" icon="fa-print text-primary"/>
-                        <h2 class="text-muted " style="text-align: -webkit-center;">Lensa RO <field class="col-5 p-2" style="width: auto;" name="location"/></h2>
+                        <h2 class="text-muted " style="text-align: -webkit-center;">Lensa <field class="col-5 p-2" style="width: auto;" name="location"/></h2>
                         <h1 style="text-align: -webkit-center;">PRESCRIPTIE OPTOMETRICA
                             <span t-field="prescription_code"/>
                         </h1>
