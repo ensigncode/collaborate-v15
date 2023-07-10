@@ -8,17 +8,18 @@
             <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//notebook" position="inside">
+                    <field name="attendee_id" invisible="1"/>
                     <page name="receipt" string="Receipt">
                         <button name="print_prescription"
                                 style="background-color: lightblue;border-block-color: black;width: 13%;font-size: 132%;"
                                 string="Print" type="object" icon="fa-print text-primary"/>
-                        <h2 class="text-muted" style="text-align: -webkit-center;">test test test</h2>
+                        <h2 class="text-muted " style="text-align: -webkit-center;">Lensa RO <field class="col-5 p-2" style="width: auto;" name="location"/></h2>
                         <h1 style="text-align: -webkit-center;">PRESCRIPTIE OPTOMETRICA
                             <span t-field="prescription_code"/>
                         </h1>
-                        <h3 style="text-align: -webkit-center;">Dinu Ciobanu - varsta: <field class="col-1" name="varsta"/> ani</h3>
+                        <h3 style="text-align: -webkit-center;"><field name="attendee_id"/> - varsta: <field class="col-1" name="varsta"/> ani</h3>
                         <br/>
-                        <div class="row">
+                        <div class="row" style="font-size: 18px;">
                             <div class="col-1"></div>
                             <div class="col-7" style="border-right: 1px solid lightgrey;">
                                 <table class="table table-bordered" style="width:100%;">
@@ -88,7 +89,7 @@
                             </div>
                             <div class="col-1"></div>
                         </div>
-                        <div class="row">
+                        <div class="row" style="font-size: 18px;">
                             <div class="col-1"></div>
                             <div class="container col-10">
                               <div class="row">
