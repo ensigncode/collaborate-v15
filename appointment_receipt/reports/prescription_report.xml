@@ -13,148 +13,156 @@
     </record>
 
     <template id="print_prescription">
-        <t t-call="web.external_layout">
-            <t t-foreach="docs" t-as="event">
-                <div class="page">
-                    <h2 class="text-muted" style="text-align: -webkit-center;">test test test</h2>
-                    <h1 style="text-align: -webkit-center;">PRESCRIPTIE OPTOMETRICA
-                        <span t-field="event.prescription_code"/>
-                    </h1>
-                    <h3 style="text-align: -webkit-center;">Dinu Ciobanu - varsta:
-                        <span class="col-1" t-esc="event.varsta"/>
-                        ani
-                    </h3>
-                    <br/>
-                    <div class="row">
-                        <div class="col-1"></div>
-                        <div class="col-7" style="border-right: 1px solid lightgrey;">
-                            <table class="table table-bordered" style="width:100%;">
-                                <thead style="display: table-row-group">
-                                    <tr>
-                                        <th colspan="2"></th>
-                                        <th>SF</th>
-                                        <th>CIL</th>
-                                        <th>AX</th>
-                                        <th>Dp</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td rowspan="2" style="text-align: -webkit-center;vertical-align: inherit;">V.D.
-                                        </td>
-                                        <td>O.D.</td>
-                                        <td>
-                                            <span t-esc="event.vd_od_sf"/>
-                                        </td>
-                                        <td>
-                                            <span t-esc="event.vd_od_cil"/>
-                                        </td>
-                                        <td>
-                                            <span t-esc="event.vd_od_ax"/>
-                                        </td>
-                                        <td rowspan="2" style="text-align: -webkit-center;vertical-align: inherit;">
-                                            <span t-esc="event.vd_dp"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>O.S.</td>
-                                        <td>
-                                            <span t-esc="event.vd_os_sf"/>
-                                        </td>
-                                        <td>
-                                            <span t-esc="event.vd_os_cil"/>
-                                        </td>
-                                        <td>
-                                            <span t-esc="event.vd_os_ax"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td rowspan="2" style="text-align: -webkit-center;vertical-align: inherit;">V.A.
-                                        </td>
-                                        <td>O.D.</td>
-                                        <td>
-                                            <span t-esc="event.va_od_sf"/>
-                                        </td>
-                                        <td>
-                                            <span t-esc="event.va_od_cil"/>
-                                        </td>
-                                        <td>
-                                            <span t-esc="event.va_od_ax"/>
-                                        </td>
-                                        <td rowspan="2" style="text-align: -webkit-center;vertical-align: inherit;">
-                                            <span t-esc="event.va_dp"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>O.S.</td>
-                                        <td>
-                                            <span t-esc="event.va_os_sf"/>
-                                        </td>
-                                        <td>
-                                            <span t-esc="event.va_os_cil"/>
-                                        </td>
-                                        <td>
-                                            <span t-esc="event.va_os_ax"/>
-                                        </td>
-                                    </tr>
-                                </tbody>
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <t t-foreach="docs" t-as="event">
+                    <div class="page" style="font-size: 22px;">
+                        <h2 class="text-muted" style="text-align: -webkit-center;font-size: 30px;">Lensa <span class="col-5 p-2" style="width: auto;" t-field="event.location"/></h2>
+                        <h1 style="text-align: -webkit-center;font-size: 35px;">PRESCRIPTIE OPTOMETRICA
+                            <span t-field="event.prescription_code"/>
+                        </h1>
+                        <h3 style="text-align: -webkit-center;font-size: 30px;"> <span t-field="event.attendee_id"/> - varsta:
+                            <span class="col-1" t-esc="event.varsta"/>
+                            ani
+                        </h3>
+                        <br/>
+                        <div class="row">
+                            <div class="col-1"></div>
+                            <div class="col-7" style="border-right: 1px solid lightgrey;">
+                                <table class="table table-bordered" style="width:100%;">
+                                    <thead style="display: table-row-group">
+                                        <tr>
+                                            <th colspan="2"></th>
+                                            <th>SF</th>
+                                            <th>CIL</th>
+                                            <th>AX</th>
+                                            <th>Dp</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td rowspan="2" style="text-align: -webkit-center;vertical-align: inherit;">
+                                                V.D.
+                                            </td>
+                                            <td>O.D.</td>
+                                            <td>
+                                                <span t-esc="event.vd_od_sf"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="event.vd_od_cil"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="event.vd_od_ax"/>
+                                            </td>
+                                            <td rowspan="2" style="text-align: -webkit-center;vertical-align: inherit;">
+                                                <span t-esc="event.vd_dp"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>O.S.</td>
+                                            <td>
+                                                <span t-esc="event.vd_os_sf"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="event.vd_os_cil"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="event.vd_os_ax"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td rowspan="2" style="text-align: -webkit-center;vertical-align: inherit;">
+                                                V.A.
+                                            </td>
+                                            <td>O.D.</td>
+                                            <td>
+                                                <span t-esc="event.va_od_sf"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="event.va_od_cil"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="event.va_od_ax"/>
+                                            </td>
+                                            <td rowspan="2" style="text-align: -webkit-center;vertical-align: inherit;">
+                                                <span t-esc="event.va_dp"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>O.S.</td>
+                                            <td>
+                                                <span t-esc="event.va_os_sf"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="event.va_os_cil"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="event.va_os_ax"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
 
-                            </table>
+                                </table>
+                            </div>
+                            <div class="col-3" style="align-self: center;">
+                                <table class="table table-borderless" border="0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="float-right">A.V. F.C.: O.D.</td>
+                                            <td>
+                                                <span t-esc="event.av_fc_od"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="float-right">A.V. F.C.: O.S.</td>
+                                            <td>
+                                                <span t-esc="event.av_fc_os"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="float-right">A.V. C.C.: O.D.</td>
+                                            <td>
+                                                <span t-esc="event.av_cc_od"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="float-right">A.V. C.C.: O.S.</td>
+                                            <td>
+                                                <span t-esc="event.av_cc_os"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-1"></div>
                         </div>
-                        <div class="col-3" style="align-self: center;">
-                            <table class="table table-borderless" border="0">
-                                <tbody>
-                                    <tr>
-                                        <td class="float-right">A.V. F.C.: O.D.</td>
-                                        <td>
-                                            <span t-esc="event.av_fc_od"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="float-right">A.V. F.C.: O.S.</td>
-                                        <td>
-                                            <span t-esc="event.av_fc_os"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="float-right">A.V. C.C.: O.D.</td>
-                                        <td>
-                                            <span t-esc="event.av_cc_od"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="float-right">A.V. C.C.: O.S.</td>
-                                        <td>
-                                            <span t-esc="event.av_cc_os"/>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="col-1"></div>
-                    </div>
-                    <div class="row">
-                        <div class="col-1"></div>
-                        <div class="container col-10">
-                            <div class="row">
-                                <div class="col m-2">DIAGNOSTIC:
-                                    <span class="ml-1 col-6" t-esc="event.diagnostic"/>
+                        <div class="row">
+                            <div class="col-1"></div>
+                            <div class="container col-10">
+                                <div class="row">
+                                    <div class="col m-2">DIAGNOSTIC:
+                                        <span class="ml-1 col-6" t-esc="event.diagnostic"/>
+                                    </div>
+                                    <div class="col m-2">RECOMANDARE:
+                                        <span class="ml-1 col-6" t-esc="event.recomandare"/>
+                                    </div>
+                                    <div class="w-100"></div>
+                                    <div class="col m-2">Data:
+                                        <span class="ml-1 col-6" t-field="event.prescription_date" t-options='{"widget": "date"}'/>
+                                    </div>
+                                    <div class="col m-2">Optometrist:
+                                        <span class="ml-1 col-6" t-field="event.optometrist_id"/>
+                                    </div>
+
                                 </div>
-                                <div class="col m-2">RECOMANDARE:
-                                    <span class="ml-1 col-6" t-esc="event.recomandare"/>
-                                </div>
-                                <div class="w-100"></div>
-                                <div class="col m-2">Date:
-                                    <span class="ml-1 col-6" t-esc="event.prescription_date"/>
-                                </div>
-                                <div class="col m-2">Optometrist:
-                                    <span class="ml-1 col-6" t-esc="event.optometrist_id" />
+                                <div class="m-2">Observatii:
+                                    <span class="ml-1 col-6" t-field="event.observation"/>
                                 </div>
                             </div>
+                            <div class="col-1"></div>
                         </div>
-                        <div class="col-1"></div>
                     </div>
-                </div>
+                </t>
             </t>
         </t>
     </template>
