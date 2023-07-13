@@ -123,13 +123,20 @@ class Event(models.Model):
 		("Astigmatism miopic", "Astigmatism miopic"), ("Astigmatism hipermetropic", "Astigmatism hipermetropic")
 	], string="Diagnostic")
 	prescription_date = fields.Date(string="Date", compute="_compute_prescription_date")
-	attendee_id = fields.Many2one('res.partner', string="Attendee", compute="_compute_single_attendee")
+	attendee_id = fields.Many2one(
+		'res.partner', string="Attendee", compute="_compute_single_attendee", inverse="_inverse_single_attendee",
+		compute_sudo=True, readonly=False, store=True)
 	observation = fields.Text(string="Observatii")
 
+	@api.depends('partner_ids')
 	def _compute_single_attendee(self):
+		for rec in self._origin:
+			attendees = rec.partner_ids._origin.filtered(lambda p: p.id != rec.user_id.partner_id.id)
+			rec.attendee_id = attendees[0]._origin.id if attendees else False
+
+	def _inverse_single_attendee(self):
 		for rec in self:
-			attendees = rec.partner_ids.filtered(lambda p: p.id != rec.user_id.partner_id.id)
-			rec.attendee_id = attendees[0].id if attendees else False
+			rec.sudo().attendee_id = rec.attendee_id
 
 	def _compute_prescription_date(self):
 		for rec in self:

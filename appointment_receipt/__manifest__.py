@@ -2,7 +2,7 @@
 
 {
     'name': 'Appointment Receipt',
-    'version': '15.0.1.0.3',
+    'version': '15.0.1.0.4',
     'category': 'Marketing/Online Appointment',
     'sequence': 216,
     'description': """
