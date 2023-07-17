@@ -17,11 +17,15 @@
             <t t-call="web.external_layout">
                 <t t-foreach="docs" t-as="event">
                     <div class="page" style="font-size: 22px;">
-                        <h2 class="text-muted" style="text-align: -webkit-center;font-size: 30px;">Lensa <span class="col-5 p-2" style="width: auto;" t-field="event.location"/></h2>
+                        <h2 class="text-muted" style="text-align: -webkit-center;font-size: 30px;">Lensa
+                            <span class="col-5 p-2" style="width: auto;height:auto;" t-field="event.location"/>
+                        </h2>
                         <h1 style="text-align: -webkit-center;font-size: 35px;">PRESCRIPTIE OPTOMETRICA
                             <span t-field="event.prescription_code"/>
                         </h1>
-                        <h3 style="text-align: -webkit-center;font-size: 30px;"> <span t-field="event.attendee_id"/> - varsta:
+                        <h3 style="text-align: -webkit-center;font-size: 30px;">
+                            <span t-field="event.attendee_id"/>
+                            - varsta:
                             <span class="col-1" t-esc="event.varsta"/>
                             ani
                         </h3>
@@ -139,24 +143,24 @@
                         <div class="row">
                             <div class="col-1"></div>
                             <div class="container col-10">
-                                <div class="row">
-                                    <div class="col m-2">DIAGNOSTIC:
-                                        <span class="ml-1 col-6" t-esc="event.diagnostic"/>
+                                <div class="row mb-2 mt-2">
+                                    <div class="col-6">DIAGNOSTIC: <span class="col-6" t-esc="event.diagnostic"/></div>
+                                    <div class="col-6">RECOMANDARE:
+                                        <span class="col-6" t-esc="event.recomandare"/>
                                     </div>
-                                    <div class="col m-2">RECOMANDARE:
-                                        <span class="ml-1 col-6" t-esc="event.recomandare"/>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Data:
+                                        <span class="col-6" t-field="event.prescription_date"
+                                              t-options='{"widget": "date"}'/>
                                     </div>
-                                    <div class="w-100"></div>
-                                    <div class="col m-2">Data:
-                                        <span class="ml-1 col-6" t-field="event.prescription_date" t-options='{"widget": "date"}'/>
-                                    </div>
-                                    <div class="col m-2">Optometrist:
-                                        <span class="ml-1 col-6" t-field="event.optometrist_id"/>
+                                    <div class="col-6">Optometrist:
+                                        <span class="col-6" t-field="event.optometrist_id"/>
                                     </div>
 
                                 </div>
-                                <div class="m-2">Observatii:
-                                    <span class="ml-1 col-6" t-field="event.observation"/>
+                                <div>Observatii:
+                                    <span t-field="event.observation"/>
                                 </div>
                             </div>
                             <div class="col-1"></div>
