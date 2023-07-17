@@ -4,8 +4,8 @@
         <field name="name">Print Prescription</field>
         <field name="model">calendar.event</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">appointment_receipt.print_prescription_receipt</field>
-        <field name="report_file">appointment_receipt.print_prescription_receipt</field>
+        <field name="report_name">appointment_receipt.report_appointment_prescription</field>
+        <field name="report_file">appointment_receipt.report_appointment_prescription</field>
         <field name="print_report_name">'PRESCRIPTIE OPTOMETRICA - %s' % (object.prescription_code).replace('#', '')
         </field>
         <field name="binding_model_id" ref="calendar.model_calendar_event"/>
@@ -140,9 +140,8 @@
                         <div class="col-1"></div>
                     </div>
                     <div class="row">
-                        <div class="col-1"></div>
                         <div class="container col-10">
-                            <div class="row mb-2 mt-2">
+                            <div class="row mb-2 mt-2" style="margin-top:2px;">
                                 <div class="col-6">DIAGNOSTIC:
                                     <span class="col-6" t-esc="event.diagnostic"/>
                                 </div>
@@ -167,6 +166,15 @@
                         <div class="col-1"></div>
                     </div>
                 </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_appointment_prescription">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="lang" t-value="o.partner_id.lang or o.company_id.partner_id.lang"/>
+                <t t-call="appointment_receipt.print_prescription_receipt" t-lang="lang"/>
             </t>
         </t>
     </template>
