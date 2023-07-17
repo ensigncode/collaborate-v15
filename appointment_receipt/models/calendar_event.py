@@ -149,4 +149,4 @@ class Event(models.Model):
 		return super(Event, self).create(vals)
 
 	def print_prescription(self):
-		return self.env.ref('appointment_receipt.calendar_event_print_prescription').report_action(self)
+		return self.env.ref('appointment_receipt.calendar_event_print_prescription_receipt').report_action(self)
