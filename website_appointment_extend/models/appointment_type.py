@@ -119,9 +119,12 @@ class CalendarAppointmentType(models.Model):
         events = self.env['calendar.event'].search([('appointment_type_id', '=', self.id)], order="id desc")
         if events:
             last_event_employee_id = self.employee_ids.filtered(lambda e: e.user_id.id == events[0].user_id.id)
-            last_event_employee_id = last_event_employee_id[0]
-            employee_index = (available_employees.index(last_event_employee_id) + 1) % len(available_employees)
-            next_employee_id = available_employees[employee_index]
+            if last_event_employee_id:
+                last_event_employee_id = last_event_employee_id[0]
+                employee_index = (available_employees.index(last_event_employee_id) + 1) % len(available_employees)
+                next_employee_id = available_employees[employee_index]
+            else:
+                next_employee_id = available_employees[0]
         else:
             next_employee_id = available_employees[0]
         slots = list(map(
