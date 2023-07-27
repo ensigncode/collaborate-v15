@@ -12,9 +12,62 @@ import pytz
 from dateutil.relativedelta import relativedelta
 from werkzeug.exceptions import NotFound
 from odoo.addons.http_routing.models.ir_http import slug
+import json
 
 
 class AppointmentExtend(Appointment):
+
+	@http.route([
+		'/calendar/<model("calendar.appointment.type"):appointment_type>',
+	], type='http', auth="public", website=True, sitemap=True)
+	def calendar_appointment_type(self, appointment_type, filter_employee_ids=None, timezone=None, state=False,
+	                              **kwargs):
+		"""
+			Override to handle the screening, of the months available
+		"""
+		appointment_type = appointment_type.sudo()
+		request.session['timezone'] = timezone or appointment_type.appointment_tz
+		try:
+			filter_employee_ids = json.loads(filter_employee_ids) if filter_employee_ids else []
+		except json.decoder.JSONDecodeError:
+			raise ValueError()
+
+		if appointment_type.assign_method == 'chosen' and not filter_employee_ids:
+			suggested_employees = appointment_type.employee_ids
+		else:
+			suggested_employees = appointment_type.employee_ids.filtered(lambda emp: emp.id in filter_employee_ids)
+		# Keep retrocompatibility with the the old personnal link ?employee_id=
+		employee_id = kwargs.get('employee_id')
+		if not suggested_employees and employee_id and int(employee_id) in appointment_type.employee_ids.ids:
+			suggested_employees = request.env['hr.employee'].sudo().browse(int(employee_id))
+
+		default_employee = suggested_employees[0] if suggested_employees else request.env['hr.employee']
+		slots = appointment_type._get_appointment_slots(request.session['timezone'], default_employee)
+		formated_days = [
+			format_date(fields.Date.from_string('2021-03-0%s' % str(day + 1)), "EEE", get_lang(request.env).code) for
+			day in range(7)]
+
+		assigned_class_calendar = False
+		for slot in slots:
+			if not assigned_class_calendar and all(len(day['slots']) == 0 for week in slot['weeks'] for day in week):
+				slot['calendar_class'] = 'd-none'
+				assigned_class_calendar = True
+			else:
+				slot['calendar_class'] = ''
+		if not assigned_class_calendar:
+			for hide_Slot in slots[1::]:
+				hide_Slot['calendar_class'] = 'd-none'
+
+		return request.render("appointment.appointment_info", {
+			'appointment_type': appointment_type,
+			'suggested_employees': suggested_employees,
+			'main_object': appointment_type,
+			'timezone': request.session['timezone'],
+			'slots': slots,
+			'state': state,
+			'filter_appointment_type_ids': kwargs.get('filter_appointment_type_ids'),
+			'formated_days': formated_days,
+		})
 
 	@http.route(['/calendar/<model("calendar.appointment.type"):appointment_type>/info'], type='http', auth="public",
 	            website=True, sitemap=True)
@@ -57,17 +110,19 @@ class AppointmentExtend(Appointment):
 		# Fetch next employee which is available
 		available_employee = appointment_type.sudo().employee_ids.filtered(
 			lambda e: e.user_partner_id.with_context(
-					employee_appointment_limit=appointment_type.employee_appointment_limit).calendar_verify_availability(date_start, date_end)
+				employee_appointment_limit=appointment_type.employee_appointment_limit).calendar_verify_availability(
+				date_start, date_end)
 		)
 
 		if not available_employee:
 			return request.redirect('/calendar/%s/appointment?state=failed-employee' % slug(appointment_type))
 
 		Partner = self._get_customer_partner() or request.env['res.partner'].sudo().search([('email', '=like', email)],
-		                                                                                      limit=1)
+		                                                                                   limit=1)
 		if Partner:
 			if not Partner.with_context(
-					employee_appointment_limit=appointment_type.employee_appointment_limit).calendar_verify_availability(date_start, date_end):
+					employee_appointment_limit=appointment_type.employee_appointment_limit).calendar_verify_availability(
+				date_start, date_end):
 				return request.redirect('/calendar/%s/appointment?state=failed-partner' % appointment_type.id)
 			if not Partner.mobile:
 				Partner.write({'mobile': phone})

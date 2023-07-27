@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <template id="appointment_select_sequence" inherit_id="appointment.appointment_calendar">
+            <xpath expr="//div[@t-foreach='slots']" position="attributes">
+                <attribute name="t-attf-class">o_appointment_month px-1 px-md-3 #{month['calendar_class']}</attribute>
+            </xpath>
+        </template>
+    </data>
+</odoo>
