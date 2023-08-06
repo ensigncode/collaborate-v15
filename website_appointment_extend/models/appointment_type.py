@@ -124,9 +124,9 @@ class CalendarAppointmentType(models.Model):
                 employee_index = (available_employees.index(last_event_employee_id) + 1) % len(available_employees)
                 next_employee_id = available_employees[employee_index]
             else:
-                next_employee_id = available_employees[0]
+                next_employee_id = available_employees and available_employees[0] or self.env['hr.employee']
         else:
-            next_employee_id = available_employees[0]
+            next_employee_id = available_employees and available_employees[0] or self.env['hr.employee']
         slots = list(map(
             lambda sl: {**sl} if sl[timezone][0] < first_day else {**sl, 'employee_id': next_employee_id},
             filter(lambda x: is_slot_available(x), slots)
