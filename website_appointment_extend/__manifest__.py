@@ -4,7 +4,7 @@
 
 {
     'name': 'Website Appointments Extension',
-    'version': '15.0.1.0.9',
+    'version': '15.0.1.0.11',
     'category': 'Marketing/Online Appointment',
     'sequence': 216,
     'description': """
@@ -18,4 +18,13 @@
     ],
     'installable': True,
     'license': 'OEEL-1',
+    'assets': {
+        'web.assets_frontend': [
+            'website_appointment_extend/static/src/js/appointment_select_slot.js',
+            'website_appointment_extend/static/src/xml/appointment_slot.xml',
+        ],
+        'web.assets_qweb': [
+            'website_appointment_extend/static/src/xml/**/*',
+        ],
+    },
 }
