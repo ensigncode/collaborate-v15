@@ -10,7 +10,9 @@ class UpdateProductLine(models.TransientModel):
     _order = 'id desc'
 
     order_id = fields.Many2one('sale.order',string="Order")
+    warehouse_id = fields.Many2one(related="order_id.warehouse_id",string="Warehouse",store=True)
     delivery_date = fields.Date(string="Delivery Date")
+    sequence = fields.Integer(string="Sequence")
     partner_id = fields.Many2one('res.partner',string="Customer")
     product_code = fields.Char(string="Handling Unit")
     product_id = fields.Many2one('product.product',string="Product")
@@ -75,11 +77,17 @@ class UpdateProduct(models.TransientModel):
     def default_get(self,vals):
         res = super(UpdateProduct,self).default_get(vals)
         order_ids = self.env['sale.order'].search([('state','=','sale')])
+        warehouse_ids = self.env.user.order_warehouse_ids
+        sequence = 10
         update_product = []
-        for order in order_ids:
-            if order.picking_ids.filtered(lambda x:x.state == 'assigned'):
-                vals = self.get_order_vals(order)
-                update_product.append((0,0,vals))
+        for warehouse in warehouse_ids:
+            sale_ids = order_ids.filtered(lambda x:x.warehouse_id and x.warehouse_id.id == warehouse.id)
+            for order in sale_ids:
+                if order.picking_ids.filtered(lambda x:x.state == 'assigned'):
+                    vals = self.get_order_vals(order)
+                    vals.update({'sequence':sequence})
+                    update_product.append((0,0,vals))
+                    sequence += 1
         res['update_product_ids'] = update_product
         return res
 
