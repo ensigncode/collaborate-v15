@@ -11,9 +11,11 @@
                 <sheet>
                     <field name="name" invisible="1"/>
                     <group>
-                        <field name="update_product_ids" nolabel="1">
-                            <tree editable="bottom" create="0" edit="1" delete="0" decoration-info="need_to_update == True">
+                        <field name="update_product_ids" nolabel="1" mode="tree">
+                            <tree editable="bottom" create="0" edit="1" delete="0" decoration-info="need_to_update == True" >
+                                <field name="sequence" invisible="1"/>
                                 <field name="order_id" readonly="1" force_save="1"/>
+                                <field name="warehouse_id" readonly="1" force_save="1"/>
                                 <field name="delivery_date" readonly="1" force_save="1"/>
                                 <field name="partner_id" readonly="1" force_save="1"/>
                                 <field name="product_code"/>
