@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+     <record id="project_project_form_view_inherited" model="ir.ui.view">
+        <field name="name">project_project_form_view_inherited</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+          <xpath expr="//field[@name='tag_ids']" position="after">
+               <field name="allow_timesheet_detail"/>
+        	</xpath>
+        </field>
+     </record>
+</odoo>
