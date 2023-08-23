@@ -13,11 +13,11 @@
             'sale',
             'sale_management',
             'sale_stock',
-            ],
+        ],
     "data": [
         "security/ir.model.access.csv",
+        "wizard/update_product_views.xml",
         "views/res_users_views.xml",
-        "views/update_product_views.xml",
         "views/product_category_views.xml",
     ],
     "author": "Parth Patel",
