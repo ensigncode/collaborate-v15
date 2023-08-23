@@ -19,7 +19,6 @@ class StockMove(models.Model):
     def apply_product_rule(self):
         done_moves = []
         move = self
-
         for move in self:
             domain = [('product_id','=',move.product_id.id)]
             rule_ids = self.env['stock.putaway.rule'].search(domain,limit=1)
@@ -42,7 +41,7 @@ class StockMove(models.Model):
 
                 if qty_lines:
                     move_line_vals_list = []
-                    
+
                     if sub_location_id:
                         move_line_vals = move.with_context({'default_location_dest_id':sub_location_id})._prepare_move_line_vals(quantity=qty_lines['qty'])
                     else:

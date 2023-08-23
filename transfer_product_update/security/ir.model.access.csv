@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+transfer_product_update.access_transfer_handling_unit,access_transfer_handling_unit,transfer_product_update.model_transfer_handling_unit,base.group_user,1,1,1,1
+
+transfer_product_update.access_transfer_handling_unit_line,access_transfer_handling_unit_line,transfer_product_update.model_transfer_handling_unit_line,base.group_user,1,1,1,1
