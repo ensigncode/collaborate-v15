@@ -12,13 +12,15 @@
                     <field name="name" invisible="1"/>
                     <group>
                         <field name="transfer_handling_unit_ids" nolabel="1" mode="tree">
-                            <tree editable="bottom" create="0" edit="1" decoration-info="need_to_update == True" >
+                            <tree editable="bottom" create="0" edit="1" decoration-info="need_to_update == True" decoration-danger="product_not_found == True">
                                 <field name="picking_id" readonly="1" force_save="1"/>
                                 <field name="partner_id" readonly="1" force_save="1"/>
                                 <field name="scheduled_date" readonly="1" force_save="1"/>
                                 <field name="origin" readonly="1" force_save="1"/>
                                 <field name="product_code"/>
                                 <field name="need_to_update" invisible="1"/>
+                                <field name="product_not_found" invisible="1"/>
+                                <field name="error_msg" optional="hide"/>                                
                             </tree>
                         </field>
                     </group>

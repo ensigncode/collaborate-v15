@@ -16,11 +16,27 @@ class TransferHandlingUnit(models.TransientModel):
     need_to_update = fields.Boolean(string="Need To Update")
     product_code = fields.Char(string="Handling Unit")
     transfer_handling_unit_id = fields.Many2one('transfer.handling.unit.line',string="Contact")
+    product_not_found = fields.Boolean(string="Product Not Found")
+    error_msg = fields.Char(string="Error")
 
     @api.onchange('product_code')
     def _onchange_product_code(self):
+        error_msg = ''
+        product_not_found = False
         for obj in self:
-            obj.need_to_update =  True
+            if obj.product_code:
+                product_id = obj.get_product(obj.product_code)
+                if not product_id:
+                    product_not_found = True
+                    error_msg = 'Entered HU is not Valid'
+
+                elif product_id and not product_id.categ_id.is_cos_category:
+                    product_not_found = True
+                    error_msg = 'Entered HU is not belong to HU Category.' 
+            if not product_not_found:
+                obj.need_to_update =  True
+            obj.product_not_found = product_not_found
+            obj.error_msg = error_msg
 
     '''
         Function to get the Product ID on the basis of product name.
@@ -46,9 +62,8 @@ class TransferHandlingUnitLine(models.TransientModel):
     transfer_handling_unit_ids = fields.One2many('transfer.handling.unit','transfer_handling_unit_id',string="Transfer Handling Units")
 
     def get_product_code(self,picking_id):
-        categ_id = self.env['product.category'].search([('is_cos_category','=',True)],limit=1)
         product_code = ''
-        move_line = picking_id.move_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.id == categ_id.id and x.product_uom_qty == 0)
+        move_line = picking_id.move_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id and x.product_id.categ_id.is_cos_category and  x.product_uom_qty == 0)
         if move_line:
             product_code = move_line[-1].product_id.name
         return product_code
@@ -80,22 +95,18 @@ class TransferHandlingUnitLine(models.TransientModel):
         categ_id = self.env['product.category'].search([('is_cos_category','=',True)],limit=1)
         done_pickings = []
         if self.transfer_handling_unit_ids:
-            for line in self.transfer_handling_unit_ids:
-
-                line.need_to_update = False
+            for line in self.transfer_handling_unit_ids:                
                 scheduled_date = line.scheduled_date.date()
                 sch_date = scheduled_date.strftime('%Y-%m-%d %H:%M:%S')
                 origin = line.origin
-
-                # 2023-08-18 09:47:42
-
                 product_id = line.get_product(line.product_code)
-                if line.product_code and categ_id and product_id:
+                if line.product_code and product_id and product_id.categ_id and product_id.categ_id.is_cos_category:
+                    line.need_to_update = False
                     company_id = self.env.company.id
                     uom_id = product_id.uom_id.id
                     product_name = product_id.display_name
                     product_id = product_id.id
-                    move_line = line.picking_id.move_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.id == categ_id.id and x.product_uom_qty == 0)
+                    move_line = line.picking_id.move_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.is_cos_category and x.product_uom_qty == 0)
                     done_pickings.append(line.picking_id.id)
                     
                     if move_line:
@@ -121,14 +132,11 @@ class TransferHandlingUnitLine(models.TransientModel):
                                     VALUES (%s,'%s',%s,%s,'%s','%s','%s','%s')
                             """ %(product_id,'0','0',order_id.id,product_name,'0',uom_id,'11')
                             self._cr.execute(query)
-
-
                             picking_ids = order_id.picking_ids
                             for picking in picking_ids:
                                 if picking.id not in done_pickings:
-                                    move_ids = picking.move_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.id == categ_id.id and x.product_uom_qty == 0)
-                                    move_line_ids = picking.move_line_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.id == categ_id.id and x.product_uom_qty == 0)
-                                   
+                                    move_ids = picking.move_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.is_cos_category and x.product_uom_qty == 0)
+                                    move_line_ids = picking.move_line_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.is_cos_category and x.product_uom_qty == 0)
                                     if move_line_ids:
                                         for move_line in move_line_ids:
                                             query = "DELETE FROM stock_move_line WHERE id = %s" %(move_line.id)
