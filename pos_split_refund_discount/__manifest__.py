@@ -2,7 +2,7 @@
 
 {
     'name': 'POS Refund Discount Split',
-    'version': '15.0.1.0.0',
+    'version': '15.0.1.0.1',
     'category': 'Point Of Sale',
     'description': """
         Add ability to split discount in refunds as well

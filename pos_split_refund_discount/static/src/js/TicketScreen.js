@@ -97,6 +97,15 @@ odoo.define('pos_split_refund_discount.TicketScreen', function(require) {
             }
             this.render();
         }
+        _getSearchFields() {
+            return Object.assign({}, super._getSearchFields(), {
+                PHONE_NUMBER: {
+                    repr: (order) => order.get_client_name(),
+                    displayName: this.env._t('Phone'),
+                    modelField: 'partner_id.phone',
+                }
+            });
+        }
 
     };
 
