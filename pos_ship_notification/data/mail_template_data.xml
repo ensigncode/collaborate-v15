@@ -41,15 +41,8 @@
                                         <br />
                                         <p>
                                             We are waiting for you at the store to pick up the ordered products,
-                                            Mon-Fri between 10 a.m. and 6 p.m. at (Shop address)
+                                            Mon-Fri between 10 a.m. and 6 p.m. at <t t-out="ctx.get('shop_address')"/>
                                             <br />
-                                            <p>Adress : 
-                                                <span t-esc="object.partner_id.street" />
-                                                <span t-esc="object.partner_id.city" />
-                                                <span t-esc="object.partner_id.state_id.name" />
-                                                <span t-esc="object.partner_id.zip" />
-                                                <span t-esc="object.partner_id.country_id.name" />
-                                            </p>
                                         </p>
                                     </td>
                                 </tr>

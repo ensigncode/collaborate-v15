@@ -4,19 +4,18 @@
 
 from odoo import api, fields, models, _
 
+
 class StockPickingCustom(models.Model):
     _inherit = "stock.picking"
 
     def _compute_state(self):
         res = super(StockPickingCustom, self)._compute_state()
-        template_id = self.env.ref('pos_ship_notification.mail_template_picking_notification_tmpl')
-        subject = _('Product picking notification')
-        address = self.partner_id.address_get(['delivery']) 
-        pickings = self.env['stock.picking'].search([('state', '=', 'done')])
-        products = pickings.mapped('move_ids_without_package.product_id')
-        print("\n\n products ::; ",products,products.ids)
-        print("\n\n compute state ----- ",self,self.state)
-        if self.state == 'done' and self.pos_order_id :
-            email_values = {'email_to': self.partner_id.email or '', 'subject': subject}
-            template_id.send_mail(self.id, email_values=email_values)
+        for pick in self:
+            template_id = self.env.ref('pos_ship_notification.mail_template_picking_notification_tmpl')
+            subject = _('Product picking notification')
+            if pick.pos_order_id.config_id.ship_later:
+                shop_address = pick.pos_order_id.config_id.warehouse_id.partner_id._display_address(without_company=True)
+                if pick.state == 'assigned' and pick.pos_order_id:
+                    email_values = {'email_to': pick.partner_id.email or '', 'subject': subject}
+                    template_id.with_context(shop_address=shop_address).send_mail(pick.id, email_values=email_values)
         return res

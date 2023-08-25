@@ -2,7 +2,7 @@
 
 {
     'name': 'POS Shipment Notification',
-    'version': '15.0.1.0.0',
+    'version': '15.0.1.0.1',
     'category': 'Point Of Sale',
     'description': """
         Add ability to notify shipment of product when it's done.
