@@ -44,7 +44,7 @@
         <field name="inherit_id" ref="calendar.view_calendar_event_form" />
         <field name="arch" type="xml">
             <field name="categ_ids" position="after">
-                <field name="appintment_reason_ids" widget="many2many_tags" />
+                <field name="appointment_reason_ids" widget="many2many_tags" />
             </field>
         </field>
     </record>
@@ -54,8 +54,8 @@
         <field name="inherit_id" ref="appointment.calendar_event_view_pivot" />
         <field name="arch" type="xml">
             <field name="start" position="after">
-                <field name="appintment_reason_ids" type="row" />
-                <field name="appintment_reason_names" type="row" />
+                <field name="appointment_reason_ids" type="row" />
+                <field name="appointment_reason_names" type="row" />
             </field>
         </field>
     </record>

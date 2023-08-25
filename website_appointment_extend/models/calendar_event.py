@@ -8,21 +8,24 @@ class AppointmentReason(models.Model) :
 
     name = fields.Char(string="Name")
 
+
 class CalendarEventInherit(models.Model):
 
     _inherit = "calendar.event"
 
-    appintment_reason_ids = fields.Many2many('appointment.reason',string="Appointment Reason",translate=True)
-    appintment_reason_names = fields.Char(string='Appintment reason Names', compute='_compute_appointment_reason_names', store=True,translate=True)
+    appointment_reason_ids = fields.Many2many('appointment.reason', string="Appointment Reason", translate=True)
+    appointment_reason_names = fields.Char(string='Appointment reason Names',
+                                           compute='_compute_appointment_reason_names', store=True, translate=True)
 
     
     @api.model
     def _get_custom_fields(self):
         res = super(CalendarEventInherit,self)._get_custom_fields()
-        res.add('appintment_reason_ids')
-        res.add('appintment_reason_names')
+        res.add('appointment_reason_ids')
+        res.add('appointment_reason_names')
         return res
-    
+
+    @api.depends('appointment_reason_ids')
     def _compute_appointment_reason_names(self):
         for record in self:
-            record.appintment_reason_names = ', '.join(record.appintment_reason_ids.mapped('name'))
+            record.appointment_reason_names = ', '.join(record.appointment_reason_ids.mapped('name'))
