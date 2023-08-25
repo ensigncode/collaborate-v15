@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<odoo>
+  <data>
+    <record id="appointment_reason_1" model="appointment.reason">
+      <field name="name">Didn't come</field>
+    </record>
+    <record id="appointment_reason_2" model="appointment.reason">
+        <field name="name">Cancelled</field>
+    </record>
+    <record id="appointment_reason_3" model="appointment.reason">
+        <field name="name">Annulled</field>
+    </record>
+    <record id="appointment_reason_4" model="appointment.reason">
+        <field name="name">Not shown</field>
+    </record>
+    <record id="appointment_reason_5" model="appointment.reason">
+        <field name="name">Optometrist missing</field>
+    </record>
+    <record id="appointment_reason_6" model="appointment.reason">
+        <field name="name">Presented without consultation</field>
+    </record>
+    <record id="appointment_reason_7" model="appointment.reason">
+        <field name="name">Recipe issued</field>
+    </record>
+    <record id="appointment_reason_8" model="appointment.reason">
+        <field name="name">He needs a doctor</field>
+    </record>
+   
+  </data>
+</odoo>

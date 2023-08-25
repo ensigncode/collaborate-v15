@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+appointment_reason.access_appointment_reason,access_appointment_reason,model_appointment_reason,,1,1,1,1
