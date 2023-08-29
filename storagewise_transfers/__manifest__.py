@@ -11,6 +11,7 @@
     "depends": [
             'stock',
             'sale_stock',
+            'sale_management',
             ],
     "data": [
         # 'views/stock_picking_views.xml',
