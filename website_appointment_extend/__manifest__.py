@@ -4,7 +4,7 @@
 
 {
     'name': 'Website Appointments Extension',
-    'version': '15.0.1.0.14',
+    'version': '15.0.1.0.15',
     'category': 'Marketing/Online Appointment',
     'sequence': 216,
     'description': """
@@ -14,10 +14,10 @@
     'depends': ['website_appointment', 'appointment'],
     'data': [
         'security/ir.model.access.csv',
-        'data/appointment_reason_data.xml',
+        'data/appointment_status_data.xml',
         'views/appointment_type_views.xml',
         'views/calendar_templates.xml',
-        'views/appointment_reason_views.xml',
+        'views/appointment_status_views.xml',
     ],
     'installable': True,
     'license': 'OEEL-1',
