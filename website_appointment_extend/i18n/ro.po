@@ -1,0 +1,156 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* website_appointment_extend
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-31 13:13+0000\n"
+"PO-Revision-Date: 2023-08-31 13:13+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: website_appointment_extend
+#: model:appointment.reason,name:website_appointment_extend.appointment_reason_3
+msgid "Annulled"
+msgstr "Anulat"
+
+#. module: website_appointment_extend
+#: model:ir.actions.act_window,name:website_appointment_extend.action_appointment_reason
+#: model:ir.model.fields,field_description:website_appointment_extend.field_calendar_event__appointment_reason_ids
+#: model:ir.ui.menu,name:website_appointment_extend.menu_appointment_reason
+#: model_terms:ir.ui.view,arch_db:website_appointment_extend.view_appointment_reason_form
+#: model_terms:ir.ui.view,arch_db:website_appointment_extend.view_appointment_reason_tree
+msgid "Appointment Reason"
+msgstr "Motivul numirii"
+
+#. module: website_appointment_extend
+#: model:ir.model,name:website_appointment_extend.model_calendar_appointment_type
+msgid "Appointment Type"
+msgstr "Tip întâlnire"
+
+#. module: website_appointment_extend
+#: model:ir.model.fields,field_description:website_appointment_extend.field_calendar_event__appointment_reason_names
+msgid "Appointment reason Names"
+msgstr "Motivul numirii Nume"
+
+#. module: website_appointment_extend
+#: model:ir.model,name:website_appointment_extend.model_calendar_event
+msgid "Calendar Event"
+msgstr "Eveniment Calendar"
+
+#. module: website_appointment_extend
+#: model:appointment.reason,name:website_appointment_extend.appointment_reason_2
+msgid "Cancelled"
+msgstr "Anulat"
+
+#. module: website_appointment_extend
+#: model:ir.model,name:website_appointment_extend.model_res_partner
+msgid "Contact"
+msgstr "a lua legatura"
+
+#. module: website_appointment_extend
+#: model:ir.model.fields,field_description:website_appointment_extend.field_appointment_reason__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: website_appointment_extend
+#: model:ir.model.fields,field_description:website_appointment_extend.field_appointment_reason__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: website_appointment_extend
+#: model:appointment.reason,name:website_appointment_extend.appointment_reason_1
+msgid "Didn't come"
+msgstr "Nu a venit"
+
+#. module: website_appointment_extend
+#: model:ir.model.fields,field_description:website_appointment_extend.field_appointment_reason__display_name
+msgid "Display Name"
+msgstr "Numele de afișare"
+
+#. module: website_appointment_extend
+#: code:addons/website_appointment_extend/controllers/main.py:0
+#, python-format
+msgid "Email: %s"
+msgstr ""
+
+#. module: website_appointment_extend
+#: model:ir.model.fields,field_description:website_appointment_extend.field_calendar_appointment_type__employee_appointment_limit
+msgid "Employee's Appointment Limit"
+msgstr "Limita de numire a angajatului"
+
+#. module: website_appointment_extend
+#: model:appointment.reason,name:website_appointment_extend.appointment_reason_8
+msgid "He needs a doctor"
+msgstr "Are nevoie de un doctor"
+
+#. module: website_appointment_extend
+#: model:ir.model.fields,field_description:website_appointment_extend.field_appointment_reason__id
+msgid "ID"
+msgstr ""
+
+#. module: website_appointment_extend
+#: model:ir.model.fields,field_description:website_appointment_extend.field_appointment_reason____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: website_appointment_extend
+#: model:ir.model.fields,field_description:website_appointment_extend.field_appointment_reason__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: website_appointment_extend
+#: model:ir.model.fields,field_description:website_appointment_extend.field_appointment_reason__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: website_appointment_extend
+#. openerp-web
+#: code:addons/website_appointment_extend/static/src/xml/appointment_slot.xml:0
+#, python-format
+msgid ""
+"Locurile disponibile s-au epuizat. Verificati disponibilitatea in zilele "
+"urmatoare!"
+msgstr ""
+
+#. module: website_appointment_extend
+#: code:addons/website_appointment_extend/controllers/main.py:0
+#, python-format
+msgid "Mobile: %s"
+msgstr ""
+
+#. module: website_appointment_extend
+#: model:ir.model.fields,field_description:website_appointment_extend.field_appointment_reason__name
+msgid "Name"
+msgstr ""
+
+#. module: website_appointment_extend
+#: model:appointment.reason,name:website_appointment_extend.appointment_reason_4
+msgid "Not shown"
+msgstr "Nereprezentat"
+
+#. module: website_appointment_extend
+#: model:appointment.reason,name:website_appointment_extend.appointment_reason_5
+msgid "Optometrist missing"
+msgstr "Optometristul lipsește"
+
+#. module: website_appointment_extend
+#: model:appointment.reason,name:website_appointment_extend.appointment_reason_6
+msgid "Presented without consultation"
+msgstr "Prezentat fără consultare"
+
+#. module: website_appointment_extend
+#: model:appointment.reason,name:website_appointment_extend.appointment_reason_7
+msgid "Recipe issued"
+msgstr "Reteta emisa"
+
+#. module: website_appointment_extend
+#: model:ir.model,name:website_appointment_extend.model_appointment_reason
+msgid "appointment.reason"
+msgstr ""

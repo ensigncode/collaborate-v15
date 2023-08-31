@@ -3,10 +3,10 @@
 from odoo import fields, models,api
 
 
-class AppointmentReason(models.Model) :
+class AppointmentReason(models.Model):
     _name= "appointment.reason"
 
-    name = fields.Char(string="Name")
+    name = fields.Char(string="Name", translate=True)
 
 
 class CalendarEventInherit(models.Model):
