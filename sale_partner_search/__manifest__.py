@@ -3,7 +3,7 @@
     "name": "Sale Customer Search",
     "category": "sale",
     "summary": "Posibility to search by phone number in Order",
-    "version": "15.0.1.0.0",
+    "version": "15.0.1.0.1",
     "license": "LGPL-3",
     "depends": [
         'sale',
