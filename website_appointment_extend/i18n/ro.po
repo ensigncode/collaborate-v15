@@ -26,7 +26,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website_appointment_extend.view_appointment_status_form
 #: model_terms:ir.ui.view,arch_db:website_appointment_extend.view_appointment_status_tree
 msgid "Appointment Status"
-msgstr ""
+msgstr "Status programare"
 
 #. module: website_appointment_extend
 #: model:ir.model,name:website_appointment_extend.model_calendar_appointment_type
