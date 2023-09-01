@@ -41,7 +41,7 @@ msgstr "Eveniment Calendar"
 #. module: website_appointment_extend
 #: model:appointment.status,name:website_appointment_extend.appointment_status_6
 msgid "Came but wasn't consulted"
-msgstr ""
+msgstr "Prezentat fara consult"
 
 #. module: website_appointment_extend
 #: model:appointment.status,name:website_appointment_extend.appointment_status_2
