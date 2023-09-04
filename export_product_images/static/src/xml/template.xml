@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+	<t t-inherit="base_import.ImportMenu" t-inherit-mode="extension">
+        <xpath expr="//li[hasclass('o_import_menu')]" position="inside">
+            <button type="button" class="dropdown-item" t-on-click="_onImportImage">
+                Import Images
+            </button>
+        </xpath>
+    </t>
+</templates>
