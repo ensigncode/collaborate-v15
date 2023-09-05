@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_import_images_form" model="ir.ui.view">
+        <field name="name">view.import.images.form</field>
+        <field name="model">import.images</field>
+        <field name="arch" type="xml">
+        	<form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="image_zip_file" required="1" />
+                        </group>
+                    </group>
+                </sheet>
+        		<footer>
+                    <button string="Confirm" name="action_confirm" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+     <record id="action_import_images" model="ir.actions.act_window">
+        <field name="name">Import Images</field>
+        <field name="res_model">import.images</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_import_images_form"/>
+    </record>
+    
+   <!--  <record id="action_import_images_act_window" model="ir.actions.act_window">
+        <field name="name">Import Images</field>
+        <field name="res_model">import.images</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="export_product_images.view_import_images_form"/>
+        <field name="binding_model_id" ref="product.model_product_product"/>
+        <field name="target">new</field>
+    </record> -->
+</odoo>

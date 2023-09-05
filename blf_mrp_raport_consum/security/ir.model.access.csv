@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+blf_mrp_raport_consum.access_mrp_status,access_mrp_status,blf_mrp_raport_consum.model_mrp_status,base.group_user,1,1,1,1
+blf_mrp_raport_consum.access_mrp_consume,access_mrp_consume,blf_mrp_raport_consum.model_mrp_consume,base.group_user,1,1,1,1
+
+blf_mrp_raport_consum.access_mrp_consume_report,access_mrp_consume_report,blf_mrp_raport_consum.model_mrp_consume_report,base.group_user,1,1,1,1
