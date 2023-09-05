@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="appointment_type_view_form_appointment_extend" model="ir.ui.view">
+            <field name="name">calendar.appointment.type.view.kanban.inherit.extend.limit.appointment</field>
+            <field name="model">calendar.appointment.type</field>
+            <field name="inherit_id" ref="appointment.calendar_appointment_type_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='schedule_availability']//group[@name='left_details']" position="inside">
+                    <label for="employee_appointment_limit"/>
+                    <div style="width:30%;">
+                        <field name="employee_appointment_limit"/>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
