@@ -20,5 +20,6 @@
         'wizards/change_payment_method_wizard_view.xml',
     ],
     'installable': True,
-    'auto_install': True
+    'auto_install': True,
+    'license': 'LGPL-3',
 }
