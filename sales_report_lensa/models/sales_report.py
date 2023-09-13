@@ -8,12 +8,15 @@ class PivotInheritReport(models.Model):
 
     def _select_sale(self,fields=None):
         res = super(PivotInheritReport,self)._select_sale(fields)
-        res += ", s.margin_percent AS margin_per, (select sum(amount) from account_payment as ap where move_id in (select id from account_move where ref=am.name)) AS total_payment"
+        res +=  """, SUM(l.margin_percent)*100 AS margin_per, 
+                    (select sum(amount) from account_payment as ap where move_id in (select id from account_move where ref=am.name)) AS total_payment
+                """
         return res
     
     def _select_pos(self,fields=None):
-        fields['margin_percent'] = ', SUM(l.price_subtotal - COALESCE(l.total_cost,0) / CASE COALESCE(pos.currency_rate, 0) WHEN 0 THEN 1.0 ELSE pos.currency_rate END) / SUM(l.price_subtotal) AS margin_percent'
-        fields['total_payment'] = ', (select sum(amount) from account_payment as ap where move_id in (select id from account_move where ref=am.name)) AS total_payment'
+        fields['margin_percent'] = ', (SUM(l.price_subtotal - COALESCE(l.total_cost,0) / CASE COALESCE(pos.currency_rate, 0) WHEN 0 THEN 1.0 ELSE pos.currency_rate END) / SUM(l.price_subtotal))*100 AS margin_per'
+        fields['total_payment'] = ', SUM(pop.amount) AS total_payment'
+        # fields['total_payment'] = ', (select sum(amount) from account_payment as ap where move_id in (select id from account_move where ref=am.name)) AS total_payment'
         return super(PivotInheritReport,self)._select_pos(fields)
 
     def _from_sale(self, from_clause=''):
