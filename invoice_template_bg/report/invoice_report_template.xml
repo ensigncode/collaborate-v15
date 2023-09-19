@@ -1,59 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <template id="invoice_report_template">
             <t t-call="web.external_layout">
                 <table>
                     <tbody>
                         <tr>
-                            <td colspan="1" style="border: 3px solid #000; background-color: lightgrey;">
-                                <!--                            <td colspan="1"  style="border: 3px solid #000; background-color: lightgrey;" t-if="o.partner_shipping_id and (o.partner_shipping_id != o.partner_id)">-->
-                                <strong>Доставчик/Supplier:</strong>
-                                <span groups="sale.group_delivery_invoice_address"
-                                      name="shipping_address_block"/>
-                                <span t-esc="o.partner_shipping_id"
-                                      t-options='{"widget": "contact", "fields": [ "name"], "no_marker": True}'/>
-                                <strong>Адрес/Address:</strong>
-                                <span t-esc="o.partner_id"
-                                      t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'
-                                      groups="sale.group_delivery_invoice_address"/>
-                                <strong>Ид. номер по ДДС/VAT number:</strong>
-                                <span t-if="o.partner_id.vat" class="mt16">
-                                    <t t-if="o.company_id.account_fiscal_country_id.vat_label"
-                                       t-esc="o.company_id.account_fiscal_country_id.vat_label"
-                                       id="inv_tax_id_label"/>
-                                    <t t-else="">Номер по ДДС/VAT number:</t>
-                                    <span t-esc="o.partner_id.vat"/>
-                                </span>
-                            </td>
-                            <td colspan="5"
-                                style="border: 3px solid #000; border-left: 0; border-right: 0;  border-bottom: 0;  border-top: 0;">
-                                &amp;nbsp;
-                            </td>
-                            <td colspan="1" style="border: 3px solid #000; background-color: lightgrey;">
-                                <strong>Получател/Client:</strong>
-                                <span t-esc="o.partner_id"
-                                      t-options='{"widget": "contact", "fields": [ "name"], "no_marker": True}'
-                                      groups="sale.group_delivery_invoice_address"/>
-                                <strong>Адрес/Address:</strong>
-                                <span t-esc="o.partner_id"
-                                      t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'
-                                      groups="sale.group_delivery_invoice_address"/>
-                                <strong>Ид. номер по ДДС/VAT number:</strong>
-                                <span t-if="o.partner_id.vat" class="mt16">
-                                    <t t-if="o.company_id.account_fiscal_country_id.vat_label"
-                                       t-esc="o.company_id.account_fiscal_country_id.vat_label"
-                                       id="inv_tax_id_label"/>
-                                    <t t-else="">Номер по ДДС/VAT number:</t>
-                                    <span t-esc="o.partner_id.vat"/>
-                                </span>
-                            </td>
+                            <td style="width: 10%"></td>
+                            <td style="width: 20%"></td>
+                            <td style="width: 30%"></td>
+                            <td style="width: 10%"></td>
+                            <td style="width: 10%"></td>
+                            <td style="width: 10%"></td>
+                            <td style="width: 10%"></td>
                         </tr>
                         <tr>
-                            <td colspan="1"/>
-                            <td colspan="5"/>
-                            <td colspan="1"/>
+                            <td colspan="2"
+                                style="border: 3px solid #000; background-color: lightgrey; padding-top: -200px;">
+                                <strong>Доставчик/Supplier:</strong>
+                                <span t-esc="o.company_id.name"
+                                />
+                                <strong>Адрес/Address:</strong>
+                                <t t-esc="o.company_id.street"/>
+                                <span t-if="o.company_id.street and ( o.company_id.street2 or o.company_id.city or o.company_id.state_id.name or o.company_id.zip or o.company_id.country_id.name)">
+                                    ,
+                                </span>
+                                <t t-esc="o.company_id.street2"/>
+                                <span t-if="o.company_id.street2 and ( o.company_id.city or o.company_id.state_id.name or o.company_id.zip or o.company_id.country_id.name)">
+                                    ,
+                                </span>
+                                <br/>
+                                <strong>Ид. номер по ДДС/VAT number:</strong>
+                                <span t-if="o.company_id.vat" class="mt16">
+                                    <t t-if="o.company_id.account_fiscal_country_id.vat_label"
+                                       t-esc="o.company_id.account_fiscal_country_id.vat_label"
+                                       id="inv_tax_id_label"/>
+                                    <t t-else="">Номер по ДДС/VAT number:</t>
+                                    <span t-esc="o.company_id.vat"/>
+                                </span>
+                            </td>
+                            <td colspan="2" style="border-bottom: 3px solid #fff; padding-top: -200px;">
+                                &amp;nbsp;
+                            </td>
+                            <td colspan="3"
+                                style="border: 3px solid #000; background-color: lightgrey; padding-top: -200px;">
+                                <strong>Получател/Client:</strong>
+                                <span t-esc="o.partner_id"
+                                      t-options='{"widget": "contact", "fields": ["name"], "no_marker": True}'
+                                      groups="sale.group_delivery_invoice_address"/>
+                                <t t-if="o.partner_shipping_id and (o.partner_shipping_id == o.partner_id)">
+                                    <span groups="sale.group_delivery_invoice_address"
+                                          name="shipping_address_block"/>
+                                    <span t-esc="o.partner_shipping_id"
+                                          t-options='{"widget": "contact", "fields": ["name"], "no_marker": True}'/>
+                                </t>
+                                <strong>Адрес/Address:</strong>
+                                <span t-esc="o.partner_id"
+                                      t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'
+                                      groups="sale.group_delivery_invoice_address"/>
+                                <t t-if="o.partner_shipping_id and (o.partner_shipping_id == o.partner_id)">
+                                    <span t-esc="o.partner_shipping_id"
+                                          t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'/>
+                                </t>
+                                <strong>Ид. номер по ДДС/VAT number:</strong>
+                                <span t-if="o.partner_id.vat" class="mt16">
+                                    <t t-if="o.company_id.account_fiscal_country_id.vat_label"
+                                       t-esc="o.company_id.account_fiscal_country_id.vat_label"
+                                       id="inv_tax_id_label"/>
+                                    <t t-else="">Номер по ДДС/VAT number:</t>
+                                    <span t-esc="o.partner_id.vat"/>
+                                </span>
+                            </td>
                         </tr>
                         <tr>
                             <td colspan="7">
@@ -78,47 +95,47 @@
                         </tr>
                         <tr class="text-danger"
                             style="border: 3px solid #000;  border-bottom: 0; background-color: lightgrey;">
-                            <th style="width: 10%; border: 3px solid #000;  border-left: 0;  border-top: 0;  border-bottom: 0;">
+                            <th style="border: 3px solid #000;  border-left: 0;  border-top: 0;  border-bottom: 0;">
                                 No
                             </th>
                             <th colspan="2"
-                                style="width: 50%; border: 3px solid #000;  border-right: 0;  border-top: 0;  border-bottom: 0;">
+                                style="border: 3px solid #000;  border-right: 0;  border-top: 0;  border-bottom: 0;">
                                 Наименование на стоките или услугите/ Type of the goods
                                 or services
                             </th>
-                            <th style="width: 10%; border: 3px solid #000;  border-left: 0;  border-right: 0; border-top: 0;  border-bottom: 0; ">
+                            <th style="border: 3px solid #000;  border-left: 0;  border-right: 0; border-top: 0;  border-bottom: 0;">
                                 Количество/ Quantity
                             </th>
-                            <th style="width: 10%; border: 3px solid #000;  border-left: 0;  border-top: 0;  border-bottom: 0;">
+                            <th style="border: 3px solid #000;  border-left: 0;  border-top: 0;  border-bottom: 0;">
                                 Ед. Цена/ Price (BGN)
                             </th>
-                            <th style="width: 10%; border: 3px solid #000;  border-right: 0; border-top: 0;  border-bottom: 0;">
+                            <th style="border: 3px solid #000;  border-right: 0; border-top: 0;  border-bottom: 0;">
                                 Отстъпка/ Discount (BGN)
                             </th>
-                            <th style="width: 10%; border: 3px solid #000;  border-right: 0; border-top: 0;  border-bottom: 0;">
+                            <th style="border: 3px solid #000;  border-right: 0; border-top: 0;  border-bottom: 0;">
                                 Value (BGN)
                             </th>
                         </tr>
                         <t t-set="i" t-value="1"/>
                         <t t-foreach="o.invoice_line_ids" t-as="product">
                             <tr>
-                                <td style="width: 10%; border: 3px solid #000;  border-top: 0;  border-bottom: 0;">
+                                <td style="border: 3px solid #000;  border-top: 0;  border-bottom: 0;">
                                     <span t-esc="i"/>
                                 </td>
                                 <td colspan="2"
-                                    style="width: 50%; border: 3px solid #000;  border-right: 0;  border-top: 0;  border-bottom: 0;">
+                                    style="border: 3px solid #000;  border-right: 0;  border-top: 0;  border-bottom: 0;">
                                     <span t-esc="product.product_id.name"/>
                                 </td>
-                                <td style="width: 10%; border: 3px solid #000;  border-left: 0;  border-right: 0; border-top: 0;  border-bottom: 0; ">
+                                <td style="border: 3px solid #000;  border-left: 0;  border-right: 0; border-top: 0;  border-bottom: 0; ">
                                     <span t-esc="product.quantity"/>
                                 </td>
-                                <td style="width: 10%; border: 3px solid #000;  border-left: 0;  border-top: 0;  border-bottom: 0;">
+                                <td style="border: 3px solid #000;  border-left: 0;  border-top: 0;  border-bottom: 0;">
                                     <span t-esc="product.price_unit"/>
                                 </td>
-                                <td style="width: 10%; border: 3px solid #000;  border-right: 0; border-top: 0;  border-bottom: 0;">
+                                <td style="border: 3px solid #000;  border-right: 0; border-top: 0;  border-bottom: 0;">
                                     <span t-esc="product.discount"/>
                                 </td>
-                                <td style="width: 10%; border: 3px solid #000; border-top: 0;  border-bottom: 0;">
+                                <td style="border: 3px solid #000; border-top: 0;  border-bottom: 0;">
                                     <span t-esc="product.price_total"/>
                                 </td>
                                 <t t-set="i" t-value="i+1"/>
@@ -126,7 +143,7 @@
                         </t>
                         <tr>
                             <td colspan="2"
-                                style="width: 10%; border: 3px solid #000;  border-right: 0; border-left: 0;  border-bottom: 0;">
+                                style="border: 3px solid #000;  border-right: 0; border-left: 0;  border-bottom: 0;">
                                 &amp;nbsp;
                             </td>
                             <t t-set="tax_totals" t-value="json.loads(o.tax_totals_json)"/>
@@ -181,8 +198,9 @@
                             <td colspan="4" style="border: 3px solid #000;  border-right: 0;  border-top: none;">Сума за
                                 плащане /Total amount:
                             </td>
-                            <td class="text-right" style="border:  3px solid black; border-left: none; border-top: none;">
-                                 <span t-esc="tax_totals['formatted_amount_total']"/>
+                            <td class="text-right"
+                                style="border:  3px solid black; border-left: none; border-top: none;">
+                                <span t-esc="tax_totals['formatted_amount_total']"/>
                             </td>
                         </tr>
                         <tr>
@@ -204,7 +222,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="7" style="padding-top: 120px;">
+                            <td colspan="7" style="padding-top: 100px;">
                                 <span>Signature of the issuer:</span>
                                 <span class="d-inline-block"
                                       style="width: 100px;border-bottom: 1px dotted #000;"/>
@@ -217,7 +235,7 @@
     </data>
 </odoo>
 
-        <!--<template id="report_invoice_document_extend" inherit_id="account.report_invoice_document">-->
+        <!--<template id="report_invoice_oument_extend" inherit_id="account.report_invoice_oument">-->
         <!--<xpath expr="//t[@t-set='address']" position="replace">-->
         <!--    <t t-set="address">-->
         <!--        <strong>Client:</strong>-->
@@ -327,7 +345,7 @@
         <!--            </xpath>-->
 
         <!--        </template>-->
-        <!-- <template id="document_tax_totals_extend" inherit_id="account.document_tax_totals">
+        <!-- <template id="oument_tax_totals_extend" inherit_id="account.oument_tax_totals">
             <xpath expr="//t" position="replace">
                 <t t-foreach="tax_totals['subtotals']" t-as="subtotal">
                     <tr class="border-black o_subtotal">
