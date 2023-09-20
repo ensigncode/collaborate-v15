@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "<br/>\n"
 "                <span> ОРИГИНАЛ </span>"
-msgstr ""
+
 
 #. module: invoice_template_bg
 #: model_terms:ir.ui.view,arch_db:invoice_template_bg.report_invoice_document_extend
