@@ -113,7 +113,7 @@ class AppointmentExtend(Appointment):
 		sms_ques_ans = kwargs.get([que_id for que_id in kwargs if eval(que_id.split('_')[1].strip()) == sms_que_id.id][0])
 		
 		# List of ans.
-		ans_str_list = ['Yes','yes','Subscribe','subscribe','True','true']
+		ans_str_list = ['Yes','yes','YES','Subscribe','subscribe','SUBSCRIBE','True','true','TRUE']
 
 		if employee not in appointment_type.sudo().employee_ids:
 			raise NotFound()
