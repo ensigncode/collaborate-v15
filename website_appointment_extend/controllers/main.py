@@ -105,6 +105,16 @@ class AppointmentExtend(Appointment):
 		date_end = date_start + relativedelta(hours=duration)
 		# check availability of the employee again (in case someone else booked while the client was entering the form)
 		employee = request.env['hr.employee'].sudo().browse(int(employee_id)).exists()
+
+		# Get ans of the appoinment questions.
+		newsletter_ques_id = request.env['calendar.appointment.question'].search([('appointment_type_id','=',appointment_type.id),('name','ilike','newsletter')],limit=1)
+		newsletter_ques_ans = kwargs.get([que_id for que_id in kwargs if eval(que_id.split('_')[1].strip()) == newsletter_ques_id.id][0])
+		sms_que_id = request.env['calendar.appointment.question'].search([('appointment_type_id','=',appointment_type.id),('name','ilike','sms')],limit=1)
+		sms_ques_ans = kwargs.get([que_id for que_id in kwargs if eval(que_id.split('_')[1].strip()) == sms_que_id.id][0])
+		
+		# List of ans.
+		ans_str_list = ['Yes','yes','Subscribe','subscribe','True','true']
+
 		if employee not in appointment_type.sudo().employee_ids:
 			raise NotFound()
 		# Fetch next employee which is available
@@ -124,15 +134,21 @@ class AppointmentExtend(Appointment):
 					employee_appointment_limit=appointment_type.employee_appointment_limit).calendar_verify_availability(
 				date_start, date_end):
 				return request.redirect('/calendar/%s/appointment?state=failed-partner' % appointment_type.id)
-			if not Partner.mobile:
-				Partner.write({'mobile': phone})
-			if not Partner.email:
-				Partner.write({'email': email})
+			Partner.write(
+				{
+					'mobile':phone if not Partner.mobile else None,
+					'email':email if not Partner.email else None,
+					'subscribed_to_newsletter':True if newsletter_ques_ans.lower() in ans_str_list else False,
+					'subscribed_to_sms':True if sms_ques_ans.lower() in ans_str_list else False,
+				}
+			)
 		else:
 			Partner = Partner.create({
 				'name': name,
 				'mobile': Partner._phone_format(phone, country=self._get_customer_country()),
 				'email': email,
+				'subscribed_to_newsletter':True if newsletter_ques_ans.lower() in ans_str_list else False,
+				'subscribed_to_sms':True if sms_ques_ans.lower() in ans_str_list else False,
 			})
 
 		description_bits = []

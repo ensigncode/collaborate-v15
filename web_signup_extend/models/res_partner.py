@@ -8,8 +8,10 @@ class Partner(models.Model):
 
     subscribed_to_newsletter = fields.Boolean(string="Subscribed To Newsletter?",
                                               default=False,
+                                              tracking=True,
                                               help="If it's checked then user will be subscribed for Newsletter.")
     subscribed_to_sms = fields.Boolean(string="Subscribed To SMS?",
                                        default=False,
+                                       tracking=True,
                                        help="If it's checked then user will be subscribed for SMS.")
-    account_deleted = fields.Boolean(string="Account Deleted", default=False)
+    account_deleted = fields.Boolean(string="Account Deleted", default=False, tracking=True)
