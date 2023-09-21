@@ -6,6 +6,12 @@ import random
 import pytz
 from functools import reduce
 import logging
+from babel.dates import format_datetime
+from dateutil.relativedelta import relativedelta
+import calendar as cal
+
+
+from odoo.tools.misc import get_lang
 
 _logger = logging.getLogger(__name__)
 
@@ -132,3 +138,115 @@ class CalendarAppointmentType(models.Model):
             filter(lambda x: is_slot_available(x), slots)
         ))
         return slots
+
+    def _get_appointment_slots(self, timezone, employee=None, reference_date=None):
+        # Override method for filter out appointment slot based on employee working hours.
+        """ Fetch available slots to book an appointment.
+
+        :param str timezone: timezone string e.g.: 'Europe/Brussels' or 'Etc/GMT+1'
+        :param <hr.employee> employee: if set will only check available slots for
+          this employee. Otherwise employee_ids fields is used to fetch availability;
+        :param datetime reference_date: starting datetime to fetch slots. If not
+          given now (in UTC) is used instead. Note that minimum schedule hours
+          defined on appointment type is added to the beginning of slots;
+
+        :returns: list of dicts (1 per month) containing available slots per week
+          and per day for each week (see ``_slots_generate()``), like
+          [
+            {'id': 0,
+             'month': 'February 2022' (formatted month name),
+             'weeks': [
+                [{'day': '']
+                [{...}],
+             ],
+            },
+            {'id': 1,
+             'month': 'March 2022' (formatted month name),
+             'weeks': [ (...) ],
+            },
+            {...}
+          ]
+        """
+        self.ensure_one()
+        if not reference_date:
+            reference_date = datetime.utcnow()
+
+        appt_tz = pytz.timezone(self.appointment_tz)
+        requested_tz = pytz.timezone(timezone)
+        first_day = requested_tz.fromutc(reference_date + relativedelta(hours=self.min_schedule_hours))
+        appointment_duration_days = self.max_schedule_days
+        unique_slots = self.slot_ids.filtered(lambda slot: slot.slot_type == 'unique')
+        if self.category == 'custom' and unique_slots:
+            appointment_duration_days = (unique_slots[-1].end_datetime.date() - reference_date.date()).days
+        last_day = requested_tz.fromutc(reference_date + relativedelta(days=appointment_duration_days))
+
+        # Compute available slots (ordered)
+        slots = self._slots_generate(
+            first_day.astimezone(appt_tz),
+            last_day.astimezone(appt_tz),
+            timezone,
+            reference_date=reference_date
+        )
+        if not employee or employee in self.employee_ids:
+            self._slots_available(slots, first_day.astimezone(pytz.UTC), last_day.astimezone(pytz.UTC), employee)
+
+        # Compute calendar rendering and inject available slots
+        today = requested_tz.fromutc(reference_date)
+        start = today
+        month_dates_calendar = cal.Calendar(0).monthdatescalendar
+        months = []
+        while (start.year, start.month) <= (last_day.year, last_day.month):
+            dates = month_dates_calendar(start.year, start.month)
+            for week_index, week in enumerate(dates):
+                for day_index, day in enumerate(week):
+                    mute_cls = weekend_cls = today_cls = None
+                    today_slots = []
+                    if day.weekday() in (cal.SUNDAY, cal.SATURDAY):
+                        weekend_cls = 'o_weekend'
+                    if day == today.date() and day.month == today.month:
+                        today_cls = 'o_today'
+                    if day.month != start.month:
+                        mute_cls = 'text-muted o_mute_day'
+                    else:
+                        # slots are ordered, so check all unprocessed slots from until > day
+                        while slots and (slots[0][timezone][0].date() <= day):
+                            # Get employee working hours for filter out appointment slots.
+                            employee_attendace = [d for d in slots[0]['employee_id'].resource_calendar_id.attendance_ids if str(day.weekday()) == d.dayofweek]
+                            working_hour = [range(int(attendace.hour_from),int(attendace.hour_to)) for attendace in employee_attendace]
+                            is_employee_available = [True for hour in working_hour if slots[0][timezone][0].hour in hour]
+                            if (slots[0][timezone][0].date() == day) and ('employee_id' in slots[0]):
+                                if slots[0]['slot'].allday:
+                                    if is_employee_available:
+                                        today_slots.append({
+                                            'employee_id': slots[0]['employee_id'].id,
+                                            'datetime': slots[0][timezone][0].strftime('%Y-%m-%d %H:%M:%S'),
+                                            'hours': _("All day"),
+                                            'duration': 24,
+                                        })
+                                else:
+                                    start_hour = slots[0][timezone][0].strftime('%H:%M')
+                                    end_hour = slots[0][timezone][1].strftime('%H:%M')
+                                    if is_employee_available:
+                                        today_slots.append({
+                                            'employee_id': slots[0]['employee_id'].id,
+                                            'datetime': slots[0][timezone][0].strftime('%Y-%m-%d %H:%M:%S'),
+                                            'hours': "%s - %s" % (start_hour, end_hour) if self.category == 'custom' else start_hour,
+                                            'duration': str((slots[0][timezone][1] - slots[0][timezone][0]).total_seconds() / 3600),
+                                        })
+                            slots.pop(0)
+                    today_slots = sorted(today_slots, key=lambda d: d['hours'])
+                    dates[week_index][day_index] = {
+                        'day': day,
+                        'slots': today_slots,
+                        'mute_cls': mute_cls,
+                        'weekend_cls': weekend_cls,
+                        'today_cls': today_cls
+                    }
+
+            months.append({
+                'id': len(months),
+                'month': format_datetime(start, 'MMMM Y', locale=get_lang(self.env).code),
+                'weeks': dates,
+            })
+            start = start + relativedelta(months=1)
+        return months
