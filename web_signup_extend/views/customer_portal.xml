@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_details_newsletter" inherit_id="portal.portal_my_details"
+              name="Newsletter Signup checkboxes Client">
+        <xpath expr="//form//div[hasclass('o_portal_details')]//div[hasclass('row')]/div[last()]" position="after">
+            <div t-attf-class="form-group #{error.get('subscribed_to_newsletter') and 'o_has_error' or ''} col-xl-6">
+                <label class="col-form-label label-optional" for="zipcode">
+                    <input type="checkbox" name="subscribed_to_newsletter" t-attf-class="custom-form-control"
+                           t-att-value="partner.subscribed_to_newsletter"
+                           t-att-checked="partner.subscribed_to_newsletter"/> &amp;nbsp;
+                    Subscribed To Newsletter?
+                </label>
+            </div>
+            <div t-attf-class="form-group #{error.get('subscribed_to_sms') and 'o_has_error' or ''} col-xl-6">
+                <label class="col-form-label label-optional" for="zipcode">
+                    <input type="checkbox" name="subscribed_to_sms"
+                           t-attf-class="custom-form-control #{error.get('subscribed_to_sms') and 'is-invalid' or ''}"
+                           t-att-value="partner.subscribed_to_sms" t-att-checked="partner.subscribed_to_sms"/> &amp;nbsp;
+                    Subscribed To SMS?
+                </label>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="portal_layout_delete_user" inherit_id="portal.portal_layout"
+              name="Delete Account">
+        <xpath expr="//div[hasclass('o_portal_wrap')]//div[@id='o_my_sidebar']//div[hasclass('o_portal_my_security')]"
+               position="inside">
+            <!-- Modal -->
+            <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModal"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Confirmation</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&amp;times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure?
+                        </div>
+                        <div class="modal-footer">
+                            <a type="button" class="btn btn-primary" href='/my/account/delete' id="confirmOk">Yes</a>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <a id="delete_my_account" data-toggle="modal" data-target="#confirmModal" style="color:red;cursor: pointer;"><i class="fa fa-trash mx-1"/>
+                Delete Account
+            </a>
+        </xpath>
+    </template>
+
+    <template id="account_deleted_successfully" name="Account Deleted">
+        <t t-call="website.layout">
+            <div class="success_card">
+                <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;">
+                    <i class="checkmark">✓</i>
+                </div>
+                <h1>Success</h1>
+                <p>Account deleted successfully!</p>
+            </div>
+        </t>
+    </template>
+</odoo>

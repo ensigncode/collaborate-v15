@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="signup" inherit_id="auth_signup.signup" name="Newsletter Signup checkboxes">
+        <xpath expr="//form//div[hasclass('oe_login_buttons')]" position="before">
+            <div class="form-group">
+                <label for="subscribed_to_newsletter">
+                    <input type="checkbox" name="subscribed_to_newsletter" id="subscribed_to_newsletter"
+                           class="custom-form-control"/>
+                    Subscribe to Newsletter
+                </label>
+                <br/>
+                <label for="subscribed_to_sms">
+                    <input type="checkbox" name="subscribed_to_sms" id="subscribed_to_sms" class="custom-form-control"/>
+                    Subscribe to SMS
+                </label>
+                <label for="agreed_on_tmc">
+                    <input type="checkbox" name="agreed_on_tmc" id="agreed_on_tmc"/>
+                    I agree to the terms and conditions
+                </label>
+            </div>
+        </xpath>
+    </template>
+</odoo>

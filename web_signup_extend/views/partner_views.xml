@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_partner_view_form_signup_newsletter" model="ir.ui.view">
+        <field name="name">res.partner.view.form.inherit.signup.newsletter</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='sales_purchases']//group[@name='misc']" position="inside">
+                <field name="subscribed_to_newsletter"/>
+                <field name="subscribed_to_sms"/>
+                <field name="account_deleted" invisible="0"/>
+            </xpath>
+            <xpath expr="//sheet//div" position="before">
+                <widget name="web_ribbon" title="Account Deleted" bg_color="bg-danger" attrs="{'invisible': [('account_deleted', '=', False)]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="res_partner_kanban_view_inherit_signup" model="ir.ui.view">
+          <field name="name">res.partner.kanban.inherit.signup</field>
+          <field name="model">res.partner</field>
+          <field name="inherit_id" ref="base.res_partner_kanban_view"/>
+          <field name="arch" type="xml">
+              <xpath expr="//field" position="after">
+                  <field name="account_deleted" invisible="1"/>
+              </xpath>
+              <xpath expr="//t[@t-name='kanban-box']//div[hasclass('oe_kanban_global_click')]" position="attributes">
+                  <attribute name="class" add="oe_kanban_card_ribbon" />
+              </xpath>
+              <xpath expr="//t[@t-name='kanban-box']//div[hasclass('oe_kanban_details')]" position="before">
+                <div class="ribbon ribbon-top-right custom_ribbon"  attrs="{'invisible': [('account_deleted', '=', False)]}">
+                    <span class="bg-danger">Deleted</span>
+                </div>
+              </xpath>
+          </field>
+      </record>
+
+    <record id="res_partner_view_search_newsletter" model="ir.ui.view">
+        <field name="name">res.partner.view.search.inherit.sms.newsletter</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter" position="after">
+                <filter string="Subscribed To Newsletter"
+                        name="is_subscribed_to_newsletter" domain="[('subscribed_to_newsletter', '=', True)]"/>
+                <filter string="Subscribed To SMS"
+                        name="is_subscribed_to_sms" domain="[('subscribed_to_sms', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
