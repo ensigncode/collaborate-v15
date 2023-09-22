@@ -140,7 +140,7 @@ class CalendarAppointmentType(models.Model):
         return slots
 
     def _get_appointment_slots(self, timezone, employee=None, reference_date=None):
-        # Override method for filter out appointment slot based on employee working hours.
+        # Override method for filter out appointment slot based on employee working hours. 
         """ Fetch available slots to book an appointment.
 
         :param str timezone: timezone string e.g.: 'Europe/Brussels' or 'Etc/GMT+1'
