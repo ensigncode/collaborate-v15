@@ -11,6 +11,5 @@ class CustomResCompany(models.Model):
         return self.env.ref('account.account_invoices', False)
 
     report_template_id = fields.Many2one('ir.actions.report',
-                                         string="Report", domain="[('model','=','account.move')]", default=_get_default_report_id)
-
-
+                                         string="Report", domain="[('model','=','account.move')]",
+                                         default=_get_default_report_id)
