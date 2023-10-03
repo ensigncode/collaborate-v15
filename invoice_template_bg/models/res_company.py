@@ -13,3 +13,12 @@ class CustomResCompany(models.Model):
     report_template_id = fields.Many2one('ir.actions.report',
                                          string="Report", domain="[('model','=','account.move')]",
                                          default=_get_default_report_id)
+
+
+    def read(self, fields=None, load='_classic_read'):
+        for rec in self:
+            report_name = self.env.ref('account.account_invoices')
+            if report_name in rec.report_template_id:
+                r = report_name.invoice_name.split('-',1)
+                rec.report_template_id.update({'invoice_name': r[0] + '-' +rec.country_id.code, 'name': 'Invoices'})
+        return super(CustomResCompany, self).read(fields=fields, load=load)
