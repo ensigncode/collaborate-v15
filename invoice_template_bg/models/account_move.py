@@ -14,3 +14,4 @@ class InvoiceOrder(models.Model):
 
     number_to_words = fields.Char(string="Amount in Words (Total) : ",
                                   compute='_compute_number_to_words')
+

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="inherit_ir_actions_reports_form_view" model="ir.ui.view">
+            <field name="name">inherit.ir.actions.form.view</field>
+            <field name="model">ir.actions.report</field>
+            <field name="inherit_id" ref="base.act_report_xml_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='report_type']" position="before">
+                    <field name="invoice_name" attrs="{'invisible': [('report_name', '!=', 'account.report_invoice_with_payments')]}"/>
+                </xpath>
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('report_name', '=', 'account.report_invoice_with_payments')]}</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

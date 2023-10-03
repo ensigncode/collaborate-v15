@@ -3,6 +3,7 @@
     <data>
         <template id="invoice_report_template">
             <t t-call="web.external_layout">
+                <t t-set="l" t-value="o.with_context(lang=o.partner_id.lang)" />
                 <table>
                     <tbody>
                         <tr>
@@ -36,7 +37,7 @@
                                        id="inv_tax_id_label"/>
                                 </span>
                                 <br/>
-                                <strong>Company Registry Number:</strong>
+                                <strong>ЕИК/ID number:</strong>
                                 <span t-esc="o.company_id.company_registry"/>
                                 <br/>
                                 <t t-set="bank_ids"

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-04 12:46+0000\n"
-"PO-Revision-Date: 2023-09-04 12:46+0000\n"
+"POT-Creation-Date: 2023-09-28 14:28+0000\n"
+"PO-Revision-Date: 2023-09-28 14:28+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,105 +16,200 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: invoice_template_bg
-#: model_terms:ir.ui.view,arch_db:invoice_template_bg.report_invoice_document_extend
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "&amp;nbsp;"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "<b>Номер/Number:</b>"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "<b>Словом/Amount (written in words):</b>"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
 msgid ""
 "<br/>\n"
-"                <span> Original </span>"
+"                                    <strong>BIC:</strong>"
 msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid ""
 "<br/>\n"
-"                <span> ОРИГИНАЛ </span>"
+"                                    <strong>Bank Account Number:</strong>"
 msgstr ""
 
 #. module: invoice_template_bg
-#: model_terms:ir.ui.view,arch_db:invoice_template_bg.report_invoice_document_extend
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
 msgid ""
-"<span groups=\"account.group_show_line_subtotals_tax_excluded\">Value(BGN)</span>\n"
-"                    <span groups=\"account.group_show_line_subtotals_tax_included\">Value(BGN)</span>"
+"<br/>\n"
+"                                    <strong>IBAN:</strong>"
 msgstr ""
-"<span groups=\"account.group_show_line_subtotals_tax_excluded\">Value(BGN)</span>\n"
-"                    <span groups=\"account.group_show_line_subtotals_tax_included\">Value(BGN)</span>"
-
 
 #. module: invoice_template_bg
-#: model_terms:ir.ui.view,arch_db:invoice_template_bg.report_invoice_document_extend
-msgid "<span>Date :</span>"
-msgstr "<span>Дата :</span>"
-
-#. module: invoice_template_bg
-#: model_terms:ir.ui.view,arch_db:invoice_template_bg.report_invoice_document_extend
-msgid "<span>Date of the tax event: </span>"
-msgstr "<span>Дата на данъчно събитие: </span>"
-
-#. module: invoice_template_bg
-#: model_terms:ir.ui.view,arch_db:invoice_template_bg.report_invoice_document_extend
-msgid "<span>Discount(BGN)</span>"
-msgstr "<span>Отстъпка</span>"
-
-#. module: invoice_template_bg
-#: model_terms:ir.ui.view,arch_db:invoice_template_bg.report_invoice_document_extend
-msgid "<span>Number :</span>"
-msgstr "<span>Номер :</span>"
-
-#. module: invoice_template_bg
-#: model_terms:ir.ui.view,arch_db:invoice_template_bg.report_invoice_document_extend
-msgid "<span>Payment method: </span>"
-msgstr "<span>Начин на плащане: </span>"
-
-#. module: invoice_template_bg
-#: model_terms:ir.ui.view,arch_db:invoice_template_bg.report_invoice_document_extend
-msgid "<span>Price (BGN)</span>"
-msgstr "<span>Ед. Цена</span>"
-
-#. module: invoice_template_bg
-#: model_terms:ir.ui.view,arch_db:invoice_template_bg.report_invoice_document_extend
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
 msgid ""
-"<span>Signature of the issuer:.......................................</span>"
+"<br/>\n"
+"                                <b>Дата/Date:</b>"
 msgstr ""
-"<span>Подпис на съставителя:.......................................</span>"
 
 #. module: invoice_template_bg
-#: model_terms:ir.ui.view,arch_db:invoice_template_bg.report_invoice_document_extend
-msgid "<span>Type of the goods or services</span>"
-msgstr "<span>Наименование на стоките или услугите</span>"
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid ""
+"<br/>\n"
+"                                <strong>Company Registry Number:</strong>"
+msgstr ""
 
 #. module: invoice_template_bg
-#: model_terms:ir.ui.view,arch_db:invoice_template_bg.report_invoice_document_extend
-msgid "<strong>Address:</strong>"
-msgstr "<strong>Адрес:</strong>"
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid ""
+"<br/>\n"
+"                                <strong>Ид. номер по ДДС/VAT Number:</strong>"
+msgstr ""
 
 #. module: invoice_template_bg
-#: model_terms:ir.ui.view,arch_db:invoice_template_bg.report_invoice_document_extend
-msgid "<strong>Client:</strong>"
-msgstr "<strong>Получател:</strong>"
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "<span>Date of the tax event:</span>"
+msgstr "<span>Дата на данъчното събитие:</span>"
 
 #. module: invoice_template_bg
-#: model_terms:ir.ui.view,arch_db:invoice_template_bg.report_invoice_document_extend
-msgid "<strong>Supplier:</strong>"
-msgstr "<strong>Доставчик:</strong>"
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid ""
+"<span>Payment method:</span>\n"
+"                                <span>Bank Transfer</span>"
+msgstr ""
+"<span>Начин на плащане:</span>\n"
+"                                <span>Банков трансфер</span>"
 
 #. module: invoice_template_bg
-#: model_terms:ir.ui.view,arch_db:invoice_template_bg.document_tax_totals_extend
-msgid "<strong>Tax base</strong>"
-msgstr "<strong>Данъчна основа</strong>"
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid ""
+"<span>Signature of the issuer:</span>\n"
+"                                <span class=\"d-inline-block\" style=\"width: 100px;border-bottom: 1px dotted #000;\"/>"
+msgstr "<span>Подпис на емитента:</span>"
 
 #. module: invoice_template_bg
-#: model_terms:ir.ui.view,arch_db:invoice_template_bg.document_tax_totals_extend
-msgid "<strong>Total amount</strong>"
-msgstr "<strong>Сума за плащане</strong>"
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "<span>Сума на ДДС, ставка /VAT Amount:</span>"
+msgstr ""
 
 #. module: invoice_template_bg
-#: model_terms:ir.ui.view,arch_db:invoice_template_bg.report_invoice_document_extend
-msgid "Tax ID"
-msgstr "Номер по ДДС"
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "<strong>Bank name:</strong>"
+msgstr ""
 
 #. module: invoice_template_bg
-#: model_terms:ir.ui.view,arch_db:invoice_template_bg.report_invoice_document_extend
-msgid "Amount (written in words) :"
-msgstr "Словом"
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "<strong>Адрес/Address:</strong>"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "<strong>Доставчик/Supplier:</strong>"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "<strong>Ид. номер по ДДС/VAT number:</strong>"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "<strong>Получател/Client:</strong>"
+msgstr ""
 
 #. module: invoice_template_bg
 #: model:ir.model.fields,field_description:invoice_template_bg.field_account_bank_statement_line__number_to_words
 #: model:ir.model.fields,field_description:invoice_template_bg.field_account_move__number_to_words
 #: model:ir.model.fields,field_description:invoice_template_bg.field_account_payment__number_to_words
 msgid "Amount in Words (Total) : "
-msgstr "Словом"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model:ir.model,name:invoice_template_bg.model_res_company
+msgid "Companies"
+msgstr "Компании"
+
+#. module: invoice_template_bg
+#: model:ir.model.fields,field_description:invoice_template_bg.field_ir_actions_report__invoice_name
+msgid "Invoice Name"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.inherit_res_company_form_view
+msgid "Invoice Report"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model:ir.model,name:invoice_template_bg.model_account_move
+msgid "Journal Entry"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "No"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model:ir.model.fields,field_description:invoice_template_bg.field_res_company__report_template_id
+msgid "Report"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model:ir.model,name:invoice_template_bg.model_ir_actions_report
+msgid "Report Action"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "Value (BGN)"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "Данъчна основа/Tax base:"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "Ед. Цена/ Price (BGN)"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "Количество/ Quantity"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid ""
+"Наименование на стоките или услугите/ Type of the goods\n"
+"                                or services"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "ОРИГИНАЛ/ORIGINAL"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "Отстъпка/ Discount (BGN)"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid ""
+"Сума за\n"
+"                                плащане /Total amount:"
+msgstr ""
+
+#. module: invoice_template_bg
+#: model_terms:ir.ui.view,arch_db:invoice_template_bg.invoice_report_template
+msgid "ФАКТУРА/INVOICE"
+msgstr ""
