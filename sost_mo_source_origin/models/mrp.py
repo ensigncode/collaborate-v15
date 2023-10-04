@@ -37,6 +37,10 @@ class MRPProduction(models.Model):
 				for ord_name in origin_data:
 					order = self.env['sale.order'].search([('name','=',ord_name)])
 					if order:
-						order_id = order.id
+						order_id = order.id	
+				parent_production_id = production._get_sources()
+				for parent_prod in parent_production_id:
+					if parent_prod and parent_prod.sale_order_id:
+						order_id = parent_prod.sale_order_id.id
 			production.sale_order_id = order_id
 
