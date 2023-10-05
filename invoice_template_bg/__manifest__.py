@@ -5,7 +5,7 @@
         Invoice template modifications
     """,
     'category': 'Accounting',
-    'version': '15.0.1.0.6',
+    'version': '15.0.1.0.7',
 
     'depends': ['base', 'account', ],
 
