@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from datetime import datetime, timedelta, time
 import random
 import pytz
@@ -211,7 +211,7 @@ class CalendarAppointmentType(models.Model):
                         # slots are ordered, so check all unprocessed slots from until > day
                         while slots and (slots[0][timezone][0].date() <= day):
                             # Get employee working hours for filter out appointment slots.
-                            employee_attendace = [d for d in slots[0]['employee_id'].resource_calendar_id.attendance_ids if str(day.weekday()) == d.dayofweek]
+                            employee_attendace = [d for d in slots[0].get('employee_id', self.env['hr.employee'].browse(1)).resource_calendar_id.attendance_ids if str(day.weekday()) == d.dayofweek]
                             working_hour = [range(int(attendace.hour_from),int(attendace.hour_to)) for attendace in employee_attendace]
                             is_employee_available = [True for hour in working_hour if slots[0][timezone][0].hour in hour]
                             if (slots[0][timezone][0].date() == day) and ('employee_id' in slots[0]):

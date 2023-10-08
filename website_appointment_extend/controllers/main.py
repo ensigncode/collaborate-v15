@@ -107,14 +107,13 @@ class AppointmentExtend(Appointment):
 		employee = request.env['hr.employee'].sudo().browse(int(employee_id)).exists()
 
 		# Get ans of the appoinment questions.
-		newsletter_ques_id = request.env['calendar.appointment.question'].search([('appointment_type_id','=',appointment_type.id),('name','ilike','newsletter')],limit=1)
-		newsletter_ques_ans = kwargs.get([que_id for que_id in kwargs if eval(que_id.split('_')[1].strip()) == newsletter_ques_id.id][0])
-		sms_que_id = request.env['calendar.appointment.question'].search([('appointment_type_id','=',appointment_type.id),('name','ilike','sms')],limit=1)
-		sms_ques_ans = kwargs.get([que_id for que_id in kwargs if eval(que_id.split('_')[1].strip()) == sms_que_id.id][0])
+		newsletter_ques_id = request.env['calendar.appointment.question'].search([('appointment_type_id','=',appointment_type.id),('name','ilike', _('newsletter'))],limit=1)
+		is_present_newsletter = [que_id for que_id in kwargs if eval(que_id.split('_')[1].strip()) == newsletter_ques_id.id]
+		newsletter_ques_ans = kwargs.get(is_present_newsletter[0]) if is_present_newsletter else ''
+		sms_que_id = request.env['calendar.appointment.question'].search([('appointment_type_id','=',appointment_type.id),('name','ilike', _('sms'))],limit=1)
+		is_present_sms = [que_id for que_id in kwargs if eval(que_id.split('_')[1].strip()) == sms_que_id.id]
+		sms_ques_ans = kwargs.get(is_present_sms[0]) if is_present_sms else ''
 		
-		# List of ans.
-		ans_str_list = ['Yes','yes','YES','Subscribe','subscribe','SUBSCRIBE','True','true','TRUE']
-
 		if employee not in appointment_type.sudo().employee_ids:
 			raise NotFound()
 		# Fetch next employee which is available
@@ -129,6 +128,8 @@ class AppointmentExtend(Appointment):
 
 		Partner = self._get_customer_partner() or request.env['res.partner'].sudo().search([('email', '=like', email)],
 		                                                                                   limit=1)
+		subscribed_to_newsletter = newsletter_ques_id.answer_ids and newsletter_ques_id.answer_ids.filtered(lambda qa: qa.name == newsletter_ques_ans).positive_answer or False
+		subscribed_to_sms = sms_que_id.answer_ids and sms_que_id.answer_ids.filtered(lambda qa: qa.name == sms_ques_ans).positive_answer or False
 		if Partner:
 			if not Partner.with_context(
 					employee_appointment_limit=appointment_type.employee_appointment_limit).calendar_verify_availability(
@@ -138,8 +139,8 @@ class AppointmentExtend(Appointment):
 				{
 					'mobile':phone if not Partner.mobile else None,
 					'email':email if not Partner.email else None,
-					'subscribed_to_newsletter':True if newsletter_ques_ans.lower() in ans_str_list else False,
-					'subscribed_to_sms':True if sms_ques_ans.lower() in ans_str_list else False,
+					'subscribed_to_newsletter': subscribed_to_newsletter,
+					'subscribed_to_sms': subscribed_to_sms,
 				}
 			)
 		else:
@@ -147,8 +148,8 @@ class AppointmentExtend(Appointment):
 				'name': name,
 				'mobile': Partner._phone_format(phone, country=self._get_customer_country()),
 				'email': email,
-				'subscribed_to_newsletter':True if newsletter_ques_ans.lower() in ans_str_list else False,
-				'subscribed_to_sms':True if sms_ques_ans.lower() in ans_str_list else False,
+				'subscribed_to_newsletter': subscribed_to_newsletter,
+				'subscribed_to_sms': subscribed_to_sms,
 			})
 
 		description_bits = []
