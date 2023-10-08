@@ -17,14 +17,13 @@ class PivotInheritReport(models.Model):
 		fields[
 			'margin_percent'] = ', (SUM(l.price_subtotal - COALESCE(l.total_cost,0) / CASE COALESCE(pos.currency_rate, 0) WHEN 0 THEN 1.0 ELSE pos.currency_rate END) / SUM(l.price_subtotal))*100 AS margin_per'
 		fields[
-			'total_payment'] = ', (SELECT sum(amount) FROM account_payment AS ap WHERE move_id IN (SELECT id FROM account_move WHERE ref=am.name)) AS total_payment'
+			'total_payment'] = ', (SELECT sum(amount) FROM account_payment AS ap WHERE move_id IN (SELECT id FROM account_move am WHERE ref=am.name)) AS total_payment'
 		fields['brand_id'] = ', t.brand_id AS brand_id'
 		return super(PivotInheritReport, self)._select_pos(fields)
 
 	def _from_sale(self, from_clause=''):
 		res = super(PivotInheritReport, self)._from_sale(from_clause)
 		res += """
-                    JOIN sale_order_line_invoice_rel soli_rel ON soli_rel.order_line_id = l.id
                     FULL JOIN pos_order_line pol ON pol.sale_order_line_id = l.id
 					FULL JOIN pos_order as po ON pol.order_id = po.id
 					FULL JOIN pos_payment AS py ON py.pos_order_id = po.id
@@ -35,7 +34,6 @@ class PivotInheritReport(models.Model):
 		res = super(PivotInheritReport, self)._from_pos()
 		res += """
                     JOIN pos_payment pop ON pop.pos_order_id = pos.id
-                    JOIN account_move am ON am.id = pop.account_move_id
                 """
 		return res
 
@@ -46,5 +44,5 @@ class PivotInheritReport(models.Model):
 
 	def _group_by_pos(self):
 		res = super(PivotInheritReport, self)._group_by_pos()
-		res += """, am.name, t.brand_id"""
+		res += """, t.brand_id"""
 		return res

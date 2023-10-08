@@ -9,21 +9,21 @@
                     <label>
                         <t t-if="'newsletter' in question.name.lower()">
                             <t t-if="env.user and env.user.partner_id.subscribed_to_newsletter">
-                                <t t-if="answer.name.lower() in ['Yes','yes','YES','Subscribe','subscribe','SUBSCRIBE','True','true','TRUE']">
+                                <t t-if="answer.positive_answer">
                                     <input type="radio" t-attf-name="question_#{question.id}" t-att-required="question.question_required or None" t-att-value="answer.name" class="mr-1" checked="checked"/>
                                     <t t-out="answer.name"/>
                                 </t>
-                                <t t-if="answer.name.lower() in ['No','no','NO','Unsubscribe','unsubscribe','UNSUBSCRIBE','False','false','FALSE']">
+                                <t t-if="not answer.positive_answer">
                                     <input type="radio" t-attf-name="question_#{question.id}" t-att-required="question.question_required or None" t-att-value="answer.name" class="mr-1"/>
                                     <t t-out="answer.name"/>
                                 </t>
                             </t>
                             <t t-if="env.user and not env.user.partner_id.subscribed_to_newsletter">
-                                <t t-if="answer.name.lower() in ['Yes','yes','YES','Subscribe','subscribe','SUBSCRIBE','True','true','TRUE']">
+                                <t t-if="answer.positive_answer">
                                     <input type="radio" t-attf-name="question_#{question.id}" t-att-required="question.question_required or None" t-att-value="answer.name" class="mr-1"/>
                                     <t t-out="answer.name"/>
                                 </t>
-                                <t t-if="answer.name.lower() in ['No','no','NO','Unsubscribe','unsubscribe','UNSUBSCRIBE','False','false','FALSE']">
+                                <t t-if="not answer.positive_answer">
                                     <input type="radio" t-attf-name="question_#{question.id}" t-att-required="question.question_required or None" t-att-value="answer.name" class="mr-1" checked="checked"/>
                                     <t t-out="answer.name"/>
                                 </t>
@@ -31,21 +31,21 @@
                         </t>
                         <t t-elif="'sms' in question.name.lower()">
                             <t t-if="env.user and env.user.partner_id.subscribed_to_sms">
-                                <t t-if="answer.name.lower() in ['Yes','yes','YES','Subscribe','subscribe','SUBSCRIBE','True','true','TRUE']">
+                                <t t-if="answer.positive_answer">
                                     <input type="radio" t-attf-name="question_#{question.id}" t-att-required="question.question_required or None" t-att-value="answer.name" class="mr-1" checked="checked"/>
                                     <t t-out="answer.name"/>
                                 </t>
-                                <t t-if="answer.name.lower() in ['No','no','NO','Unsubscribe','unsubscribe','UNSUBSCRIBE','False','false','FALSE']">
+                                <t t-if="not answer.positive_answer">
                                     <input type="radio" t-attf-name="question_#{question.id}" t-att-required="question.question_required or None" t-att-value="answer.name" class="mr-1"/>
                                     <t t-out="answer.name"/>
                                 </t>
                             </t>
                             <t t-if="env.user and not env.user.partner_id.subscribed_to_sms">
-                                <t t-if="answer.name.lower() in ['Yes','yes','YES','Subscribe','subscribe','SUBSCRIBE','True','true','TRUE']">
+                                <t t-if="answer.positive_answer">
                                     <input type="radio" t-attf-name="question_#{question.id}" t-att-required="question.question_required or None" t-att-value="answer.name" class="mr-1"/>
                                     <t t-out="answer.name"/>
                                 </t>
-                                <t t-if="answer.name.lower() in ['No','no','NO','Unsubscribe','unsubscribe','UNSUBSCRIBE','False','false','FALSE']">
+                                <t t-if="not answer.positive_answer">
                                     <input type="radio" t-attf-name="question_#{question.id}" t-att-required="question.question_required or None" t-att-value="answer.name" class="mr-1" checked="checked"/>
                                     <t t-out="answer.name"/>
                                 </t>
