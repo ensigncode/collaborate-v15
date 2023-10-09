@@ -19,5 +19,5 @@ class CustomResCompany(models.Model):
 			report_name = self.env.ref('account.account_invoices')
 			if report_name in rec.report_template_id:
 				name = report_name.invoice_name and report_name.invoice_name.split('-', 1) or [report_name.name, '']
-				rec.report_template_id.update({'invoice_name': name[0] + '-' + rec.country_id.code, 'name': 'Invoices'})
+				rec.report_template_id.update({'invoice_name': name[0] or '' + '-' + rec.country_id.code or '', 'name': 'Invoices'})
 		return super(CustomResCompany, self).read(fields=fields, load=load)

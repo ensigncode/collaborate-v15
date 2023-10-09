@@ -3,7 +3,7 @@
     <data>
         <template id="invoice_report_template">
             <t t-call="web.external_layout">
-                <t t-set="l" t-value="o.with_context(lang=o.partner_id.lang)" />
+                <t t-set="l" t-value="o.with_context(lang=o.partner_id.lang)"/>
                 <table>
                     <tbody>
                         <tr>
@@ -185,7 +185,7 @@
                                     <t t-if="len(tax_totals['groups_by_subtotal'][subtotal_to_show]) > 1 or (tax_totals['amount_untaxed'] != amount_by_group['tax_group_base_amount'])">
                                         <td colspan="4"
                                             style="border: 3px solid #000; border-right: 0; border-top: none; border-bottom: none;">
-                                            <span>Сума на ДДС, ставка /VAT Amount:</span>
+                                            <span>Сума на ДДС, ставка /Amount <t t-esc="amount_by_group['tax_group_name']"/> :</span>
                                         </td>
                                         <td class="text-right o_price_total"
                                             style="border: 3px solid black; border-left: none; border-top: none; border-bottom: none;">
@@ -196,7 +196,7 @@
                                     <t t-else="">
                                         <td colspan="4"
                                             style="border: 3px solid #000; border-right: 0; border-top: none; border-bottom: none;">
-                                            <span>Сума на ДДС, ставка /VAT Amount:</span>
+                                            <span>Сума на ДДС, ставка /Amount <t t-esc="amount_by_group['tax_group_name']"/>:</span>
                                         </td>
                                         <td class="text-right o_price_total"
                                             style="border: 3px solid black; border-left: none; border-top: none; border-bottom: none;">
@@ -211,8 +211,7 @@
                             <td colspan="2">&amp;nbsp;</td>
                             <t t-set="tax_totals" t-value="json.loads(o.tax_totals_json)"/>
                             <td colspan="4" style="border: 3px solid #000;  border-right: 0;">
-                                Сума за
-                                плащане /Total amount:
+                                Сума за плащане / Total amount:
                             </td>
                             <td class="text-right"
                                 style="border:  3px solid black; border-left: none; ">
@@ -228,18 +227,18 @@
                         </tr>
                         <tr>
                             <td colspan="2" style="padding-top: 80px;">
-                                <span>Date of the tax event:</span>
+                                <span>Дата на данъчно събитие/ Date of the tax event:</span>
                                 <span t-field="o.invoice_date"/>
                             </td>
                             <td colspan="3">&amp;nbsp;</td>
                             <td colspan="2" class="text-center" style="padding-top: 80px;">
-                                <span>Payment method:</span>
-                                <span>Bank Transfer</span>
+                                <span>Начин на плащане/ Payment method:</span>
+                                <span><t t-esc="o.payment_methods"/> </span>
                             </td>
                         </tr>
                         <tr>
                             <td colspan="7" style="padding-top: 100px;">
-                                <span>Signature of the issuer:</span>
+                                <span>Подпис на съставителя/ Signature of the issuer:</span>
                                 <span class="d-inline-block"
                                       style="width: 100px;border-bottom: 1px dotted #000;"/>
                             </td>
@@ -250,141 +249,3 @@
         </template>
     </data>
 </odoo>
-
-        <!--<template id="report_invoice_oument_extend" inherit_id="account.report_invoice_oument">-->
-        <!--<xpath expr="//t[@t-set='address']" position="replace">-->
-        <!--    <t t-set="address">-->
-        <!--        <strong>Client:</strong>-->
-        <!--        <span t-field="o.partner_id" t-options='{"widget": "contact", "fields": [ "name"], "no_marker": True}'-->
-        <!--              groups="sale.group_delivery_invoice_address"/>-->
-        <!--        <strong>Address:</strong>-->
-        <!--        <span t-field="o.partner_id" t-options='{"widget": "contact", "fields": ["address"   ], "no_marker": True}'-->
-        <!--              groups="sale.group_delivery_invoice_address"/>-->
-        <!--        <t t-if="o.partner_shipping_id and (o.partner_shipping_id != o.partner_id)">-->
-        <!--            <t t-set="information_block">-->
-        <!--                <div groups="sale.group_delivery_invoice_address" name="shipping_address_block">-->
-        <!--                    <strong>Supplier:</strong>-->
-        <!--                    <div t-field="o.partner_shipping_id"-->
-        <!--                         t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>-->
-        <!--                </div>-->
-        <!--            </t>-->
-        <!--        </t>-->
-        <!--        <div t-if="o.partner_id.vat" class="mt16">-->
-        <!--            <t t-if="o.company_id.account_fiscal_country_id.vat_label"-->
-        <!--               t-esc="o.company_id.account_fiscal_country_id.vat_label" id="inv_tax_id_label"/>-->
-        <!--            <t t-else="">Tax ID</t>:-->
-        <!--            <span t-field="o.partner_id.vat"/>-->
-        <!--        </div>-->
-        <!--    </t>-->
-        <!--</xpath>-->
-        <!--<xpath expr="//div[hasclass('page')]/h2" position="attributes">-->
-        <!--    <attribute name="class">text-center</attribute>-->
-        <!--</xpath>-->
-        <!--<xpath expr="//div[hasclass('page')]/h2/span[last()]" position="replace">-->
-        <!--    <br/>-->
-        <!--    <span>Original</span>-->
-        <!--</xpath>-->
-        <!--<xpath expr="//div[@name='invoice_date']" position="replace">-->
-        <!--    <div></div>-->
-        <!--</xpath>-->
-        <!--<xpath expr="//div[@name='due_date']" position="replace">-->
-        <!--    <div></div>-->
-        <!--</xpath>-->
-        <!--<xpath expr="//div[hasclass('page')]/h2" position="after">-->
-
-        <!--    <div class="row">-->
-        <!--        <div class="col-5 offset-md-6">-->
-        <!--            <strong>-->
-        <!--                <span>Number :</span>-->
-        <!--                <span t-if="o.name != '/'" t-field="o.name"/>-->
-        <!--            </strong>-->
-        <!--            <br/>-->
-        <!--            <strong>-->
-        <!--                <span>Date :</span>-->
-        <!--                <span class="m-0" t-field="o.invoice_date"/>-->
-        <!--            </strong>-->
-        <!--        </div>-->
-        <!--    </div>-->
-
-        <!--</xpath>-->
-        <!--<xpath expr="//th[@name='th_description']" position="replace">-->
-        <!--    <th name="th_description" class="text-left">-->
-        <!--        <span>Type of the goods or services</span>-->
-        <!--    </th>-->
-        <!--</xpath>-->
-        <!--<xpath expr="//th[@name='th_priceunit']" position="replace">-->
-        <!--    <th name="th_priceunit" t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">-->
-        <!--        <span>Price (BGN)</span>-->
-        <!--    </th>-->
-        <!--</xpath>-->
-        <!--            <xpath expr="//th[@name='th_price_unit']" position="replace">-->
-        <!--                <th name="th_price_unit" t-if="display_discount" t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">-->
-        <!--                    <span>Discount(BGN)</span>-->
-        <!--                </th>-->
-        <!--            </xpath>-->
-        <!--            <xpath expr="//th[@name='th_subtotal']" position="replace">-->
-        <!--                <th name="th_subtotal" class="text-right">-->
-        <!--                    <span groups="account.group_show_line_subtotals_tax_excluded">Value(BGN)</span>-->
-        <!--                    <span groups="account.group_show_line_subtotals_tax_included">Value(BGN)</span>-->
-        <!--                </th>-->
-        <!--            </xpath>-->
-        <!--            <xpath expr="//t[@t-if='len(payments_vals) > 0']" position="after">-->
-        <!--                <tr class="font-weight-bold">-->
-        <!--                    <td>-->
-        <!--                        Amount (written in words) :-->
-        <!--                    </td>-->
-        <!--                    <td class="text-right">-->
-        <!--                        <span t-field="o.number_to_words"></span>-->
-        <!--                    </td>-->
-        <!--                </tr>-->
-
-        <!--            </xpath>-->
-        <!--            <xpath expr="//div[@name='comment']" position="after">-->
-        <!--                <br />-->
-        <!--                <div class="row">-->
-        <!--                    <div class="col-6">-->
-        <!--                        <span>Date of the tax event: </span>-->
-        <!--                        <span t-field="o.invoice_date" />-->
-        <!--                    </div>-->
-        <!--                    <div class="col-6">-->
-        <!--                        <span>Payment method: </span>-->
-        <!--                        <span t-field="o.payment_id" />-->
-        <!--                    </div>-->
-        <!--                </div>-->
-        <!--                <br />-->
-        <!--                <br />-->
-        <!--                <div class="row mt32">-->
-        <!--                    <div class="col-12">-->
-        <!--                        <span>Signature of the issuer:.......................................</span>-->
-        <!--                    </div>-->
-        <!--                </div>-->
-        <!--            </xpath>-->
-
-        <!--        </template>-->
-        <!-- <template id="oument_tax_totals_extend" inherit_id="account.oument_tax_totals">
-            <xpath expr="//t" position="replace">
-                <t t-foreach="tax_totals['subtotals']" t-as="subtotal">
-                    <tr class="border-black o_subtotal">
-                        <td>
-                            <strong>Tax base</strong>
-                        </td>
-
-                        <td class="text-right">
-                            <span t-att-class="oe_subtotal_footer_separator" t-esc="subtotal['formatted_amount']" />
-                        </td>
-                    </tr>
-
-                    <t t-set="subtotal_to_show" t-value="subtotal['name']"/>
-                    <t t-call="account.tax_groups_totals"/>
-                </t>
-
-            </xpath>
-            <xpath expr="//tr" position="replace">
-                <tr class="border-black o_total">
-                    <td><strong>Total amount</strong></td>
-                    <td class="text-right">
-                        <span t-esc="tax_totals['formatted_amount_total']"/>
-                    </td>
-                </tr>
-            </xpath>
-        </template> -->
