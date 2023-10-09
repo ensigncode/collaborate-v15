@@ -12,6 +12,9 @@
                         <field name="employee_appointment_limit"/>
                     </div>
                 </xpath>
+                <xpath expr="//page[@name='questions']//field[@name='question_ids']//field[@name='answer_ids']" position="attributes">
+                    <attribute name="widget">one2many_list</attribute>
+                </xpath>
             </field>
         </record>
 
