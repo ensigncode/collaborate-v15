@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
     'name': 'Website Appointments Extension',
-    'version': '15.0.1.1.20',
+    'version': '15.0.1.1.21',
     'category': 'Marketing/Online Appointment',
     'sequence': 216,
     'description': """

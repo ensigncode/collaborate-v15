@@ -10,6 +10,7 @@
     'version': '15.0.1.1.2',
 
     'depends': ['base', 'auth_signup', 'portal', 'website'],
+    'license': 'LGPL-3',
 
     'data': [
         'views/auth_oauth_templates.xml',
