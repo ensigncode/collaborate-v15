@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_stock_storage_category_inherited" model="ir.ui.view">
+        <field name="name">view_stock_storage_category_inherited</field>
+        <field name="model">stock.storage.category</field>
+        <field name="inherit_id" ref="stock.stock_storage_category_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='allow_new_product']" position="after">
+            	<field name="auto_putaway_rule"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

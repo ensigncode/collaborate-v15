@@ -15,6 +15,7 @@
             ],
     "data": [
         'views/product_views.xml',
+        'views/stock_storage_category_views.xml',
     ],
     "author": "Ensigncode Software",
     "installable": True,
