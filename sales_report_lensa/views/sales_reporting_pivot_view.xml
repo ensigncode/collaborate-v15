@@ -9,13 +9,11 @@
             <field name="inherit_id" ref="sale.view_order_product_pivot"/>
             <field name="arch" type="xml">
                 <xpath expr="//pivot" position="inside">
-                    <field name="brand_id" type="row"/>
                     <field name="margin_per" type="measure"/>
                     <field name="total_payment" type="measure"/>
                 </xpath>
             </field>
         </record>
-        
     </data>
     
 </odoo>
