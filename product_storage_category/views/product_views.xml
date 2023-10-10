@@ -6,11 +6,13 @@
         <field name="inherit_id" ref="product.product_normal_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//group[@name='packaging']" position="before">
-                <group>
-                    <group string="Storage Capacity">
-                        <field name="storage_category_id"/>
-                        <field name="storage_capacity"/>
-                    </group>
+                <group string="Storage Capacity">
+                    <field name="product_storage_line_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="storage_category_id"/>
+                            <field name="storage_capacity"/>
+                        </tree>
+                    </field>
                 </group>
             </xpath>
         </field>

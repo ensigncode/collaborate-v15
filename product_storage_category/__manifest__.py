@@ -14,6 +14,7 @@
             'sale_management',
             ],
     "data": [
+        'security/ir.model.access.csv',
         'views/product_views.xml',
         'views/stock_storage_category_views.xml',
     ],
