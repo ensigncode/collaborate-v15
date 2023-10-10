@@ -5,7 +5,7 @@
         Add margin and total payment in sales report pivot view.
     """,
     'category': 'Sales/Sales',
-    'version': '15.0.1.0.3',
+    'version': '15.0.1.0.4',
 
     'depends': ['product', 'sale','sale_margin', 'point_of_sale', 'product_margin'],
 
