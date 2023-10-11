@@ -33,7 +33,7 @@
                                 <strong>Ид. номер по ДДС/VAT Number:</strong>
                                 <span t-if="o.company_id.vat" class="mt16">
                                     <t t-if="o.company_id.account_fiscal_country_id.vat_label"
-                                       t-esc="o.company_id.account_fiscal_country_id.vat_label"
+                                       t-esc="o.company_id.vat"
                                        id="inv_tax_id_label"/>
                                 </span>
                                 <br/>

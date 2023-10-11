@@ -18,7 +18,12 @@ class InvoiceOrder(models.Model):
 
     def _compute_payment_methods(self):
         for move in self:
-            move.payment_methods = ','.join(list(set(move.invoice_line_ids.mapped(
-                'sale_line_ids.order_id.pos_order_line_ids.order_id.payment_ids.payment_method_id.name'))))
-            if not move.payment_methods:
+            sale_line_pos_order_ids = move.invoice_line_ids.mapped('sale_line_ids.order_id.pos_order_line_ids.order_id')
+            pos_order_ids = move.pos_order_ids
+            if pos_order_ids:
+                move.payment_methods = ','.join(list(set(pos_order_ids.mapped('payment_ids.payment_method_id.name'))))
+            elif sale_line_pos_order_ids:
+                move.payment_methods = ','.join(list(set(sale_line_pos_order_ids.mapped(
+                    'payment_ids.payment_method_id.name'))))
+            else:
                 move.payment_methods = 'Bank Transfer'
