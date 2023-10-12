@@ -7,9 +7,9 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='category_id']" position="after">
                 <field name="birthday"/>
-                <field name="coupon_id"/>
-                <field name="coupon_valid_start_date"/>
-                <field name="coupon_valid_end_date"/>
+                <field name="coupon_id" invisible="1"/>
+                <field name="coupon_valid_start_date"  invisible="1"/>
+                <field name="coupon_valid_end_date"  invisible="1"/>
             </xpath>
         </field>
     </record>
