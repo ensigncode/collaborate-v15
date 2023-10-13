@@ -4,19 +4,16 @@
         <template id="invoice_report_template">
             <t t-call="web.external_layout">
                 <t t-set="l" t-value="o.with_context(lang=o.partner_id.lang)"/>
-                <table>
+                <t t-set="o" t-value="o.sudo()"/>
+                <table style="margin-bottom:5%">
                     <tbody>
                         <tr>
-                            <td style="width: 10%"></td>
+                            <td style="width: 40%"></td>
                             <td style="width: 20%"></td>
-                            <td style="width: 30%"></td>
-                            <td style="width: 10%"></td>
-                            <td style="width: 10%"></td>
-                            <td style="width: 10%"></td>
-                            <td style="width: 10%"></td>
+                            <td style="width: 40%"></td>
                         </tr>
                         <tr>
-                            <td colspan="2"
+                            <td
                                 style="border: 3px solid #000; background-color: lightgrey; padding-top: -200px;">
                                 <strong>Доставчик/Supplier:</strong>
                                 <span t-esc="o.company_id.name"/>
@@ -50,10 +47,10 @@
                                     <span t-esc="bank_ids[0].acc_number"/>
                                 </t>
                             </td>
-                            <td colspan="2" style="border-bottom: 3px solid #fff; padding-top: -200px;">
+                            <td  style="border-bottom: 3px solid #fff; padding-top: -200px;">
                                 &amp;nbsp;
                             </td>
-                            <td colspan="3"
+                            <td
                                 style="border: 3px solid #000; background-color: lightgrey; padding-top: -200px;">
                                 <strong>Получател/Client:</strong>
                                 <span t-esc="o.partner_id"
@@ -83,6 +80,19 @@
                                     <span t-esc="partner_bank_ids[0].acc_number"/>
                                 </t>
                             </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td style="width: 10%"></td>
+                            <td style="width: 20%"></td>
+                            <td style="width: 30%"></td>
+                            <td style="width: 10%"></td>
+                            <td style="width: 10%"></td>
+                            <td style="width: 10%"></td>
+                            <td style="width: 10%"></td>
                         </tr>
                         <tr>
                             <td colspan="7">
@@ -185,7 +195,10 @@
                                     <t t-if="len(tax_totals['groups_by_subtotal'][subtotal_to_show]) > 1 or (tax_totals['amount_untaxed'] != amount_by_group['tax_group_base_amount'])">
                                         <td colspan="4"
                                             style="border: 3px solid #000; border-right: 0; border-top: none; border-bottom: none;">
-                                            <span>Сума на ДДС, ставка /Amount <t t-esc="amount_by_group['tax_group_name']"/> :</span>
+                                            <span>Сума на ДДС, ставка /Amount
+                                                <t t-esc="amount_by_group['tax_group_name']"/>
+                                                :
+                                            </span>
                                         </td>
                                         <td class="text-right o_price_total"
                                             style="border: 3px solid black; border-left: none; border-top: none; border-bottom: none;">
@@ -196,7 +209,9 @@
                                     <t t-else="">
                                         <td colspan="4"
                                             style="border: 3px solid #000; border-right: 0; border-top: none; border-bottom: none;">
-                                            <span>Сума на ДДС, ставка /Amount <t t-esc="amount_by_group['tax_group_name']"/>:</span>
+                                            <span>Сума на ДДС, ставка /Amount<t
+                                                    t-esc="amount_by_group['tax_group_name']"/>:
+                                            </span>
                                         </td>
                                         <td class="text-right o_price_total"
                                             style="border: 3px solid black; border-left: none; border-top: none; border-bottom: none;">
@@ -233,7 +248,9 @@
                             <td colspan="3">&amp;nbsp;</td>
                             <td colspan="2" class="text-center" style="padding-top: 80px;">
                                 <span>Начин на плащане/ Payment method:</span>
-                                <span><t t-esc="o.payment_methods"/> </span>
+                                <span>
+                                    <t t-esc="o.payment_methods"/>
+                                </span>
                             </td>
                         </tr>
                         <tr>
