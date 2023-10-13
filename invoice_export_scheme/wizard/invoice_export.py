@@ -3,6 +3,8 @@
 from odoo import  models, fields, api, _
 import xml.etree.ElementTree as ET
 import base64
+import  random
+from odoo.exceptions import UserError
 
 class InvoiceSelect(models.Model):
     _name = "invoice.select"
@@ -21,8 +23,20 @@ class InvoiceSelect(models.Model):
 
 
     def action_show_data(self,invoice_ids):
+        extra_invoice_ids = invoice_ids.filtered(lambda x:x.move_type not in ('out_invoice','in_invoice'))
+        if extra_invoice_ids:
+            raise UserError(_('Invoice Export Scheme will be done only on Customer Invoice and Vendor Bills'))
+
         document_root = ET.Element("Documents")
         for invoice in invoice_ids:
+            
+            if invoice.move_type == 'in_invoice':
+                supplier_id = invoice.company_id.partner_id
+                buyer_id = invoice.partner_id
+            else:
+                supplier_id = invoice.partner_id
+                buyer_id = invoice.company_id.partner_id
+
             # Create child elements and add data
             document = ET.SubElement(document_root, "Document")
             supplier_info = ET.SubElement(document, "SupplierInfo")
@@ -33,26 +47,37 @@ class InvoiceSelect(models.Model):
             number = ET.SubElement(supplier_info, "Number")
             number.text = invoice.name
 
+            IsSupplierOnly = 'false'
+            if supplier_id and supplier_id.supplier_rank:
+                IsSupplierOnly = 'true'
+
+            supplier_address = supplier_id.street or '' + ' ,' + supplier_id.street2  or '' + ' , ' + supplier_id.city or ''
 
             issue_date = ET.SubElement(supplier_info, "IssuedDate")
-            issue_date.text = invoice.invoice_date.strftime("%d/%m/%Y")
+            issue_date.text = invoice.invoice_date.strftime("%d/%m/%Y") if invoice.invoice_date else ''
 
             delivery_date = ET.SubElement(supplier_info, "DeliveryDate")
-            delivery_date.text = invoice.invoice_date.strftime("%d/%m/%Y")
+            delivery_date.text = invoice.invoice_date.strftime("%d/%m/%Y") if invoice.invoice_date else ''
+
+            Supplier_BranchTitle = Supplier_BranchCode =  Supplier_Account = ''
+            if supplier_id and supplier_id.bank_ids:
+                Supplier_BranchTitle = supplier_id.bank_ids[0].name
+                Supplier_BranchCode = supplier_id.bank_ids[0].bic
+                Supplier_Account =  supplier_id.bank_ids[0].acc_number
 
             supplier =  ET.SubElement(supplier_info, "Supplier")
-            supplier.set("IDNO", "1023600006055")
-            supplier.set("Title", "MIRISTAR-DEAL S.R.L.")
-            supplier.set("Address", "SEC.RISCANI Studentilor nr.7 bl.10 of.37")
+            supplier.set("IDNO", supplier_id.vat or '')
+            supplier.set("Title", supplier_id.ref or '')
+            supplier.set("Address", supplier_address)
             supplier.set("NResident", "false")
-            supplier.set("IsSupplierOnly", "false")
+            supplier.set("IsSupplierOnly", IsSupplierOnly)
             supplier.set("TaxpayerType", "1")
 
-
             bank_account =  ET.SubElement(supplier_info, "BankAccount")
-            bank_account.set("BranchTitle", "BC'Moldindconbank'S.A. suc. 'Kiev' Chisinau")
-            bank_account.set("BranchCode", "MOLDMD2X336")
-            bank_account.set("Account", "MD67ML000000022516361772")
+            bank_account.set("BranchTitle",Supplier_BranchTitle)
+            bank_account.set("BranchCode", Supplier_BranchCode)
+            bank_account.set("Account", Supplier_Account)
+
 
             bank_account_manual =  ET.SubElement(bank_account, "IsManual")
             bank_account_manual.text = 'false'
@@ -69,23 +94,26 @@ class InvoiceSelect(models.Model):
             is_legalperson =  ET.SubElement(supplier_info, "IsLegalPerson")
             is_legalperson.text = 'false'
 
+            address = buyer_id.street if buyer_id.street else '' + ' ,' + buyer_id.street2 if buyer_id.street else ''  + ' , ' + buyer_id.city if buyer_id.city else ''
+            BranchTitle = BranchCode =  Account = ''
+            if buyer_id and buyer_id.bank_ids:
+                BranchTitle = buyer_id.bank_ids[0].name
+                BranchCode = buyer_id.bank_ids[0].bic
+                Account =  buyer_id.bank_ids[0].acc_number
+
             buyer =  ET.SubElement(supplier_info, "Buyer")
-            buyer.set("IDNO", "1023600009883")
-            buyer.set("Title", "TENSA ART DESIGN S.R.L.")
-            buyer.set("Address", "SEC.RISCANI A. Puskin nr.47/1 bl.C of.1")
+            buyer.set("IDNO", buyer_id.vat or "")
+            buyer.set("Title", buyer_id.ref or "")
+            buyer.set("Address", address)
             buyer.set("CodTVA", "0612817")
             buyer.set("NResident", "false")
             buyer.set("IsSupplierOnly", "false")
             buyer.set("TaxpayerType", "1")
 
             bank_account =  ET.SubElement(buyer, "BankAccount")
-            bank_account.set("BranchTitle", "")
-            bank_account.set("BranchCode", "")
-            buyer.set("Address", "SEC.RISCANI A. Puskin nr.47/1 bl.C of.1")
-            buyer.set("CodTVA", "0612817")
-            buyer.set("NResident", "false")
-            buyer.set("IsSupplierOnly", "false")
-            buyer.set("TaxpayerType", "1")
+            bank_account.set("BranchTitle", BranchTitle)
+            bank_account.set("BranchCode", BranchCode)
+            bank_account.set("Account", Account)
 
             bank_account_manual =  ET.SubElement(bank_account, "IsManual")
             bank_account_manual.text = 'false'
@@ -105,42 +133,41 @@ class InvoiceSelect(models.Model):
             bank_account_legal_person =  ET.SubElement(buyer, "IsLegalPerson")
             bank_account_legal_person.text = 'true'
 
-            transporter =  ET.SubElement(supplier_info, "Transporter")
-            transporter.set("IDNO",'1023600006055')
-            transporter.set("Title",'MIRISTAR-DEAL S.R.L.')
-            transporter.set("Address",'SEC.RISCANI Studentilor nr.7 bl.10 of.37')
-            transporter.set("NResident",'false')
-            transporter.set("IsSupplierOnly",'false')
-            transporter.set("TaxpayerType",'1')
+            if invoice.move_type == 'in_invoice':
+                transporter =  ET.SubElement(supplier_info, "Transporter")
+                transporter.set("IDNO", supplier_id.vat or "")
+                transporter.set("Title",supplier_id.ref or "")
+                transporter.set("Address",supplier_address)
+                transporter.set("NResident",'false')
+                transporter.set("IsSupplierOnly",'false')
+                transporter.set("TaxpayerType",'1')
 
-            transporter_bank_account =  ET.SubElement(transporter, "BankAccount")
-            transporter_bank_account.set("BranchTitle",'')
-            transporter_bank_account.set("BranchCode",'')
-            transporter_bank_account.set("Account",'')
+                transporter_bank_account =  ET.SubElement(transporter, "BankAccount")
+                transporter_bank_account.set("BranchTitle",Supplier_BranchTitle)
+                transporter_bank_account.set("BranchCode",Supplier_BranchCode)
+                transporter_bank_account.set("Account",Supplier_Account)
 
-            transporter_bank_account_manual =  ET.SubElement(transporter_bank_account, "IsManual")
-            transporter_bank_account_manual.text = 'true'
-
-
-            transporter_bank_account_risk =  ET.SubElement(transporter, "RiskAnalysisValid")
-            transporter_bank_account_risk.text = 'false'
-
-            transporter_bank_account_registered =  ET.SubElement(transporter, "IsRegistered")
-            transporter_bank_account_registered.text = 'false'
-
-            transporter_bank_account_valid =  ET.SubElement(transporter, "IsValid")
-            transporter_bank_account_valid.text = 'false'
-
-            transporter_bank_account_liquidate =  ET.SubElement(transporter, "IsLiquidated")
-            transporter_bank_account_liquidate.text = 'false'
-
-            transporter_bank_account_legal_person =  ET.SubElement(transporter, "IsLegalPerson")
-            transporter_bank_account_valid.text = 'false'
+                transporter_bank_account_manual =  ET.SubElement(transporter_bank_account, "IsManual")
+                transporter_bank_account_manual.text = 'true'
 
 
+                transporter_bank_account_risk =  ET.SubElement(transporter, "RiskAnalysisValid")
+                transporter_bank_account_risk.text = 'false'
 
-            attached_documents =  ET.SubElement(supplier_info, "AttachedDocuments")
-            attached_documents.text = 'act servicii'
+                transporter_bank_account_registered =  ET.SubElement(transporter, "IsRegistered")
+                transporter_bank_account_registered.text = 'false'
+
+                transporter_bank_account_valid =  ET.SubElement(transporter, "IsValid")
+                transporter_bank_account_valid.text = 'false'
+
+                transporter_bank_account_liquidate =  ET.SubElement(transporter, "IsLiquidated")
+                transporter_bank_account_liquidate.text = 'false'
+
+                transporter_bank_account_legal_person =  ET.SubElement(transporter, "IsLegalPerson")
+                transporter_bank_account_valid.text = 'false'
+
+                attached_documents =  ET.SubElement(supplier_info, "AttachedDocuments")
+                attached_documents.text = 'act servicii'
 
             delegate_date =  ET.SubElement(supplier_info, "DelegateDate")
             delegate_date.set("xmlns:p2",'http://www.w3.org/2001/XMLSchema-instance')
@@ -157,9 +184,9 @@ class InvoiceSelect(models.Model):
             loading_point =  ET.SubElement(supplier_info, "LoadingPoint")
             loading_point.text = 'mun.Chisinau, str.Podul Inalt, nr.18/1, of.31'
 
-            un_loading_point =  ET.SubElement(supplier_info, "UnloadingPoint")
-            un_loading_point.text = 'mun.Chisinau, str.Vlaicu Pircalab, nr.45'
-
+            if invoice.move_type == 'in_invoice':
+                un_loading_point =  ET.SubElement(supplier_info, "UnloadingPoint")
+                un_loading_point.text = 'mun.Chisinau, str.Vlaicu Pircalab, nr.45'
 
             redirections =  ET.SubElement(supplier_info, "Redirections")
             redirections_total =  ET.SubElement(redirections, "Total")
@@ -168,29 +195,39 @@ class InvoiceSelect(models.Model):
             redirections_tva.text = '0'
 
             merchandises =  ET.SubElement(supplier_info, "Merchandises")
-            merchandises_row =  ET.SubElement(merchandises, "Row")
-            merchandises_row.set('IsManualEdited','true')
-            merchandises_row.set('CalculationScenario','-1')
-            merchandises_row.set('Code','1')
-            merchandises_row.set('Name','Servicii aromatizare')
-            merchandises_row.set('UnitOfMeasure','luna')
-            merchandises_row.set('Quantity','1')
-            merchandises_row.set('UnitPriceWithoutTVA','1370.00')
-            merchandises_row.set('TotalPriceWithoutTVA','1370.00')
-            merchandises_row.set('TVA','-')
-            merchandises_row.set('TotalTVA','0')
-            merchandises_row.set('TotalPrice','1370.00')
-            merchandises_row.set('OtherInfo','-')
-            merchandises_row.set('PackageType','-')
-            merchandises_row.set('NumberOfPlaces','-')
-            merchandises_row.set('GrossWeight','-')
-            dynamic_merchandises =  ET.SubElement(merchandises_row, "Dynamic")
+
+            for line in invoice.invoice_line_ids:
+                merchandises_row =  ET.SubElement(merchandises, "Row")
+                merchandises_row.set('IsManualEdited','true')
+                merchandises_row.set('CalculationScenario','-1')
+                merchandises_row.set('Code',line.product_id.default_code if line.product_id else '')
+                merchandises_row.set('Name',line.product_id.display_name if line.product_id else '')
+                merchandises_row.set('UnitOfMeasure',line.product_uom_id.name if line.product_uom_id else '')
+                merchandises_row.set('Quantity',str(line.quantity))
+                merchandises_row.set('UnitPriceWithoutTVA',str(line.price_unit) or str(0.0))
+                merchandises_row.set('TotalPriceWithoutTVA',str(line.price_subtotal) or str(0.0))
+                merchandises_row.set('TVA','-')
+                merchandises_row.set('TotalTVA','0')
+                merchandises_row.set('TotalPrice',str(line.price_total) or str(0.0))
+                merchandises_row.set('OtherInfo','-')
+                merchandises_row.set('PackageType','-')
+                merchandises_row.set('NumberOfPlaces','-')
+                merchandises_row.set('GrossWeight','-')
+                dynamic_merchandises =  ET.SubElement(merchandises_row, "Dynamic")
+                dynamic_merchandises =  ET.SubElement(merchandises_row, "Dynamic")
 
             is_farma =  ET.SubElement(supplier_info, "IsFarma")
             is_farma.text = 'false'
 
+            TaxareaInversa = 'false'
+            tax_ids = invoice.invoice_line_ids.mapped('tax_ids')
+            if tax_ids:
+                tax_ids = tax_ids.filtered(lambda x: 'Inversa' in x.name)
+                if tax_ids:
+                    TaxareaInversa = 'true'
+
             taxareainversa =  ET.SubElement(supplier_info, "TaxareaInversa")
-            taxareainversa.text = 'false'
+            taxareainversa.text = TaxareaInversa
 
             creation_motiv =  ET.SubElement(supplier_info, "CreationMotiv")
             creation_motiv.text = '1'
@@ -202,7 +239,12 @@ class InvoiceSelect(models.Model):
         xml_data = ET.tostring(document_root, encoding="utf-8")
         file_upoload = base64.b64encode(xml_data)
         file_name = "custom_data.xml"
-        return {'file_upoload':file_upoload,'file_name':file_name}
+
+        journal_code = ''
+        if invoice_ids and invoice_ids[0] and invoice_ids[0].journal_id:
+            journal_code = invoice_ids[0].journal_id.code + '__'
+
+        return {'file_upoload':file_upoload,'file_name':journal_code + str(random.randint(0,99999)) + '.xml'}
         
     def action_proceed(self):
         invoice_ids = self.invoice_ids
