@@ -5,7 +5,7 @@
         Add margin and total payment in sales report pivot view.
     """,
     'category': 'Sales/Sales',
-    'version': '15.0.1.0.4',
+    'version': '15.0.1.0.5',
 
     'depends': ['product', 'sale','sale_margin', 'point_of_sale', 'product_margin'],
 
@@ -14,6 +14,7 @@
         'views/product_views.xml',
         'views/sales_reporting_pivot_view.xml',
     ],
+    'license': 'LGPL-3',
     'installable': True,
     'auto_install': True
 }
