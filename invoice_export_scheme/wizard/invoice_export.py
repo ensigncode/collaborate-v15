@@ -61,8 +61,8 @@ class InvoiceSelect(models.Model):
 
             Supplier_BranchTitle = Supplier_BranchCode =  Supplier_Account = ''
             if supplier_id and supplier_id.bank_ids:
-                Supplier_BranchTitle = supplier_id.bank_ids[0].name
-                Supplier_BranchCode = supplier_id.bank_ids[0].bic
+                Supplier_BranchTitle = supplier_id.bank_ids[0].bank_id.name
+                Supplier_BranchCode = supplier_id.bank_ids[0].bank_id.bic
                 Supplier_Account =  supplier_id.bank_ids[0].acc_number
 
             supplier =  ET.SubElement(supplier_info, "Supplier")
@@ -97,8 +97,8 @@ class InvoiceSelect(models.Model):
             address = buyer_id.street if buyer_id.street else '' + ' ,' + buyer_id.street2 if buyer_id.street else ''  + ' , ' + buyer_id.city if buyer_id.city else ''
             BranchTitle = BranchCode =  Account = ''
             if buyer_id and buyer_id.bank_ids:
-                BranchTitle = buyer_id.bank_ids[0].name
-                BranchCode = buyer_id.bank_ids[0].bic
+                BranchTitle = buyer_id.bank_ids[0].bank_id.name
+                BranchCode = buyer_id.bank_ids[0].bank_id.bic
                 Account =  buyer_id.bank_ids[0].acc_number
 
             buyer =  ET.SubElement(supplier_info, "Buyer")
