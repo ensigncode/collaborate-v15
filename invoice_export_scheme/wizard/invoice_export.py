@@ -56,7 +56,7 @@ class InvoiceSelect(models.Model):
                 IsSupplierOnly = 'true'
 
             # supplier_address = supplier_id.street or '' + ' ,' + supplier_id.street2  or '' + ' , ' + supplier_id.city or ''
-            address = supplier_id.street if supplier_id.street else '' + ' ,' + supplier_id.street2 if supplier_id.street else ''  + ' , ' + supplier_id.city if supplier_id.city else ''
+            supplier_address = supplier_id.street if supplier_id.street else '' + ' ,' + supplier_id.street2 if supplier_id.street else ''  + ' , ' + supplier_id.city if supplier_id.city else ''
             issue_date = ET.SubElement(supplier_info, "IssuedDate")
             issue_date.text = invoice.invoice_date.strftime("%d/%m/%Y") if invoice.invoice_date else ''
 
