@@ -29,13 +29,13 @@ class InvoiceSelect(models.Model):
 
         document_root = ET.Element("Documents")
         for invoice in invoice_ids:
-            
             if invoice.move_type == 'in_invoice':
-                supplier_id = invoice.company_id.partner_id
-                buyer_id = invoice.partner_id
-            else:
                 supplier_id = invoice.partner_id
                 buyer_id = invoice.company_id.partner_id
+            else:
+                supplier_id = invoice.company_id.partner_id
+                buyer_id = invoice.partner_id
+                
 
             # Create child elements and add data
             document = ET.SubElement(document_root, "Document")
@@ -47,12 +47,16 @@ class InvoiceSelect(models.Model):
             number = ET.SubElement(supplier_info, "Number")
             number.text = invoice.name
 
+            print('\n\n===supplier_id==',supplier_id,supplier_id.name)
+            print('===buyer_id==',buyer_id,buyer_id.name)
+
+
             IsSupplierOnly = 'false'
             if supplier_id and supplier_id.supplier_rank:
                 IsSupplierOnly = 'true'
 
-            supplier_address = supplier_id.street or '' + ' ,' + supplier_id.street2  or '' + ' , ' + supplier_id.city or ''
-
+            # supplier_address = supplier_id.street or '' + ' ,' + supplier_id.street2  or '' + ' , ' + supplier_id.city or ''
+            address = supplier_id.street if supplier_id.street else '' + ' ,' + supplier_id.street2 if supplier_id.street else ''  + ' , ' + supplier_id.city if supplier_id.city else ''
             issue_date = ET.SubElement(supplier_info, "IssuedDate")
             issue_date.text = invoice.invoice_date.strftime("%d/%m/%Y") if invoice.invoice_date else ''
 
@@ -67,7 +71,7 @@ class InvoiceSelect(models.Model):
 
             supplier =  ET.SubElement(supplier_info, "Supplier")
             supplier.set("IDNO", supplier_id.vat or '')
-            supplier.set("Title", supplier_id.ref or '')
+            supplier.set("Title", supplier_id.name or '')
             supplier.set("Address", supplier_address)
             supplier.set("NResident", "false")
             supplier.set("IsSupplierOnly", IsSupplierOnly)
@@ -103,7 +107,7 @@ class InvoiceSelect(models.Model):
 
             buyer =  ET.SubElement(supplier_info, "Buyer")
             buyer.set("IDNO", buyer_id.vat or "")
-            buyer.set("Title", buyer_id.ref or "")
+            buyer.set("Title", buyer_id.name or "")
             buyer.set("Address", address)
             buyer.set("CodTVA", "0612817")
             buyer.set("NResident", "false")
