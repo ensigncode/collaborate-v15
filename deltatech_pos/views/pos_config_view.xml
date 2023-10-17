@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="pos_config_view_form" model="ir.ui.view">
+        <field name="name">pos.config.form.view</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form" />
+        <field name="arch" type="xml">
+            <div id="payment_methods_new" position="after">
+                <div class="col-12 col-lg-6 o_setting_box">
+                    <div class="o_setting_left_pane">
+                        <field name="iface_cash_in_out" />
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="iface_cash_in_out" />
+                        <div class="text-muted">
+                            Make Cash Collection / Payment Disposal from POS interface
+                        </div>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="text_cash_in" />
+                        <div>
+                            <field name="text_cash_in" />
+                        </div>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="text_cash_out" />
+                        <div>
+                            <field name="text_cash_out" />
+                        </div>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="transfer_account_id" />
+                        <div>
+                            <field name="transfer_account_id" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 o_setting_box">
+                    <div class="o_setting_left_pane">
+                        <field name="ecr_cash_in_out" />
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="ecr_cash_in_out" />
+                        <div class="text-muted">
+                            Send Cash Collection / Payment Disposal to ECR
+                        </div>
+                    </div>
+                    <div class="o_setting_left_pane">
+                        <field name="print_duplicate_in_out" />
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="print_duplicate_in_out" />
+                        <div class="text-muted">
+                            Print Payment Disposal duplicate
+                        </div>
+                    </div>
+
+                    <div class="o_setting_left_pane">
+                        <field name="print_order_barcode" />
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="print_order_barcode" />
+                        <div class="text-muted">
+                            Print order number as barcode
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </field>
+    </record>
+</odoo>

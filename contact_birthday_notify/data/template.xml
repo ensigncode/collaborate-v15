@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Contact Birthday Mail template -->
+        <record id="mail_template_bday_notification" model="mail.template">
+            <field name="name">Contact: Birthday Notification</field>
+            <field name="model_id" ref="base.model_res_partner" />
+            <field name="subject">Happy Birthday, {{ object.name }}</field>
+            <field name="use_default_to" eval="True"/>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px; font-size: 13px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Dear <t t-out="object.name or ''"/><br/><br/>
+
+                        We value your special day just as much as we value you. On your birthday, we send you our warmest and most heartfelt wishes.<br/><br/>
+
+                        We are thrilled to be able to share this great day with you, and glad to have you as a valuable member of the team. We appreciate everything you’ve done to help us flourish and grow.<br/><br/>
+                        Our entire corporate family wishes you a very happy birthday and wishes you the best on your special day!
+                    </p>
+                </div>
+            </field>
+            <field name="lang">{{ object.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

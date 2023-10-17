@@ -1,0 +1,12 @@
+<odoo>
+    <data>
+        <template id="inherit_auth_signup_fields" name="Inherit Auth Signup/ResetPassword form fields"
+                  inherit_id="auth_signup.fields">
+            <xpath expr="//div[last()]" position="after">
+                <label for="confirm_newsletter">Sign up to our Lensa.ro Newsletter</label>
+                <input type="checkbox" aria-label="toggle newsletter" title="toggle newsletter" t-on-change="_onChangePushToTalk" t-att-checked="messaging.userSetting.usePushToTalk ? 'checked' : ''"/>
+                       class="form-control form-control-sm" required="required"/>
+            </xpath>
+        </template>
+    </data>
+</odoo>

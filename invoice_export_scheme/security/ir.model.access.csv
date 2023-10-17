@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+invoice_export_scheme.access_invoice_export,access_invoice_export,invoice_export_scheme.model_invoice_export,base.group_user,1,1,1,1
+
+invoice_export_scheme.access_invoice_select,access_invoice_select,invoice_export_scheme.model_invoice_select,base.group_user,1,1,1,1
