@@ -128,15 +128,18 @@ class InvoiceSelect(models.Model):
             bank_account_valid.text = 'false'
             
             bank_account_liquodated =  ET.SubElement(buyer, "IsLiquidated")
-            bank_account_liquodated.text = 'true'
+            bank_account_liquodated.text = 'false'
             
             bank_account_legal_person =  ET.SubElement(buyer, "IsLegalPerson")
-            bank_account_legal_person.text = 'true'
+            if buyer_id and buyer_id.company_type == 'company':
+                bank_account_legal_person.text = 'true'
+            else:
+                bank_account_legal_person.text = 'false'
 
             if invoice.move_type == 'in_invoice':
                 transporter =  ET.SubElement(supplier_info, "Transporter")
                 transporter.set("IDNO", supplier_id.vat or "")
-                transporter.set("Title",supplier_id.ref or "")
+                transporter.set("Title",supplier_id.name or "")
                 transporter.set("Address",supplier_address)
                 transporter.set("NResident",'false')
                 transporter.set("IsSupplierOnly",'false')
@@ -164,7 +167,10 @@ class InvoiceSelect(models.Model):
                 transporter_bank_account_liquidate.text = 'false'
 
                 transporter_bank_account_legal_person =  ET.SubElement(transporter, "IsLegalPerson")
-                transporter_bank_account_valid.text = 'false'
+                if supplier_id and supplier_id.company_type == 'company':
+                    transporter_bank_account_legal_person.text = 'true'
+                else:
+                    transporter_bank_account_legal_person.text = 'false'
 
                 attached_documents =  ET.SubElement(supplier_info, "AttachedDocuments")
                 attached_documents.text = 'act servicii'
@@ -196,6 +202,7 @@ class InvoiceSelect(models.Model):
 
             merchandises =  ET.SubElement(supplier_info, "Merchandises")
 
+            
             for line in invoice.invoice_line_ids:
                 merchandises_row =  ET.SubElement(merchandises, "Row")
                 merchandises_row.set('IsManualEdited','true')
@@ -207,14 +214,16 @@ class InvoiceSelect(models.Model):
                 merchandises_row.set('UnitPriceWithoutTVA',str(line.price_unit) or str(0.0))
                 merchandises_row.set('TotalPriceWithoutTVA',str(line.price_subtotal) or str(0.0))
                 merchandises_row.set('TVA','-')
-                merchandises_row.set('TotalTVA','0')
+                merchandises_row.set('TotalTVA',str(line.price_total - line.price_subtotal) or str(0.0))
                 merchandises_row.set('TotalPrice',str(line.price_total) or str(0.0))
-                merchandises_row.set('OtherInfo','-')
-                merchandises_row.set('PackageType','-')
-                merchandises_row.set('NumberOfPlaces','-')
-                merchandises_row.set('GrossWeight','-')
+                if invoice.move_type == 'in_invoice':
+                    merchandises_row.set('OtherInfo','-')
+                    merchandises_row.set('PackageType','-')
+                    merchandises_row.set('NumberOfPlaces','-')
+                    merchandises_row.set('GrossWeight','-')
                 dynamic_merchandises =  ET.SubElement(merchandises_row, "Dynamic")
                 dynamic_merchandises =  ET.SubElement(merchandises_row, "Dynamic")
+
 
             is_farma =  ET.SubElement(supplier_info, "IsFarma")
             is_farma.text = 'false'
