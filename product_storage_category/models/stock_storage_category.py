@@ -29,6 +29,7 @@ class StockStorageCategory(models.Model):
 	    						'storage_category_id':self.id,
 	    						'product_id':product_line.product_id.id,
 	    						'location_out_id':default_location_id.id,
+	    						'location_in_id':default_location_id.id,
 	    					}
 	    					self.env['stock.putaway.rule'].create(vals)
     	return True
