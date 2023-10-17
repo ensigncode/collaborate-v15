@@ -47,10 +47,6 @@ class InvoiceSelect(models.Model):
             number = ET.SubElement(supplier_info, "Number")
             number.text = invoice.name
 
-            print('\n\n===supplier_id==',supplier_id,supplier_id.name)
-            print('===buyer_id==',buyer_id,buyer_id.name)
-
-
             IsSupplierOnly = 'false'
             if supplier_id and supplier_id.supplier_rank:
                 IsSupplierOnly = 'true'
@@ -204,7 +200,7 @@ class InvoiceSelect(models.Model):
                 merchandises_row =  ET.SubElement(merchandises, "Row")
                 merchandises_row.set('IsManualEdited','true')
                 merchandises_row.set('CalculationScenario','-1')
-                merchandises_row.set('Code',line.product_id.default_code if line.product_id else '')
+                merchandises_row.set('Code',line.product_id.default_code if line.product_id and line.product_id.default_code else '')
                 merchandises_row.set('Name',line.product_id.display_name if line.product_id else '')
                 merchandises_row.set('UnitOfMeasure',line.product_uom_id.name if line.product_uom_id else '')
                 merchandises_row.set('Quantity',str(line.quantity))
