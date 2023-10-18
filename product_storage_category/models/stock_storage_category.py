@@ -22,6 +22,8 @@ class StockStorageCategoryCapacity(models.Model):
     		res.prod_storage_category_line_id = prod_storage_category_line_id.id
     	return res
 
+
+
     
 class StockStorageCategory(models.Model):
     _inherit = 'stock.storage.category'
@@ -75,4 +77,3 @@ class StockPutawayRule(models.Model):
     _inherit = 'stock.putaway.rule'
 
     prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines",ondelete="cascade")
-    
