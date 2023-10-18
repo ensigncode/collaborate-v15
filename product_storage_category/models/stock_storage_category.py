@@ -1,6 +1,20 @@
 # -*- coding: utf-8 -*-
 from odoo import models,fields,api
 
+class StockStorageCategoryCapacity(models.Model):
+    _inherit = 'stock.storage.category.capacity'
+
+    product_tmp_id = fields.Many2one('product.template',string="Template")
+    prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines",ondelete="cascade")
+    active = fields.Boolean(string="Active",default=True)
+
+    def unlink(self):
+        for record in self:
+        	if record.prod_storage_category_line_id:
+        		record.prod_storage_category_line_id.unlink()
+        super(StockStorageCategoryCapacity, self).unlink()
+
+    
 class StockStorageCategory(models.Model):
     _inherit = 'stock.storage.category'
 
@@ -12,6 +26,7 @@ class StockStorageCategory(models.Model):
         return input_loc
 
     def update_putaway_rule(self):
+    	putaway_rule_id = False
     	for storage in self:
     		if storage.auto_putaway_rule:
     			default_location_id = self._default_location_id()
@@ -31,8 +46,8 @@ class StockStorageCategory(models.Model):
 	    						'location_out_id':default_location_id.id,
 	    						'location_in_id':default_location_id.id,
 	    					}
-	    					self.env['stock.putaway.rule'].create(vals)
-    	return True
+	    					putaway_rule_id = self.env['stock.putaway.rule'].create(vals)
+    	return putaway_rule_id
     			
     @api.model
     def create(self,vals):
@@ -46,3 +61,10 @@ class StockStorageCategory(models.Model):
     	for storage in self:
     		storage.update_putaway_rule()
     	return res
+
+
+class StockPutawayRule(models.Model):
+    _inherit = 'stock.putaway.rule'
+
+    prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines",ondelete="cascade")
+    

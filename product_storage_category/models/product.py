@@ -11,7 +11,7 @@ class ProductStorageCategoryLines(models.Model):
     storage_capacity = fields.Float(string="Storage Capacity")
     product_id = fields.Many2one('product.product',string="Product")
     product_tmp_id = fields.Many2one('product.template',string="Product")
-
+    active = fields.Boolean(string="Active",default=True)
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
@@ -20,24 +20,30 @@ class ProductTemplate(models.Model):
 
     def update_storage_capacity(self):
         for storage_line in self.product_storage_line_ids:
-            storage_category_line_ids = False
-
             product_ids = self.product_variant_ids
-
             for product in product_ids:
-                if storage_line.storage_category_id and storage_line.storage_category_id.product_capacity_ids:
-
-                    storage_category_line_ids  = storage_line.storage_category_id.product_capacity_ids.filtered(lambda x:x.product_id.id == product.id)
+                storage_category_line_ids = False
+                query1 = """SELECT id from stock_storage_category_capacity WHERE STORAGE_CATEGORY_ID='%s' and PRODUCT_ID='%s'""" %(storage_line.storage_category_id.id,product.id)
+                self._cr.execute(query1)
+                for row in self._cr.fetchall():
+                    storage_category_line_ids = self.env['stock.storage.category.capacity'].sudo().browse(row[0])
                     for line in storage_category_line_ids:
-                        line.quantity = storage_line.storage_capacity
+                        line.update({'quantity':storage_line.storage_capacity,'active':True})
+                
                 if not storage_category_line_ids:
                     vals = {
+                        'product_tmp_id':product.product_tmpl_id.id,
                         'product_id':product.id,
                         'quantity':storage_line.storage_capacity,
                         'storage_category_id':storage_line.storage_category_id.id,
                         'company_id':self.env.company.id,
+                        'prod_storage_category_line_id':storage_line.id,
                     }
-                    self.env['stock.storage.category.capacity'].create(vals)
+                    storage_category_line_ids = self.env['stock.storage.category.capacity'].create(vals)
+
+                putaway_rule_id = storage_line.storage_category_id.update_putaway_rule()
+                if putaway_rule_id:
+                    putaway_rule_id.prod_storage_category_line_id = storage_line.id
         return True
 
     @api.model
@@ -50,4 +56,10 @@ class ProductTemplate(models.Model):
         res = super(ProductTemplate,self).write(vals)
         for product in self:
             product.update_storage_capacity()
+        if 'active' in vals and not  vals['active']:
+            for product in self:
+                domain = ['|',('product_tmp_id','=',product.id),('product_id','in',product.product_variant_ids.ids)]
+                category_capacity_ids = self.env['stock.storage.category.capacity'].search(domain)
+                for cat_capacity in category_capacity_ids:
+                    cat_capacity.active = False
         return res
