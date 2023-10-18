@@ -14,6 +14,14 @@ class StockStorageCategoryCapacity(models.Model):
         		record.prod_storage_category_line_id.unlink()
         super(StockStorageCategoryCapacity, self).unlink()
 
+    @api.model
+    def create(self,vals):
+    	res = super(StockStorageCategoryCapacity,self).create(vals)
+    	if not res.prod_storage_category_line_id:
+    		prod_storage_category_line_id = self.env['product.storage.category.lines'].create({'storage_category_id':res.storage_category_id.id,'storage_capacity':res.quantity,'product_tmp_id':res.product_id.product_tmpl_id.id})
+    		res.prod_storage_category_line_id = prod_storage_category_line_id.id
+    	return res
+
     
 class StockStorageCategory(models.Model):
     _inherit = 'stock.storage.category'
