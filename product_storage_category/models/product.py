@@ -14,9 +14,11 @@ class ProductStorageCategoryLines(models.Model):
     putaway_rule_id = fields.Many2one('stock.putaway.rule',string="Putaway Rule",ondelete="cascade")
     active = fields.Boolean(string="Active",default=True)
 
+
+
+
     def unlink(self):
         for record in self:
-            # rule_id = self.env['stock.putaway.rule'].search([('prod_storage_category_line_id','=',record.id)])
             if 'unlink_rule' in self._context:
                 return super(ProductStorageCategoryLines, self).unlink()
             if record.putaway_rule_id:
@@ -52,7 +54,7 @@ class ProductTemplate(models.Model):
                     }
                     storage_category_line_ids = self.env['stock.storage.category.capacity'].create(vals)
 
-                putaway_rule_id = storage_line.storage_category_id.update_putaway_rule()
+                putaway_rule_id = storage_line.storage_category_id.with_context(update_putaway_rule=1).update_putaway_rule()
                 if putaway_rule_id:
                     putaway_rule_id.prod_storage_category_line_id = storage_line.id
                     storage_line.putaway_rule_id = putaway_rule_id.id
