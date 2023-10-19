@@ -21,7 +21,6 @@ class StockStorageCategoryCapacity(models.Model):
 			prod_storage_category_line_id = self.env['product.storage.category.lines'].create({'storage_category_id':res.storage_category_id.id,'storage_capacity':res.quantity,'product_tmp_id':res.product_id.product_tmpl_id.id})
 			res.prod_storage_category_line_id = prod_storage_category_line_id.id
 		return res
-
 	
 class StockStorageCategory(models.Model):
 	_inherit = 'stock.storage.category'

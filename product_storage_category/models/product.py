@@ -14,9 +14,6 @@ class ProductStorageCategoryLines(models.Model):
     putaway_rule_id = fields.Many2one('stock.putaway.rule',string="Putaway Rule",ondelete="cascade")
     active = fields.Boolean(string="Active",default=True)
 
-
-
-
     def unlink(self):
         for record in self:
             if 'unlink_rule' in self._context:
@@ -33,6 +30,7 @@ class ProductTemplate(models.Model):
 
     def update_storage_capacity(self):
         for storage_line in self.product_storage_line_ids:
+            # storage_line.storage_category_id.update_putaway_rule()
             product_ids = self.product_variant_ids
             for product in product_ids:
                 storage_category_line_ids = False
@@ -77,3 +75,28 @@ class ProductTemplate(models.Model):
                 for cat_capacity in category_capacity_ids:
                     cat_capacity.active = False
         return res
+
+
+
+
+
+class StockQuant(models.Model):
+    _inherit = 'stock.quant'
+
+    def action_apply_inventory(self):
+        res = super(StockQuant,self).action_apply_inventory()
+        for quant in self:
+            product_id = quant.product_id
+            for storage_line in product_id.product_storage_line_ids:
+                storage_line.storage_category_id.update_putaway_rule()
+        return res 
+
+    # def write(self,vals):
+    #     res = super(StockQuant,self).write(vals)
+    #     if 'quantity' in vals and  vals['quantity']:
+    #         for quant in self:
+    #             product_id = quant.product_id
+    #             for storage_line in product_id.product_storage_line_ids:
+    #                 storage_line.storage_category_id.update_putaway_rule()
+    #     return res
+
