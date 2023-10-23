@@ -5,14 +5,15 @@ class StockStorageCategoryCapacity(models.Model):
 	_inherit = 'stock.storage.category.capacity'
 
 	product_tmp_id = fields.Many2one('product.template',string="Template")
-	prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines",ondelete="cascade")
+	# prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines",ondelete="cascade")
+	prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines")
 	active = fields.Boolean(string="Active",default=True)
 
-	def unlink(self):
-		for record in self:
-			if record.prod_storage_category_line_id:
-				record.prod_storage_category_line_id.unlink()
-		super(StockStorageCategoryCapacity, self).unlink()
+	# def unlink(self):
+	# 	for record in self:
+	# 		if record.prod_storage_category_line_id:
+	# 			record.prod_storage_category_line_id.unlink()
+	# 	super(StockStorageCategoryCapacity, self).unlink()
 
 	@api.model
 	def create(self,vals):
@@ -48,36 +49,41 @@ class StockStorageCategory(models.Model):
 				else:
 					location_in_id = location_out_id.id
 
-				storage_category_id = self
-				if location_out_id:
-					for product_line in storage.product_capacity_ids:
-						product_id = product_line.product_id
-						if product_id and not product_id.qty_available:
-							rules = []
-							query1 = """SELECT id from stock_putaway_rule WHERE PRODUCT_ID='%s'""" %(product_id.id)
-							self._cr.execute(query1)
-							for row in self._cr.fetchall():
-								rules.append(row[0])						
-							rule_ids = self.env['stock.putaway.rule'].sudo().search([('id','in',rules)])
-							storage_location_rule_ids = rule_ids.filtered(lambda x:x.location_out_id.storage_category_id and x.location_out_id.storage_category_id.id == storage.id)
-							if storage_location_rule_ids:
-								for rule in storage_location_rule_ids:
-									rule.unlink()
-						else:
-							domain = [
-								('storage_category_id','=',self.id),
-								('product_id','=',product_line.product_id.id),
-								('location_out_id','=',location_out_id.id),
-							]
-							rule_id = self.env['stock.putaway.rule'].search(domain)
-							if not rule_id:
-								vals = {
-									'storage_category_id':self.id,
-									'product_id':product_line.product_id.id,
-									'location_out_id':location_out_id.id,
-									'location_in_id':location_in_id,
-								}
-								putaway_rule_id = self.env['stock.putaway.rule'].create(vals)
+				print('-------location_out_id--',location_out_id)
+				print('-------location_in_id--',location_in_id)
+				
+
+				# storage_category_id = self
+				# if location_out_id:
+				for product_line in storage.product_capacity_ids:
+					product_id = product_line.product_id
+					if product_id and not product_id.qty_available:
+						rules = []
+						query1 = """SELECT id from stock_putaway_rule WHERE PRODUCT_ID='%s'""" %(product_id.id)
+						self._cr.execute(query1)
+						for row in self._cr.fetchall():
+							rules.append(row[0])						
+						rule_ids = self.env['stock.putaway.rule'].sudo().search([('id','in',rules)])
+						storage_location_rule_ids = rule_ids.filtered(lambda x:x.location_out_id.storage_category_id and x.location_out_id.storage_category_id.id == storage.id)
+						if storage_location_rule_ids:
+							for rule in storage_location_rule_ids:
+								rule.unlink()
+					# else:
+					elif location_out_id and location_in_id:
+						domain = [
+							('storage_category_id','=',self.id),
+							('product_id','=',product_line.product_id.id),
+							('location_out_id','=',location_out_id.id),
+						]
+						rule_id = self.env['stock.putaway.rule'].search(domain)
+						if not rule_id:
+							vals = {
+								'storage_category_id':self.id,
+								'product_id':product_line.product_id.id,
+								'location_out_id':location_out_id.id,
+								'location_in_id':location_in_id,
+							}
+							putaway_rule_id = self.env['stock.putaway.rule'].create(vals)
 		return putaway_rule_id
 				
 	@api.model
@@ -97,4 +103,6 @@ class StockStorageCategory(models.Model):
 class StockPutawayRule(models.Model):
 	_inherit = 'stock.putaway.rule'
 
-	prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines",ondelete="cascade")
+	# prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines",ondelete="cascade")
+	prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines")
+

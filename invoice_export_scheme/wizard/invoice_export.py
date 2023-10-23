@@ -54,10 +54,10 @@ class InvoiceSelect(models.Model):
             # supplier_address = supplier_id.street or '' + ' ,' + supplier_id.street2  or '' + ' , ' + supplier_id.city or ''
             supplier_address = supplier_id.street if supplier_id.street else '' + ' ,' + supplier_id.street2 if supplier_id.street else ''  + ' , ' + supplier_id.city if supplier_id.city else ''
             issue_date = ET.SubElement(supplier_info, "IssuedDate")
-            issue_date.text = invoice.invoice_date.strftime("%d/%m/%Y") if invoice.invoice_date else ''
+            issue_date.text = invoice.invoice_date.strftime("%Y-%m-%d") if invoice.invoice_date else ''
 
             delivery_date = ET.SubElement(supplier_info, "DeliveryDate")
-            delivery_date.text = invoice.invoice_date.strftime("%d/%m/%Y") if invoice.invoice_date else ''
+            delivery_date.text = invoice.invoice_date.strftime("%Y-%m-%d") if invoice.invoice_date else ''
 
             Supplier_BranchTitle = Supplier_BranchCode =  Supplier_Account = ''
             if supplier_id and supplier_id.bank_ids:
