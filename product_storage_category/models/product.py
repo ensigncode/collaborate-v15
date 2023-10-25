@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
-
 from odoo import models,fields,api
 
 class ProductStorageCategoryLines(models.Model):
     _name = 'product.storage.category.lines'
     _description = 'Product Storage Category Lines'
 
-
     storage_category_id = fields.Many2one('stock.storage.category',string="Storage Capacity ")
     storage_capacity = fields.Float(string="Storage Capacity")
     product_id = fields.Many2one('product.product',string="Product")
     product_tmp_id = fields.Many2one('product.template',string="Product")
     putaway_rule_id = fields.Many2one('stock.putaway.rule',string="Putaway Rule")
-
     # putaway_rule_id = fields.Many2one('stock.putaway.rule',string="Putaway Rule",ondelete="cascade")
     active = fields.Boolean(string="Active",default=True)
 
@@ -53,7 +50,6 @@ class ProductTemplate(models.Model):
                         'prod_storage_category_line_id':storage_line.id,
                     }
                     storage_category_line_ids = self.env['stock.storage.category.capacity'].create(vals)
-
                 putaway_rule_id = storage_line.storage_category_id.with_context(update_putaway_rule=1).update_putaway_rule()
 
 
@@ -104,7 +100,6 @@ class StockQuant(models.Model):
             for storage_line in product_id.product_storage_line_ids:
                 storage_line.storage_category_id.update_putaway_rule()
         return res
-
 
     @api.model
     def _unlink_zero_quants(self):
