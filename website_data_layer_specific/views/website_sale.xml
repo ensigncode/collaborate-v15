@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<template id="products_item_data_layer_specific" inherit_id="website_sale.products_item" name="Data Layer Specific">
+		<xpath expr="//a[hasclass('o_product_link')]" position="replace">
+			<a class="o_product_link css_editable_mode_hidden" style="cursor:pointer;pointer-events:all;"
+			   t-att-data-href-path="product_href"/>
+		</xpath>
+	</template>
+
+	<template id="cart_inherit_website_data_layer_specific" inherit_id="website_sale.cart"
+	          name="Data Layer Specific">
+		<xpath expr="//a[@href='/shop/checkout?express=1']"
+		       position="replace">
+			<a role="button" t-if="website_sale_order and website_sale_order.website_order_line"
+               class="btn btn-primary float-right shop_checkout_process">
+                <span class="">Process Checkout</span>
+                <span class="fa fa-chevron-right" />
+            </a>
+		</xpath>
+	</template>
+</odoo>

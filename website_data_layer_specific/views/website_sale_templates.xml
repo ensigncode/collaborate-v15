@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <template id="products_other_information" inherit_id="website_sale.products"
+                  name="Products with other infos">
+            <xpath expr="//div[@id='wrap']//div[hasclass('oe_website_sale')]//div[hasclass('o_wsale_products_main_row')]//div[@id='products_grid']//div[hasclass('o_wsale_products_grid_table_wrapper')]//td[@t-attf-class='oe_product']" position="attributes">
+                <attribute name="t-att-data-categories">product.public_categ_ids.mapped('name')</attribute>
+            </xpath>
+        </template>
+    </data>
+</odoo>
