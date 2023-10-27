@@ -134,7 +134,7 @@ class StockPicking(models.Model):
 			vals = {
 				'product_id':line.product_id.id,
 				'location_in_id':destination_id.id,
-				'storage_category_id':storage_category_id.id,
+				# 'storage_category_id':storage_category_id.id,
 			}
 			if left_location_ids:
 				vals.update({'location_out_id':left_location_ids[0]})
