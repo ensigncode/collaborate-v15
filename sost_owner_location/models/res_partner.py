@@ -15,6 +15,7 @@ class StockPicking(models.Model):
 	def update_location(self):
 		location_dest_id = self.location_dest_id
 		location_vals = {}
+		update_dest_id = False
 		if self.assign_owner_id and self.assign_owner_id.location_ids:
 			locations = []
 			owner_locations = ",".join(str(location.complete_name) for location in self.assign_owner_id.location_ids)
