@@ -160,7 +160,7 @@ class ProductProduct(models.Model):
             for line in storage_category_lines:
                 storage_category_id = line.storage_category_id
                 domain = [
-                    ('storage_category_id','=',storage_category_id.id),
+                    # ('storage_category_id','=',storage_category_id.id),
                     ('location_id','=',destination_id.id),
                     ('id','!=',destination_id.id),
                 ]
@@ -196,9 +196,6 @@ class ProductProduct(models.Model):
         #                 if storage_location_rule_ids:
         #                     for rule in storage_location_rule_ids:
         #                         rule.unlink()
-
-
-
 
     # def write(self,vals):
     #     res = super(StockQuant,self).write(vals)
