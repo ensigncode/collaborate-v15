@@ -39,24 +39,21 @@ class StockStorageCategory(models.Model):
 		putaway_rule_id = False
 		for storage in self:
 			if storage.auto_putaway_rule:
-				location_vals = self._default_location_id()
-				location_out_id = location_vals['location_out_id']
 
-				# location_in_id = False
-				# if 'location_in_id' in location_vals.keys() and  location_vals['location_in_id']:
-				# 	location_in_id =  location_vals['location_in_id']
-				# 	location_in_id = location_in_id.id
-				# else:
-				# 	location_in_id = location_out_id.id	
+				if 'default_destination_id' in self._context  and self._context['default_destination_id']:
+					destination_id  = self._context['default_destination_id']
+				else:
+					location_vals = self._default_location_id()
+					destination_id = location_vals['location_out_id']
 
 				for product_line in storage.product_capacity_ids:
-					# storage_line_ids = product_id
-					location_ids = self.env['stock.location'].search([('storage_category_id','=',self.id)])
+					location_ids = self.env['stock.location'].search([('storage_category_id','=',self.id),('location_id','=',destination_id.id)])
+					
 					for location in location_ids:
 						location_in_id = location
+						location_out_id = destination_id
 
 						product_id = product_line.product_id
-						
 						if product_id and not product_id.qty_available:
 							rules = []
 							query1 = """SELECT id from stock_putaway_rule WHERE PRODUCT_ID='%s'""" %(product_id.id)
@@ -69,6 +66,7 @@ class StockStorageCategory(models.Model):
 								for rule in storage_location_rule_ids:
 									rule.unlink()
 
+
 						elif location_out_id and location_in_id:
 							domain = [
 								('storage_category_id','=',self.id),
@@ -80,8 +78,10 @@ class StockStorageCategory(models.Model):
 								vals = {
 									'storage_category_id':self.id,
 									'product_id':product_line.product_id.id,
-									'location_out_id':location_out_id.id,
-									'location_in_id':location_in_id.id,
+									'location_out_id':location_in_id.id,
+									'location_in_id':location_out_id.id,
+									# 'location_out_id':location_out_id.id,
+									# 'location_in_id':location_in_id.id,
 								}
 								putaway_rule_id = self.env['stock.putaway.rule'].create(vals)
 		return putaway_rule_id
@@ -103,23 +103,94 @@ class StockStorageCategory(models.Model):
 class StockPutawayRule(models.Model):
 	_inherit = 'stock.putaway.rule'
 
-	# prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines",ondelete="cascade")
+
 	prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines")
-
-
-
 
 class StockPicking(models.Model):
 	_inherit = 'stock.picking'
 
-	# # prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines",ondelete="cascade")
-	# prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines")
+	def get_lines(self,storage_category_lines,used_location):
+		lines = []
+		destination_id = self.location_dest_id
+		for line in storage_category_lines:
+			storage_category_id = line.storage_category_id
+			domain = [
+				('storage_category_id','=',storage_category_id.id),
+				('location_id','=',destination_id.id),
+				('id','!=',destination_id.id),
+				('id','not in',used_location),
+			]
+			location_ids = self.env['stock.location'].search(domain)
+			rule_ids = self.env['stock.putaway.rule'].search([('storage_category_id','=',storage_category_id.id)])
+			location_rule_ids = []
+			left_location_ids = []
+			for rule in rule_ids:
+				location_rule_ids += rule.location_out_id.ids		
+
+			for location in location_ids:
+				if location not in location_rule_ids:
+					left_location_ids.append(location.id)
+
+			vals = {
+				'product_id':line.product_id.id,
+				'location_in_id':destination_id.id,
+				'storage_category_id':storage_category_id.id,
+			}
+			if left_location_ids:
+				vals.update({'location_out_id':left_location_ids[0]})
+			lines.append(vals)
+		return lines
+
+
+	def action_update_rules(self):
+		line_data = []
+		used_location = []
+		for line in self.move_ids_without_package:
+			product_id = line.product_id
+
+			if product_id:
+				storage_category_lines = product_id.product_storage_line_ids
+				datas = self.get_lines(storage_category_lines,used_location)
+
+				for data in datas:
+					data.update({'product_id':product_id.id})
+					line_data.append((0,0,data))
+					if 'location_out_id' in data and data['location_out_id']:
+						used_location.append(data['location_out_id'])
+
+		rule_vals = {'picking_id':self.id,'product_putaway_rule_line_ids':line_data}
+		rule_id = self.env['product.putaway.rule'].create(rule_vals)
+		return {
+			'name': 'Putaway Rule',
+			'view_mode': 'form',
+			'target': 'new',
+			'res_id': rule_id.id,
+			'res_model': 'product.putaway.rule',
+			'type': 'ir.actions.act_window',
+		}
+
+	def get_product_putaway_rule_data(self):
+		line_data = []
+		used_location = []
+
+		for line in self.move_ids_without_package:
+			product_id = line.product_id
+			datas =  product_id.get_rule_lines()
+			# for data in datas:
+			# 	print('\n\n---data--',data)
+			# 	if 'location_out_id' in data and data['location_out_id']:
+			# 		vals = {
+			# 				'product_id':data['product_id'],
+			# 				'storage_category_id':data['storage_category_id'],
+			# 				'location_out_id':data['location_out_id'],
+			# 				'location_in_id':data['location_in_id'],
+			# 			}
+			# 		rule_id = self.env['stock.putaway.rule'].create(vals)
+			# 		print('\n\n===rule_id=',rule_id)
+		return True 
 
 	def _action_done(self):
 		res = super(StockPicking,self)._action_done()
-		for line in self.move_ids_without_package:
-			product_id = line.product_id
-			for storage_line in product_id.product_storage_line_ids:
-				storage_category_id = storage_line.storage_category_id
-				storage_category_id.update_putaway_rule()
+		self.with_context(location_dest_id=self.location_dest_id).get_product_putaway_rule_data()
 		return res
+

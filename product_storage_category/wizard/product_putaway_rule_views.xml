@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_product_putaway_rule_form" model="ir.ui.view">
+        <field name="name">view_product_putaway_rule_form</field>
+        <field name="model">product.putaway.rule</field>
+        <field name="arch" type="xml">
+            <form string='Product Putaway Rule'>
+                <sheet>
+                    <field name="picking_id"/>
+                    <group>
+                        <field name="product_putaway_rule_line_ids" nolabel="1">
+                            <tree editable="bottom" decoration-danger="(not location_out_id)">
+                                <field name="product_id" />
+                                <field name="storage_category_id"/>
+                                <field name="location_in_id"/>
+                                <field name="location_out_id"/>
+                                <field name="operation_type"/>
+                            </tree>
+                        </field>                 
+                    </group>
+                    <footer>
+                        <button string="Confirm" name="action_confirm" type="object" class="btn-primary"/>
+                        <button special="cancel" data-hotkey="z" string="Close" class="btn-secondary"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+   <!--  operation_type = fields.Selection([('existing','Select One Of the Existing'),
+                                    ('manually','Define the putaway rule manually later')],string="Type",default="manually")
+    location_out_id = fields.Many2one('stock.location',string="Substore Location")
+    location_in_id = fields.Many2one('stock.location',string="Arrive Location")
+    product_id = fields.Many2one('product.product',string="Product")
+    company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
+             default=lambda self: self.env.company)
+
+    rule_id = fields.Many2one('product.putaway.rule',string="Rule Id") -->
+
+
+    <record id="action_product_putaway_rule_form" model="ir.actions.act_window">
+        <field name="name">Product Putaway Rule</field>
+        <field name="res_model">product.putaway.rule</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_product_putaway_rule_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <!-- <menuitem
+        action="action_update_putaway_rule"
+        id="stock_update_putaway_rule"
+        name="Update Putaway Rule"
+        parent="stock.menu_warehouse_report" sequence="200"/> -->
+
+</odoo>
+
