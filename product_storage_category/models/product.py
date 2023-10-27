@@ -21,7 +21,6 @@ class ProductStorageCategoryLines(models.Model):
     #             record.putaway_rule_id.with_context(unlink_rule=1).unlink()
     #     super(ProductStorageCategoryLines, self).unlink()
 
-
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
@@ -51,8 +50,6 @@ class ProductTemplate(models.Model):
                     }
                     storage_category_line_ids = self.env['stock.storage.category.capacity'].create(vals)
                 putaway_rule_id = storage_line.storage_category_id.with_context(update_putaway_rule=1).update_putaway_rule()
-
-
                 print('\n\n=====putaway_rule_id==',putaway_rule_id)
                 if putaway_rule_id:
                     putaway_rule_id.prod_storage_category_line_id = storage_line.id
@@ -81,12 +78,21 @@ class ProductTemplate(models.Model):
 class StockQuant(models.Model):
     _inherit = 'stock.quant'
 
+    # def action_apply_inventory(self):
+    #     res = super(StockQuant,self).action_apply_inventory()
+    #     for quant in self:
+    #         product_id = quant.product_id
+    #         for storage_line in product_id.product_storage_line_ids:
+    #             storage_line.storage_category_id.update_putaway_rule()
+    #     return res 
+
     def action_apply_inventory(self):
         res = super(StockQuant,self).action_apply_inventory()
         for quant in self:
             product_id = quant.product_id
-            for storage_line in product_id.product_storage_line_ids:
-                storage_line.storage_category_id.update_putaway_rule()
+            datas =  product_id.with_context(location_dest_id=self.location_id).get_rule_lines()
+        #     for storage_line in product_id.product_storage_line_ids:
+        #         storage_line.storage_category_id.update_putaway_rule()
         return res 
 
 
@@ -140,6 +146,42 @@ class StockQuant(models.Model):
                     rule.unlink()
         quant_ids.sudo().unlink()
 
+class ProductProduct(models.Model):
+    _inherit = 'product.product'
+
+    def get_rule_lines(self):
+        lines = []
+        # destination_id = self.location_dest_id
+        destination_id = False
+        if 'location_dest_id' in self._context and self._context['location_dest_id']:
+            destination_id = self._context['location_dest_id']
+        if destination_id:
+            storage_category_lines = self.product_storage_line_ids
+            for line in storage_category_lines:
+                storage_category_id = line.storage_category_id
+                domain = [
+                    ('storage_category_id','=',storage_category_id.id),
+                    ('location_id','=',destination_id.id),
+                    ('id','!=',destination_id.id),
+                ]
+                location_ids = self.env['stock.location'].search(domain)
+                rule_ids = self.env['stock.putaway.rule'].search([('storage_category_id','=',storage_category_id.id)])
+                location_rule_ids = []
+                left_location_ids = []
+                for rule in rule_ids:
+                    location_rule_ids += rule.location_out_id.ids  
+                for location in location_ids:
+                    if location.id not in location_rule_ids:
+                        left_location_ids.append(location.id)
+                vals = {
+                    'product_id':self.id,
+                    'location_in_id':destination_id.id,
+                    'storage_category_id':storage_category_id.id,
+                }
+                if left_location_ids:
+                    vals.update({'location_out_id':left_location_ids[0]})
+                    rule_id = self.env['stock.putaway.rule'].create(vals)
+        return True
 
         # for product_line in storage.product_capacity_ids:
         #             product_id = product_line.product_id
