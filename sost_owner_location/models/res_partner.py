@@ -10,18 +10,22 @@ class ResPartner(models.Model):
 class StockPicking(models.Model):
 	_inherit = "stock.picking"
 
-	assign_owner_id = fields.Many2one('res.partner',string="Assign Owner")
 
 	def update_location(self):
 		location_dest_id = self.location_dest_id
 		location_vals = {}
 		update_dest_id = False
-		if self.assign_owner_id and self.assign_owner_id.location_ids:
+		if self.owner_id and self.owner_id.location_ids:
 			locations = []
-			owner_locations = ",".join(str(location.complete_name) for location in self.assign_owner_id.location_ids)
-			update_dest_id = False
-			for location in self.assign_owner_id.location_ids:
-				find_loc = location.complete_name.startswith(location_dest_id.complete_name)
+			owner_locations = ",".join(str(location.complete_name) for location in self.owner_id.location_ids)
+			update_dest_id = False 
+			first_location_dest = location_dest_id.complete_name.split('/')
+			if first_location_dest:
+				first_location_dest = first_location_dest[0]
+			else:
+				first_location_dest = location_dest_id.complete_name
+			for location in self.owner_id.location_ids:
+				find_loc = location.complete_name.startswith(first_location_dest)
 				if find_loc:
 					update_dest_id = location
 		if update_dest_id: 
@@ -39,7 +43,7 @@ class StockPicking(models.Model):
 
 	def write(self,vals):
 		res = super(StockPicking,self).write(vals)
-		if 'assign_owner_id' in vals and vals['assign_owner_id']:
+		if 'owner_id' in vals and vals['owner_id']:
 			for obj in self:
 				obj.update_location()
 		return res
