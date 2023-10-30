@@ -6,7 +6,7 @@ class ProductPutawayRule(models.TransientModel):
     _name = 'product.putaway.rule'
     _description = 'Product Putaway Rule'
 
-    picking_id = fields.Many2one('stock.picking',string="Transfer")
+    po_id = fields.Many2one('purchase.order',string="Purchase")
     product_putaway_rule_line_ids = fields.One2many('product.putaway.rule.line','rule_id')
 
     def action_confirm(self):
@@ -21,15 +21,9 @@ class ProductPutawayRule(models.TransientModel):
                     }
                 rule_id = self.env['stock.putaway.rule'].create(vals)
                 rule_ids.append(rule_id.id)
-        return {
-            'name': _('Putaway Rule'),
-            'domain': [('id', 'in', rule_ids)],
-            'res_model': 'stock.putaway.rule',
-            'type': 'ir.actions.act_window',
-            'view_id': False,
-            'view_mode': 'tree,form',
-        }
 
+        self.po_id.button_confirm()
+        return True
 
 class ProductPutawayRuleLine(models.TransientModel):
     _name = 'product.putaway.rule.line'
@@ -43,3 +37,6 @@ class ProductPutawayRuleLine(models.TransientModel):
     product_id = fields.Many2one('product.product',string="Product")
     company_id = fields.Many2one('res.company', string='Company',default=lambda self: self.env.company)
     rule_id = fields.Many2one('product.putaway.rule',string="Rule Id")
+    fix_location = fields.Boolean(string="Location Fix")
+
+

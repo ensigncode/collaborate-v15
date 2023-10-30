@@ -106,76 +106,76 @@ class StockPutawayRule(models.Model):
 
 	prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines")
 
-class StockPicking(models.Model):
-	_inherit = 'stock.picking'
+# class StockPicking(models.Model):
+# 	_inherit = 'stock.picking'
 
-	def get_lines(self,storage_category_lines,used_location):
-		lines = []
-		destination_id = self.location_dest_id
-		for line in storage_category_lines:
-			storage_category_id = line.storage_category_id
-			domain = [
-				('storage_category_id','=',storage_category_id.id),
-				('location_id','=',destination_id.id),
-				('id','!=',destination_id.id),
-				('id','not in',used_location),
-			]
-			location_ids = self.env['stock.location'].search(domain)
-			rule_ids = self.env['stock.putaway.rule'].search([('storage_category_id','=',storage_category_id.id)])
-			location_rule_ids = []
-			left_location_ids = []
-			for rule in rule_ids:
-				location_rule_ids += rule.location_out_id.ids		
+# 	def get_lines(self,storage_category_lines,used_location):
+# 		lines = []
+# 		destination_id = self.location_dest_id
+# 		for line in storage_category_lines:
+# 			storage_category_id = line.storage_category_id
+# 			domain = [
+# 				('storage_category_id','=',storage_category_id.id),
+# 				('location_id','=',destination_id.id),
+# 				('id','!=',destination_id.id),
+# 				('id','not in',used_location),
+# 			]
+# 			location_ids = self.env['stock.location'].search(domain)
+# 			rule_ids = self.env['stock.putaway.rule'].search([('storage_category_id','=',storage_category_id.id)])
+# 			location_rule_ids = []
+# 			left_location_ids = []
+# 			for rule in rule_ids:
+# 				location_rule_ids += rule.location_out_id.ids		
 
-			for location in location_ids:
-				if location not in location_rule_ids:
-					left_location_ids.append(location.id)
+# 			for location in location_ids:
+# 				if location not in location_rule_ids:
+# 					left_location_ids.append(location.id)
 
-			vals = {
-				'product_id':line.product_id.id,
-				'location_in_id':destination_id.id,
-				# 'storage_category_id':storage_category_id.id,
-			}
-			if left_location_ids:
-				vals.update({'location_out_id':left_location_ids[0]})
-			lines.append(vals)
-		return lines
+# 			vals = {
+# 				'product_id':line.product_id.id,
+# 				'location_in_id':destination_id.id,
+# 				# 'storage_category_id':storage_category_id.id,
+# 			}
+# 			if left_location_ids:
+# 				vals.update({'location_out_id':left_location_ids[0]})
+# 			lines.append(vals)
+# 		return lines
 
 
-	def action_update_rules(self):
-		line_data = []
-		used_location = []
-		for line in self.move_ids_without_package:
-			product_id = line.product_id
+# 	def action_update_rules(self):
+# 		line_data = []
+# 		used_location = []
+# 		for line in self.move_ids_without_package:
+# 			product_id = line.product_id
 
-			if product_id:
-				storage_category_lines = product_id.product_storage_line_ids
-				datas = self.get_lines(storage_category_lines,used_location)
+# 			if product_id:
+# 				storage_category_lines = product_id.product_storage_line_ids
+# 				datas = self.get_lines(storage_category_lines,used_location)
 
-				for data in datas:
-					data.update({'product_id':product_id.id})
-					line_data.append((0,0,data))
-					if 'location_out_id' in data and data['location_out_id']:
-						used_location.append(data['location_out_id'])
+# 				for data in datas:
+# 					data.update({'product_id':product_id.id})
+# 					line_data.append((0,0,data))
+# 					if 'location_out_id' in data and data['location_out_id']:
+# 						used_location.append(data['location_out_id'])
 
-		rule_vals = {'picking_id':self.id,'product_putaway_rule_line_ids':line_data}
-		rule_id = self.env['product.putaway.rule'].create(rule_vals)
-		return {
-			'name': 'Putaway Rule',
-			'view_mode': 'form',
-			'target': 'new',
-			'res_id': rule_id.id,
-			'res_model': 'product.putaway.rule',
-			'type': 'ir.actions.act_window',
-		}
+# 		rule_vals = {'picking_id':self.id,'product_putaway_rule_line_ids':line_data}
+# 		rule_id = self.env['product.putaway.rule'].create(rule_vals)
+# 		return {
+# 			'name': 'Putaway Rule',
+# 			'view_mode': 'form',
+# 			'target': 'new',
+# 			'res_id': rule_id.id,
+# 			'res_model': 'product.putaway.rule',
+# 			'type': 'ir.actions.act_window',
+# 		}
 
-	def get_product_putaway_rule_data(self):
-		line_data = []
-		used_location = []
-		for line in self.move_ids_without_package:
-			product_id = line.product_id
-			datas =  product_id.get_rule_lines()
-		return True
+# 	def get_product_putaway_rule_data(self):
+# 		line_data = []
+# 		used_location = []
+# 		for line in self.move_ids_without_package:
+# 			product_id = line.product_id
+# 			datas =  product_id.get_rule_lines()
+# 		return True
 
 	# def _action_done(self):
 	# 	res = super(StockPicking,self)._action_done()
