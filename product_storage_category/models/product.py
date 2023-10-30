@@ -176,13 +176,17 @@ class ProductProduct(models.Model):
                     storage_category_id = line.storage_category_id
                     domain = [
                         ('storage_category_id','=',storage_category_id.id),
-                        ('id','not in',occupied_locations),
                     ]
                     storage_category_location_ids = self.env['stock.location'].search(domain)
+                    if not storage_category_location_ids:
+                        create_product_rule = False
+
+                        # ('id','not in',occupied_locations),
                     
-                    if storage_category_location_ids:
+                    if storage_category_location_ids and create_product_rule:
+                        storage_category_location_ids = storage_category_location_ids.filtered(lambda x:x.id not in occupied_locations)
                         rule_ids = self.env['stock.putaway.rule'].search([('location_out_id','in',storage_category_location_ids.ids)])
-                        # rule_ids = self.env['stock.putaway.rule'].search([('location_out_id','in',storage_category_location_ids.ids),('location_out_id','not in',occupied_locations)])
+                        
                         location_rule_ids = []
                         left_location_ids = []
 
