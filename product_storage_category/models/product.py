@@ -148,43 +148,66 @@ class StockQuant(models.Model):
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
-    def get_rule_lines(self):
+    def get_rule_lines(self,location_dest_id,occupied_locations):
+
+        print('\n\n====occupied_locations===',occupied_locations)
         lines = []
         # destination_id = self.location_dest_id
-        destination_id = False
-        if 'location_dest_id' in self._context and self._context['location_dest_id']:
-            destination_id = self._context['location_dest_id']
+        destination_id = location_dest_id
+        
+        # if 'location_dest_id' in self._context and self._context['location_dest_id']:
+        #     destination_id = self._context['location_dest_id']
+        vals = {}
+        create_product_rule = False
+        issue_product_rule = False
+        occupied_location_id = False
+
         if destination_id:
             storage_category_lines = self.product_storage_line_ids
-            for line in storage_category_lines:
-                storage_category_id = line.storage_category_id
-                domain = [
-                    ('storage_category_id','=',storage_category_id.id),
-                ]
-                storage_category_location_ids = self.env['stock.location'].search(domain)
-                if storage_category_location_ids:
-                    rule_ids = self.env['stock.putaway.rule'].search([('location_out_id','in',storage_category_location_ids.ids)])
-                    location_rule_ids = []
-                    left_location_ids = []
-                    if not rule_ids:
-                        left_location_ids = storage_category_location_ids.ids 
-                    else:
-                        for rule in rule_ids:
-                            location_rule_ids += rule.location_out_id.ids 
-                        for location in storage_category_location_ids:
-                            if location.id not in location_rule_ids:
-                                left_location_ids.append(location.id)
-                    vals = {
-                        'product_id':self.id,
-                        'location_in_id':destination_id.id,
-                    }
-                    if left_location_ids:
-                        vals.update({'location_out_id':left_location_ids[0]})
-                        rule_id = self.env['stock.putaway.rule'].create(vals)
-                        return True
-                    else:
-                        return False
-        # return vals
 
-        
+            rule_ids = self.env['stock.putaway.rule'].search([('product_id','=',self.id)])
+
+            print('\n\n===rule_ids==',rule_ids,self)
+            if not rule_ids:
+                if storage_category_lines or not rule_ids:
+                    create_product_rule = True
+
+                for line in storage_category_lines:
+                    storage_category_id = line.storage_category_id
+                    domain = [
+                        ('storage_category_id','=',storage_category_id.id),
+                    ]
+                    storage_category_location_ids = self.env['stock.location'].search(domain)
+                    if not storage_category_location_ids:
+                        create_product_rule = False
+
+                        # ('id','not in',occupied_locations),
+                    
+                    if storage_category_location_ids and create_product_rule:
+                        storage_category_location_ids = storage_category_location_ids.filtered(lambda x:x.id not in occupied_locations)
+                        rule_ids = self.env['stock.putaway.rule'].search([('location_out_id','in',storage_category_location_ids.ids)])
+                        
+                        location_rule_ids = []
+                        left_location_ids = []
+
+                        if not rule_ids:
+                            left_location_ids = storage_category_location_ids.ids
+                        else:
+                            for rule in rule_ids:
+                                location_rule_ids += rule.location_out_id.ids 
+                            for location in storage_category_location_ids:
+                                if location.id not in location_rule_ids:
+                                    left_location_ids.append(location.id)
+
+                        if left_location_ids:
+                            issue_product_rule = False
+                            vals.update({'location_out_id':left_location_ids[0]})
+                            occupied_location_id = left_location_ids[0]
+                        else:
+                            issue_product_rule = True
+
+        if create_product_rule and not occupied_location_id and  not rule_ids:
+            issue_product_rule = True
+        return {'create_product_rule':create_product_rule,'issue_product_rule':issue_product_rule,'occupied_location_id':occupied_location_id,'vals':vals} 
+
 
