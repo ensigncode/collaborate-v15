@@ -36,7 +36,7 @@ class ProductPutawayRuleLine(models.TransientModel):
     _description = 'Product Putaway Rule Line'
 
     operation_type = fields.Selection([('existing','Select One Of the Existing'),
-                                    ('manually','Define the putaway rule manually later')],string="Type",default="manually")
+                                    ('manually','Define the putaway rule manually later')],string="Type",default="existing")
     location_out_id = fields.Many2one('stock.location',string="Substore Location")
     location_in_id = fields.Many2one('stock.location',string="Arrive Location")
     storage_category_id = fields.Many2one('stock.storage.category',string="Stock Category")

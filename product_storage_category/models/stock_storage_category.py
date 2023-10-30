@@ -177,24 +177,8 @@ class StockPicking(models.Model):
 			datas =  product_id.get_rule_lines()
 		return True
 
-	def _action_done(self):
-		res = super(StockPicking,self)._action_done()
-		self.with_context(location_dest_id=self.location_dest_id).get_product_putaway_rule_data()
-		return res
+	# def _action_done(self):
+	# 	res = super(StockPicking,self)._action_done()
+	# 	self.with_context(location_dest_id=self.location_dest_id).get_product_putaway_rule_data()
+	# 	return res
 
-class PurchaseOrder(models.Model):
-	_inherit = 'purchase.order'
-
-	def update_po_product_putaway_rule_data(self):
-		line_data = []
-		used_location = []
-		for line in self.order_line:
-			product_id = line.product_id
-			datas =  product_id.get_rule_lines()
-		return True
-
-	def button_confirm(self):
-		res = super(PurchaseOrder,self).button_confirm()
-		if self.picking_type_id and self.picking_type_id.default_location_dest_id:
-			self.with_context(location_dest_id=self.picking_type_id.default_location_dest_id).update_po_product_putaway_rule_data()
-		return res
