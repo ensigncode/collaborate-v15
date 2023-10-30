@@ -164,11 +164,12 @@ class ProductProduct(models.Model):
 
         if destination_id:
             storage_category_lines = self.product_storage_line_ids
+            if not storage_category_lines:
+                create_product_rule = False
 
             rule_ids = self.env['stock.putaway.rule'].search([('product_id','=',self.id)])
-
             print('\n\n===rule_ids==',rule_ids,self)
-            if not rule_ids:
+            if not rule_ids and storage_category_lines:
                 if storage_category_lines or not rule_ids:
                     create_product_rule = True
 
