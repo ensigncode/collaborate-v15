@@ -9,8 +9,6 @@
                     <group>
                         <group><field name="po_id" readonly="1" force_save="1" invisible="1"/></group>
                         <group><field name="quant_ids" readonly="1" force_save="1"  invisible="1"/></group>
-                        
-                        
                     </group>
                     <group>
                         <field name="product_putaway_rule_line_ids" nolabel="1">
@@ -32,17 +30,6 @@
         </field>
     </record>
 
-   <!--  operation_type = fields.Selection([('existing','Select One Of the Existing'),
-                                    ('manually','Define the putaway rule manually later')],string="Type",default="manually")
-    location_out_id = fields.Many2one('stock.location',string="Substore Location")
-    location_in_id = fields.Many2one('stock.location',string="Arrive Location")
-    product_id = fields.Many2one('product.product',string="Product")
-    company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
-             default=lambda self: self.env.company)
-
-    rule_id = fields.Many2one('product.putaway.rule',string="Rule Id") -->
-
-
     <record id="action_product_putaway_rule_form" model="ir.actions.act_window">
         <field name="name">Product Putaway Rule</field>
         <field name="res_model">product.putaway.rule</field>
@@ -56,6 +43,4 @@
         id="stock_update_putaway_rule"
         name="Update Putaway Rule"
         parent="stock.menu_warehouse_report" sequence="200"/> -->
-
 </odoo>
-

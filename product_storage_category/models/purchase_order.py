@@ -30,7 +30,6 @@ class PurchaseOrder(models.Model):
             'type': 'ir.actions.act_window',
         }
 
-
     def update_po_product_putaway_rule_data(self):
         line_data = []
         occupied_locations = []

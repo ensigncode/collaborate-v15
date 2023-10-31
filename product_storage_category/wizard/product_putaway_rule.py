@@ -11,7 +11,6 @@ class ProductPutawayRule(models.TransientModel):
     product_putaway_rule_line_ids = fields.One2many('product.putaway.rule.line','rule_id')
     quant_ids = fields.Many2many('stock.quant',string="Quants")
 
-
     def action_confirm(self):
         rule_ids = []
         for line in self.product_putaway_rule_line_ids:
@@ -24,10 +23,8 @@ class ProductPutawayRule(models.TransientModel):
                     }
                 rule_id = self.env['stock.putaway.rule'].create(vals)
                 rule_ids.append(rule_id.id)
-        
         if self.po_id and self.po_id.state == 'purchase':
             self.po_id.button_confirm()
-
         if self.quant_ids:
             for quant in self.quant_ids:
                 quant.with_context(update_inventory=1).action_apply_inventory()

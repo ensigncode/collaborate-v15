@@ -104,8 +104,8 @@ class StockPutawayRule(models.Model):
 
 	prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines")
 
-# class StockPicking(models.Model):
-# 	_inherit = 'stock.picking'
+class StockPicking(models.Model):
+	_inherit = 'stock.picking'
 
 # 	def get_lines(self,storage_category_lines,used_location):
 # 		lines = []
@@ -175,8 +175,33 @@ class StockPutawayRule(models.Model):
 # 			datas =  product_id.get_rule_lines()
 # 		return True
 
-	# def _action_done(self):
-	# 	res = super(StockPicking,self)._action_done()
-	# 	self.with_context(location_dest_id=self.location_dest_id).get_product_putaway_rule_data()
-	# 	return res
+	def _action_done(self):
+		res = super(StockPicking,self)._action_done()
+		# self.with_context(location_dest_id=self.location_dest_id).get_product_putaway_rule_data()
+
+		precision_digits = max(6, self.sudo().env.ref('product.decimal_product_uom').digits * 2)
+		# Use a select instead of ORM search for UoM robustness.
+		query = """SELECT id FROM stock_quant WHERE (round(quantity::numeric, %s) = 0 OR quantity IS NULL)
+					AND round(reserved_quantity::numeric, %s) = 0
+					AND (round(inventory_quantity::numeric, %s) = 0 OR inventory_quantity IS NULL)
+					AND user_id IS NULL;"""
+		params = (precision_digits, precision_digits, precision_digits)
+		self.env.cr.execute(query, params)
+		quant_ids = self.env['stock.quant'].browse([quant['id'] for quant in self.env.cr.dictfetchall()])
+		for quant in quant_ids:
+			location_id = quant.location_id
+			product_id = quant.product_id
+
+			query1 = """SELECT id from stock_putaway_rule WHERE LOCATION_IN_ID='%s' and  PRODUCT_ID='%s'""" %(location_id.id,product_id.id)
+			self._cr.execute(query1)
+			rules = []
+			for row in self._cr.fetchall():
+				rules.append(row[0])  
+			rule_ids = self.env['stock.putaway.rule'].sudo().search([('id','in',rules)])
+			print('\n\n\n==========rule_ids=======',rule_ids)
+			for rule in rule_ids:
+				rule.sudo().unlink()
+			quant.sudo().unlink()
+		print('\n\n====quant_ids===',quant_ids)
+		return res
 

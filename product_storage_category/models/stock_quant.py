@@ -120,6 +120,8 @@ class StockQuant(models.Model):
 
 	@api.model
 	def _unlink_zero_quants(self):
+
+		print('\n\n\n====_unlink_zero_quants==============')
 		""" _update_available_quantity may leave quants with no
 		quantity and no reserved_quantity. It used to directly unlink
 		these zero quants but this proved to hurt the performance as
@@ -142,16 +144,21 @@ class StockQuant(models.Model):
 		for quant in quant_ids:
 			product_id = quant.product_id
 			location_id = quant.location_id
-			storage_category_id  = location_id.storage_category_id
-			if storage_category_id  and product_id.product_storage_line_ids:
-				storage_line_ids = product_id.product_storage_line_ids.filtered(lambda x:x.storage_category_id and x.storage_category_id.id ==  storage_category_id.id)
-			if storage_category_id:
-				query1 = """SELECT id from stock_putaway_rule WHERE LOCATION_IN_ID='%s' and  PRODUCT_ID='%s' and STORAGE_CATEGORY_ID='%s'""" %(location_id.id,product_id.id,storage_category_id.id)
-				self._cr.execute(query1)
-				rules = []
-				for row in self._cr.fetchall():
-					rules.append(row[0])  
-				rule_ids = self.env['stock.putaway.rule'].sudo().search([('id','in',rules)])
-				for rule in rule_ids:
-					rule.unlink()
+			# storage_category_id  = location_id.storage_category_id
+			# if storage_category_id  and product_id.product_storage_line_ids:
+			# 	storage_line_ids = product_id.product_storage_line_ids.filtered(lambda x:x.storage_category_id and x.storage_category_id.id ==  storage_category_id.id)
+			# if storage_category_id:
+			query1 = """SELECT id from stock_putaway_rule WHERE LOCATION_IN_ID='%s' and  PRODUCT_ID='%s'""" %(location_id.id,product_id.id)
+			self._cr.execute(query1)
+			rules = []
+			for row in self._cr.fetchall():
+				rules.append(row[0])  
+			rule_ids = self.env['stock.putaway.rule'].sudo().search([('id','in',rules)])
+			print('\n\n\n==========rule_ids=======',rule_ids)
+
+			
+			for rule in rule_ids:
+				rule.unlink()
+
+		# stop
 		quant_ids.sudo().unlink()
