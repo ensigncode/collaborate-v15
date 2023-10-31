@@ -3,3 +3,4 @@
 from . import product
 from . import stock_storage_category
 from . import purchase_order
+from . import stock_quant

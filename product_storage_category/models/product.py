@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models,fields,api
+from odoo import models,fields,api, _
 
 class ProductStorageCategoryLines(models.Model):
     _name = 'product.storage.category.lines'
@@ -74,123 +74,44 @@ class ProductTemplate(models.Model):
         return res
 
 
-class StockQuant(models.Model):
-    _inherit = 'stock.quant'
-
-    # def action_apply_inventory(self):
-    #     res = super(StockQuant,self).action_apply_inventory()
-    #     for quant in self:
-    #         product_id = quant.product_id
-    #         for storage_line in product_id.product_storage_line_ids:
-    #             storage_line.storage_category_id.update_putaway_rule()
-    #     return res 
-
-    def action_apply_inventory(self):
-        res = super(StockQuant,self).action_apply_inventory()
-        for quant in self:
-            product_id = quant.product_id
-            datas =  product_id.with_context(location_dest_id=self.location_id).get_rule_lines()
-        #     for storage_line in product_id.product_storage_line_ids:
-        #         storage_line.storage_category_id.update_putaway_rule()
-        return res 
-
-
-    @api.model
-    def _update_reserved_quantity(self, product_id, location_id, quantity, lot_id=None, package_id=None, owner_id=None, strict=False):
-        """ Create or update move lines.
-        """
-        res = super(StockQuant,self)._update_reserved_quantity(product_id, location_id, quantity, lot_id=None, package_id=None, owner_id=None, strict=False)
-        for quant in self:
-            product_id = quant.product_id
-            for storage_line in product_id.product_storage_line_ids:
-                storage_line.storage_category_id.update_putaway_rule()
-        return res
-
-    @api.model
-    def _unlink_zero_quants(self):
-        print('\n\n\n====_unlink_zero_quants=====================')
-        """ _update_available_quantity may leave quants with no
-        quantity and no reserved_quantity. It used to directly unlink
-        these zero quants but this proved to hurt the performance as
-        this method is often called in batch and each unlink invalidate
-        the cache. We defer the calls to unlink in this method.
-        """
-        precision_digits = max(6, self.sudo().env.ref('product.decimal_product_uom').digits * 2)
-        # Use a select instead of ORM search for UoM robustness.
-        query = """SELECT id FROM stock_quant WHERE (round(quantity::numeric, %s) = 0 OR quantity IS NULL)
-                                                     AND round(reserved_quantity::numeric, %s) = 0
-                                                     AND (round(inventory_quantity::numeric, %s) = 0 OR inventory_quantity IS NULL)
-                                                     AND user_id IS NULL;"""
-        params = (precision_digits, precision_digits, precision_digits)
-        self.env.cr.execute(query, params)
-        quants = []
-        for quant in self.env.cr.dictfetchall():
-            quants.append(quant['id'])
-        quant_ids = self.env['stock.quant'].search([('id','in',quants)])
-
-        for quant in quant_ids:
-            product_id = quant.product_id
-            location_id = quant.location_id
-            storage_category_id  = location_id.storage_category_id
-            if storage_category_id  and product_id.product_storage_line_ids:
-                storage_line_ids = product_id.product_storage_line_ids.filtered(lambda x:x.storage_category_id and x.storage_category_id.id ==  storage_category_id.id)
-            if storage_category_id:
-                query1 = """SELECT id from stock_putaway_rule WHERE LOCATION_IN_ID='%s' and  PRODUCT_ID='%s' and STORAGE_CATEGORY_ID='%s'""" %(location_id.id,product_id.id,storage_category_id.id)
-                self._cr.execute(query1)
-                rules = []
-                for row in self._cr.fetchall():
-                    rules.append(row[0])  
-                rule_ids = self.env['stock.putaway.rule'].sudo().search([('id','in',rules)])
-                for rule in rule_ids:
-                    rule.unlink()
-        quant_ids.sudo().unlink()
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     def get_rule_lines(self,location_dest_id,occupied_locations):
-
-        print('\n\n====occupied_locations===',occupied_locations)
         lines = []
-        # destination_id = self.location_dest_id
         destination_id = location_dest_id
-        
-        # if 'location_dest_id' in self._context and self._context['location_dest_id']:
-        #     destination_id = self._context['location_dest_id']
         vals = {}
         create_product_rule = False
         issue_product_rule = False
         occupied_location_id = False
-
         if destination_id:
             storage_category_lines = self.product_storage_line_ids
             if not storage_category_lines:
                 create_product_rule = False
-
+            
             rule_ids = self.env['stock.putaway.rule'].search([('product_id','=',self.id)])
-            print('\n\n===rule_ids==',rule_ids,self)
+            # print('\n\n==self.id=rule_ids==',rule_ids,self.id)
+            # print('==storage_category_lines=',storage_category_lines)
             if not rule_ids and storage_category_lines:
                 if storage_category_lines or not rule_ids:
                     create_product_rule = True
-
                 for line in storage_category_lines:
+
+                    vals = {'product_id':self.id,'location_in_id':destination_id.id}
                     storage_category_id = line.storage_category_id
                     domain = [
                         ('storage_category_id','=',storage_category_id.id),
                     ]
                     storage_category_location_ids = self.env['stock.location'].search(domain)
+                    # print('\n=====storage_category_location_ids===',storage_category_location_ids)
                     if not storage_category_location_ids:
                         create_product_rule = False
-
-                        # ('id','not in',occupied_locations),
-                    
                     if storage_category_location_ids and create_product_rule:
                         storage_category_location_ids = storage_category_location_ids.filtered(lambda x:x.id not in occupied_locations)
                         rule_ids = self.env['stock.putaway.rule'].search([('location_out_id','in',storage_category_location_ids.ids)])
-                        
                         location_rule_ids = []
                         left_location_ids = []
-
                         if not rule_ids:
                             left_location_ids = storage_category_location_ids.ids
                         else:
@@ -204,6 +125,7 @@ class ProductProduct(models.Model):
                             issue_product_rule = False
                             vals.update({'location_out_id':left_location_ids[0]})
                             occupied_location_id = left_location_ids[0]
+
                         else:
                             issue_product_rule = True
 

@@ -39,7 +39,6 @@ class StockStorageCategory(models.Model):
 		putaway_rule_id = False
 		for storage in self:
 			if storage.auto_putaway_rule:
-
 				if 'default_destination_id' in self._context  and self._context['default_destination_id']:
 					destination_id  = self._context['default_destination_id']
 				else:
@@ -102,7 +101,6 @@ class StockStorageCategory(models.Model):
 
 class StockPutawayRule(models.Model):
 	_inherit = 'stock.putaway.rule'
-
 
 	prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines")
 

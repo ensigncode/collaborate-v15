@@ -33,18 +33,12 @@ class PurchaseOrder(models.Model):
 
     def update_po_product_putaway_rule_data(self):
         line_data = []
-        
         occupied_locations = []
-        
-        location_dest_id = self.picking_type_id.default_location_dest_id
-
         no_empty_location_found = False
-
+        location_dest_id = self.picking_type_id.default_location_dest_id
         for line in self.order_line:
             product_id = line.product_id
-            
             datas =  product_id.get_rule_lines(location_dest_id,occupied_locations)
-
             if datas['create_product_rule']:
                 line.create_product_rule = True
                 if not datas['issue_product_rule']:
@@ -59,6 +53,8 @@ class PurchaseOrder(models.Model):
                     data_vals = datas['vals']
                     data_vals.update({'product_id':product_id.id})
                     line_data.append(data_vals)
+
+                    
         rule_po_line_ids =  self.order_line.filtered(lambda x:x.create_product_rule and not x.issue_product_rule)
         if no_empty_location_found and line_data:
             rule_line_data = []
