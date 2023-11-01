@@ -144,21 +144,37 @@ class StockQuant(models.Model):
 		for quant in quant_ids:
 			product_id = quant.product_id
 			location_id = quant.location_id
+			
+			if product_id.product_storage_line_ids:
+				for storage_line in product_id.product_storage_line_ids:
+					storage_category_id = storage_line.storage_category_id
+					query1 = """SELECT id from stock_putaway_rule WHERE LOCATION_OUT_STORAGE_CATEGORY_ID='%s' and  PRODUCT_ID='%s'""" %(storage_category_id.id,product_id.id)
+					self._cr.execute(query1)
+					rules = []
+					for row in self._cr.fetchall():
+						rules.append(row[0])  
+					rule_ids = self.env['stock.putaway.rule'].sudo().search([('id','in',rules)])
+
+					print('\n\n=====rule_ids======',rule_ids)
+					for rule in rule_ids:
+						rule.sudo().unlink()
+
+
 			# storage_category_id  = location_id.storage_category_id
 			# if storage_category_id  and product_id.product_storage_line_ids:
 			# 	storage_line_ids = product_id.product_storage_line_ids.filtered(lambda x:x.storage_category_id and x.storage_category_id.id ==  storage_category_id.id)
 			# if storage_category_id:
-			query1 = """SELECT id from stock_putaway_rule WHERE LOCATION_IN_ID='%s' and  PRODUCT_ID='%s'""" %(location_id.id,product_id.id)
-			self._cr.execute(query1)
-			rules = []
-			for row in self._cr.fetchall():
-				rules.append(row[0])  
-			rule_ids = self.env['stock.putaway.rule'].sudo().search([('id','in',rules)])
-			print('\n\n\n==========rule_ids=======',rule_ids)
+			# query1 = """SELECT id from stock_putaway_rule WHERE LOCATION_IN_ID='%s' and  PRODUCT_ID='%s'""" %(location_id.id,product_id.id)
+			# self._cr.execute(query1)
+			# rules = []
+			# for row in self._cr.fetchall():
+			# 	rules.append(row[0])  
+			# rule_ids = self.env['stock.putaway.rule'].sudo().search([('id','in',rules)])
+			# print('\n\n\n==========rule_ids=======',rule_ids)
 
 			
-			for rule in rule_ids:
-				rule.unlink()
+			# for rule in rule_ids:
+			# 	rule.unlink()
 
 		# stop
 		quant_ids.sudo().unlink()
