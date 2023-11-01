@@ -105,6 +105,8 @@ class StockPutawayRule(models.Model):
 	prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines")
 	location_out_storage_category_id = fields.Many2one('stock.storage.category',string="Storage Category",related="location_out_id.storage_category_id",store=True)
 
+	
+
 
 class StockPicking(models.Model):
 	_inherit = 'stock.picking'
@@ -190,22 +192,31 @@ class StockPicking(models.Model):
 		params = (precision_digits, precision_digits, precision_digits)
 		self.env.cr.execute(query, params)
 		quant_ids = self.env['stock.quant'].browse([quant['id'] for quant in self.env.cr.dictfetchall()])
-		print('\n\n===quant_ids==',quant_ids)
 
 		for quant in quant_ids:
 			location_id = quant.location_id
 			product_id = quant.product_id
-			if product_id.product_storage_line_ids:
-				for storage_line in product_id.product_storage_line_ids:
-					storage_category_id = storage_line.storage_category_id
-					query1 = """SELECT id from stock_putaway_rule WHERE LOCATION_OUT_STORAGE_CATEGORY_ID='%s' and  PRODUCT_ID='%s'""" %(storage_category_id.id,product_id.id)
-					self._cr.execute(query1)
-					rules = []
-					for row in self._cr.fetchall():
-						rules.append(row[0])  
-					rule_ids = self.env['stock.putaway.rule'].sudo().search([('id','in',rules)])
-					for rule in rule_ids:
-						rule.sudo().unlink()
+
+			parent_location_id = False
+			if location_id.location_id:
+				parent_location_id = location_id.location_id
+			if parent_location_id:
+				location_ids = self.env['stock.location'].search(['|',('id','=',parent_location_id.id),('location_id','=',parent_location_id.id)])
+			else:
+				location_ids = self.env['stock.location'].search([('location_id','=',parent_location_id.id)])
+			check_quants = self.env['stock.quant'].search([('id','=',quant.id),('location_id','in',location_ids.ids),('product_id','=',product_id.id),('on_hand','=',True)])
+			if not check_quants:
+				if product_id.product_storage_line_ids:
+					for storage_line in product_id.product_storage_line_ids:
+						storage_category_id = storage_line.storage_category_id
+						query1 = """SELECT id from stock_putaway_rule WHERE LOCATION_OUT_STORAGE_CATEGORY_ID='%s' and  PRODUCT_ID='%s'""" %(storage_category_id.id,product_id.id)
+						self._cr.execute(query1)
+						rules = []
+						for row in self._cr.fetchall():
+							rules.append(row[0])  
+						rule_ids = self.env['stock.putaway.rule'].sudo().search([('id','in',rules)])
+						for rule in rule_ids:
+							rule.sudo().unlink()
 			quant.sudo().unlink()
 		return res
 
