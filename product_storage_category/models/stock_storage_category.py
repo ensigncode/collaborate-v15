@@ -188,11 +188,15 @@ class StockPicking(models.Model):
 		params = (precision_digits, precision_digits, precision_digits)
 		self.env.cr.execute(query, params)
 		quant_ids = self.env['stock.quant'].browse([quant['id'] for quant in self.env.cr.dictfetchall()])
+		print('\n\n===quant_ids==',quant_ids)
+
 		for quant in quant_ids:
 			location_id = quant.location_id
 			product_id = quant.product_id
 
-			query1 = """SELECT id from stock_putaway_rule WHERE LOCATION_IN_ID='%s' and  PRODUCT_ID='%s'""" %(location_id.id,product_id.id)
+			print('\n\n===location_id==',location_id)
+
+			query1 = """SELECT id from stock_putaway_rule WHERE LOCATION_OUT_ID='%s' and  PRODUCT_ID='%s'""" %(location_id.id,product_id.id)
 			self._cr.execute(query1)
 			rules = []
 			for row in self._cr.fetchall():
@@ -202,6 +206,7 @@ class StockPicking(models.Model):
 			for rule in rule_ids:
 				rule.sudo().unlink()
 			quant.sudo().unlink()
+
 		print('\n\n====quant_ids===',quant_ids)
 		return res
 
