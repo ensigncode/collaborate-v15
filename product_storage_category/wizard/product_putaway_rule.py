@@ -14,12 +14,15 @@ class ProductPutawayRule(models.TransientModel):
     def action_confirm(self):
         rule_ids = []
         for line in self.product_putaway_rule_line_ids:
+            destination_location_id = line.location_in_id.get_main_location()
             if line.location_out_id:
                 vals = {
                         'product_id':line.product_id.id,
-                        'storage_category_id':line.storage_category_id.id,
+                        # 'storage_category_id':line.storage_category_id.id,
                         'location_out_id':line.location_out_id.id if line.location_out_id else False,
-                        'location_in_id':line.location_in_id.id if line.location_in_id else False,
+                        # 'location_in_id':line.location_in_id.id if line.location_in_id else False,
+                        'location_in_id':destination_location_id.id if destination_location_id else False,
+
                     }
                 rule_id = self.env['stock.putaway.rule'].create(vals)
                 rule_ids.append(rule_id.id)

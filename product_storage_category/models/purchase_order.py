@@ -8,6 +8,20 @@ class PurchaseOrderLine(models.Model):
     done_product_rule = fields.Boolean(string="Done Product Rule",copy=False)
     issue_product_rule = fields.Boolean(string="Issue Product Rule",copy=False)
 
+class StockLocation(models.Model):
+    _inherit = 'stock.location'
+
+    def get_main_location(self):
+        main_destination_id = self
+        if main_destination_id:
+            count = 0
+            while count == 0:
+                if main_destination_id.location_id and main_destination_id.location_id.usage == 'internal':
+                    main_destination_id = main_destination_id.location_id
+                else:
+                    count = 1
+        return main_destination_id
+
 
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
@@ -35,6 +49,8 @@ class PurchaseOrder(models.Model):
         occupied_locations = []
         no_empty_location_found = False
         location_dest_id = self.picking_type_id.default_location_dest_id
+        main_destination_id = location_dest_id.get_main_location()
+
         for line in self.order_line:
             product_id = line.product_id
             datas =  product_id.get_rule_lines(location_dest_id,occupied_locations)
@@ -74,6 +90,9 @@ class PurchaseOrder(models.Model):
         elif line_data:
             for l_data in line_data:
                 l_data.pop('fix_location')
+                l_data.update({'location_in_id':main_destination_id.id})
+                if 'storage_category_id' in l_data:
+                    l_data.pop('storage_category_id')
                 rule_id = self.env['stock.putaway.rule'].create(l_data)
         self.with_context(update_po=1).button_confirm()
         return True   
