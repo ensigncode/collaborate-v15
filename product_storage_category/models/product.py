@@ -86,6 +86,7 @@ class ProductProduct(models.Model):
         issue_product_rule = False
         occupied_location_id = False
         if destination_id:
+            main_destination_id = destination_id.get_main_location()
             storage_category_lines = self.product_storage_line_ids
             if not storage_category_lines:
                 create_product_rule = False
@@ -96,9 +97,12 @@ class ProductProduct(models.Model):
             if not rule_ids and storage_category_lines:
                 if storage_category_lines or not rule_ids:
                     create_product_rule = True
+                
                 for line in storage_category_lines:
+                    storage_category_id = line.storage_category_id
+                    vals = {'storage_category_id':storage_category_id.id,'product_id':self.id,'location_in_id':main_destination_id.id}
+                    print('\n\n\n=============SQWDWQEF------vals---',vals)
 
-                    vals = {'product_id':self.id,'location_in_id':destination_id.id}
                     storage_category_id = line.storage_category_id
                     domain = [
                         ('storage_category_id','=',storage_category_id.id),
@@ -131,6 +135,8 @@ class ProductProduct(models.Model):
 
         if create_product_rule and not occupied_location_id and  not rule_ids:
             issue_product_rule = True
+
+        print('\n\n====vals---',vals)
         return {'create_product_rule':create_product_rule,'issue_product_rule':issue_product_rule,'occupied_location_id':occupied_location_id,'vals':vals} 
 
 
