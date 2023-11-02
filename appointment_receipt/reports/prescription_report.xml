@@ -6,7 +6,7 @@
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">appointment_receipt.report_appointment_prescription</field>
         <field name="report_file">appointment_receipt.report_appointment_prescription</field>
-        <field name="print_report_name">'PRESCRIPTIE OPTOMETRICA - %s' % (object.prescription_code).replace('#', '')
+        <field name="print_report_name">'PRESCRIPTIE OPTOMETRICA - %s' % (object.prescription_code or '').replace('#', '')
         </field>
         <field name="binding_model_id" ref="calendar.model_calendar_event"/>
         <field name="binding_type">report</field>

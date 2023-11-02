@@ -2,7 +2,7 @@
 
 {
     'name': 'Appointment Receipt',
-    'version': '15.0.1.0.7',
+    'version': '15.0.1.0.8',
     'category': 'Marketing/Online Appointment',
     'sequence': 216,
     'description': """
@@ -12,6 +12,7 @@
     'data': [
         'data/sequences.xml',
         'views/meeting_views.xml',
+        'views/portal_view.xml',
         'reports/prescription_report.xml',
     ],
     'installable': True,

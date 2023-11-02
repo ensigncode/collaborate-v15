@@ -1,3 +1,6 @@
+import base64
+import re
+
 from odoo import models, fields, api, _
 import werkzeug
 
@@ -7,6 +10,8 @@ class Event(models.Model):
 
 	prescription_code = fields.Char(string="Prescription code")
 	optometrist_id = fields.Many2one('hr.employee', string="Optometrist")
+	receipt_printed = fields.Boolean(string="Receipt Printed?", default=False)
+	receipt_attachment = fields.Binary(string="Attachment Receipt", attachment=False)
 
 	def _get_sf_selection(self):
 		return [
@@ -149,4 +154,23 @@ class Event(models.Model):
 		return super(Event, self).create(vals)
 
 	def print_prescription(self):
-		return self.env.ref('appointment_receipt.calendar_event_print_prescription_receipt').report_action(self)
+		"""
+			Print Prescription Method
+		"""
+		pdf = self.env.ref("appointment_receipt.calendar_event_print_prescription_receipt")._render_qweb_pdf(
+			res_ids=self.ids)[0]
+		pdf = base64.b64encode(pdf).decode()
+		attachment_name = 'PRESCRIPTIE OPTOMETRICA - %s' % (self.prescription_code or '').replace('#', '')
+		attachment = self.env['ir.attachment'].sudo().create({
+			'name': attachment_name + '.pdf',
+			'datas': pdf,
+			'mimetype': 'application/pdf',
+			'res_model': 'calendar.event',
+			'res_id': self.id,
+		})
+		self.message_post(attachment_ids=[attachment.id])
+
+		self.write({
+			'receipt_printed': True,
+			'receipt_attachment': pdf,
+		})
