@@ -93,8 +93,6 @@ class PurchaseOrder(models.Model):
                 l_data.update({'location_in_id':main_destination_id.id})
                 if 'storage_category_id' in l_data:
                     l_data.pop('storage_category_id')
-
-                print('\n\n\n==========l_data======',l_data)
                 rule_id = self.env['stock.putaway.rule'].create(l_data)
         self.with_context(update_po=1).button_confirm()
         return True   

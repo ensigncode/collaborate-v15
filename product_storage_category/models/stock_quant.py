@@ -20,7 +20,6 @@ class StockInventoryAdjustmentName(models.TransientModel):
 				main_destination_id = location_dest_id.get_main_location()
 				product_id = quant.product_id
 				datas =  product_id.get_rule_lines(location_dest_id,occupied_locations)
-				# print('\n\n===datas==',datas)
 				if datas['create_product_rule']:
 					if not datas['issue_product_rule']:
 						data_vals = datas['vals']
@@ -74,7 +73,6 @@ class StockQuant(models.Model):
 				main_destination_id = location_dest_id.get_main_location()
 				product_id = quant.product_id
 				datas =  product_id.get_rule_lines(location_dest_id,occupied_locations)
-				# print('\n\n===datas==',datas)
 				if datas['create_product_rule']:
 					if not datas['issue_product_rule']:
 						data_vals = datas['vals']
@@ -125,7 +123,6 @@ class StockQuant(models.Model):
 
 	@api.model
 	def _unlink_zero_quants(self):
-
 		print('\n\n\n====_unlink_zero_quants==============')
 		""" _update_available_quantity may leave quants with no
 		quantity and no reserved_quantity. It used to directly unlink
@@ -147,11 +144,8 @@ class StockQuant(models.Model):
 		quant_ids = self.env['stock.quant'].search([('id','in',quants)])
 
 		for quant in quant_ids:
-
 			product_id = quant.product_id
-			location_id = quant.location_id
-			
-
+			location_id = quant.location_id		
 			parent_location_id = False
 			if location_id.location_id:
 				parent_location_id = location_id.location_id
@@ -159,10 +153,8 @@ class StockQuant(models.Model):
 				location_ids = self.env['stock.location'].search(['|',('id','=',parent_location_id.id),('location_id','=',parent_location_id.id)])
 			else:
 				location_ids = self.env['stock.location'].search([('location_id','=',parent_location_id.id)])
-			check_quants = self.env['stock.quant'].search([('id','=',quant.id),('location_id','in',location_ids.ids),('product_id','=',product_id.id),('on_hand','=',True)])
-			
+			check_quants = self.env['stock.quant'].search([('id','not in',quant_ids.ids),('location_id.usage','=', 'internal'),('id','=',quant.id),('location_id','in',location_ids.ids),('product_id','=',product_id.id),('on_hand','=',True)])
 			if not check_quants:
-			
 				if product_id.product_storage_line_ids:
 					for storage_line in product_id.product_storage_line_ids:
 						storage_category_id = storage_line.storage_category_id
@@ -172,28 +164,9 @@ class StockQuant(models.Model):
 						for row in self._cr.fetchall():
 							rules.append(row[0])  
 						rule_ids = self.env['stock.putaway.rule'].sudo().search([('id','in',rules)])
-
-						print('\n\n=====rule_ids======',rule_ids)
 						for rule in rule_ids:
 							rule.sudo().unlink()
-						# rule.sudo().unlink()
-
-
-			# storage_category_id  = location_id.storage_category_id
-			# if storage_category_id  and product_id.product_storage_line_ids:
-			# 	storage_line_ids = product_id.product_storage_line_ids.filtered(lambda x:x.storage_category_id and x.storage_category_id.id ==  storage_category_id.id)
-			# if storage_category_id:
-			# query1 = """SELECT id from stock_putaway_rule WHERE LOCATION_IN_ID='%s' and  PRODUCT_ID='%s'""" %(location_id.id,product_id.id)
-			# self._cr.execute(query1)
-			# rules = []
-			# for row in self._cr.fetchall():
-			# 	rules.append(row[0])  
-			# rule_ids = self.env['stock.putaway.rule'].sudo().search([('id','in',rules)])
-			# print('\n\n\n==========rule_ids=======',rule_ids)
-
-			
-			# for rule in rule_ids:
-			# 	rule.unlink()
-
-		# stop
 		quant_ids.sudo().unlink()
+
+						
+						
