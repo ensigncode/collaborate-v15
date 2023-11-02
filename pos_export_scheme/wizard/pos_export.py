@@ -13,6 +13,20 @@ class POSSelect(models.Model):
 	name = fields.Char(default="POS Order")
 	pos_order_ids = fields.Many2many('pos.order',string="Invoices")
 
+	def get_main_location(self,main_destination_id):
+		if main_destination_id:
+			count = 0
+			while count == 0:
+				if main_destination_id.location_id and main_destination_id.location_id.usage == 'internal':
+					main_destination_id = main_destination_id.location_id
+				elif main_destination_id.location_id and main_destination_id.location_id.usage == 'view':
+					main_destination_id = main_destination_id.location_id
+					count = 1
+				else:
+					count = 1
+		return main_destination_id
+
+
 	@api.model
 	def default_get(self,vals):
 		res = super(POSSelect,self).default_get(vals)
@@ -139,24 +153,31 @@ class POSSelect(models.Model):
 
 
 			vehicle_log_book =  ET.SubElement(supplier_info, "VehicleLogbook")
-
 			vehicle_log_book_issue_date =  ET.SubElement(vehicle_log_book, "IssuedDate")
 			vehicle_log_book_issue_date.set("xmlns:p3","http://www.w3.org/2001/XMLSchema-instance")
 			vehicle_log_book_issue_date.set("p3:nil","true")
 			vehicle_log_book_seria =  ET.SubElement(vehicle_log_book, "Seria")
 			vehicle_log_book_number =  ET.SubElement(vehicle_log_book, "Number")
+			picking_type_id = self.env['stock.picking.type'].search([('sequence_code','=','POS')])
+			warehouse_id = False
+			if picking_type_id:
+				location_src_id = picking_type_id.default_location_src_id
+				main_destination_id = self.get_main_location(location_src_id)
+				location_name = main_destination_id.name
+				warehouse_id = self.env['stock.warehouse'].search([('code','=',location_name)])
+			if warehouse_id:
+				warehouse_partner_id = warehouse_id.partner_id
+				loading_point_text = warehouse_partner_id.street if warehouse_partner_id.street else '' + ' ,' + warehouse_partner_id.street2 if warehouse_partner_id.street else ''  + ' , ' + warehouse_partner_id.city if warehouse_partner_id.city else ''
+			else:
+				loading_point_text = 'mun.Chisinau, str.Podul Inalt, nr.18/1, of.31'
 
 			loading_point =  ET.SubElement(supplier_info, "LoadingPoint")
-			loading_point.text = 'mun.Chisinau, str.Podul Inalt, nr.18/1, of.31'
-
-
-
-
+			loading_point.text = loading_point_text
 			redirections =  ET.SubElement(supplier_info, "Redirections")
 			redirections_total =  ET.SubElement(redirections, "Total")
-			redirections_total.text = '100'
+			redirections_total.text = str(pos_order.amount_total) or 0.0 
 			redirections_tva =  ET.SubElement(redirections, "TotalTVA")
-			redirections_tva.text = '0'
+			redirections_tva.text = str(pos_order.amount_tax) or 0.0
 
 			merchandises =  ET.SubElement(supplier_info, "Merchandises")
 
