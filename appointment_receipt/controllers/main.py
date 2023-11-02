@@ -96,7 +96,7 @@ class CustomerAppointmentReceipt(CustomerPortal):
 			page=page,
 			step=self._items_per_page
 		)
-		attachment_ids = request.env['ir.attachment'].search(
+		attachment_ids = attachment_sudo.search(
 			domain,
 			order=order,
 			limit=self._items_per_page,
