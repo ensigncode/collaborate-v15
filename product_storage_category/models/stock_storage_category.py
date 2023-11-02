@@ -75,7 +75,7 @@ class StockStorageCategory(models.Model):
 							rule_id = self.env['stock.putaway.rule'].search(domain)
 							if not rule_id:
 								vals = {
-									'storage_category_id':self.id,
+									# 'storage_category_id':self.id,
 									'product_id':product_line.product_id.id,
 									'location_out_id':location_in_id.id,
 									'location_in_id':location_out_id.id,
