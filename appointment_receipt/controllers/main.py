@@ -16,7 +16,7 @@ class CustomerAppointmentReceipt(CustomerPortal):
 		event_ids = event_sudo.search([('partner_ids', 'in', request.env.user.partner_id.ids)])
 		return [
 			('res_model', '=', 'calendar.event'),
-			('res_id', '=', event_ids.ids)
+			('res_id', 'in', event_ids.ids)
 		]
 
 	def _prepare_home_portal_values(self, counters):
