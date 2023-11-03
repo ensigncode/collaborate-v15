@@ -54,7 +54,7 @@
                             <span t-field="attachment.create_date"/>
                         </td>
                         <td style="text-align: center;">
-                            <a target="new" t-att-href="attachment_url + '/datas?download=true'" title="Download"
+                            <a target="new" t-attf-href="#{attachment_url}/datas?download=true&amp;access_token=#{attachment.access_token}" title="Download"
                                class="mr4">
                                 <i class="fa fa-download fa-1x" role="img" aria-label="Download"></i>
                             </a>

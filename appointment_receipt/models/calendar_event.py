@@ -168,6 +168,8 @@ class Event(models.Model):
 			'res_model': 'calendar.event',
 			'res_id': self.id,
 		})
+		# For portal
+		attachment.generate_access_token()
 		self.message_post(attachment_ids=[attachment.id])
 
 		self.write({
