@@ -22,8 +22,8 @@ class CustomerAppointmentReceipt(CustomerPortal):
 	def _prepare_home_portal_values(self, counters):
 		values = super()._prepare_home_portal_values(counters)
 		attachment_ids = request.env['ir.attachment'].sudo()
-		if 'appointment_count' in counters:
-			values['appointment_count'] = attachment_ids.search_count(self._prepare_appointments_domain())
+		if 'receipt_count' in counters:
+			values['receipt_count'] = attachment_ids.search_count(self._prepare_appointments_domain())
 		return values
 
 	@http.route(['/my/receipts', '/my/receipts/page/<int:page>'], type='http', auth="user", website=True)

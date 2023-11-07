@@ -175,4 +175,5 @@ class Event(models.Model):
 		self.write({
 			'receipt_printed': True,
 			'receipt_attachment': pdf,
+			'appointment_status_id': self.env.ref('website_appointment_extend.appointment_status_7').id,
 		})

@@ -13,11 +13,10 @@
     <template id="portal_my_home" name="Show Receipts" customize_show="True" inherit_id="portal.portal_my_home"
               priority="25">
         <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
-            <span t-esc="appointment_count"/>
             <t t-call="portal.portal_docs_entry">
                 <t t-set="title">Receipts</t>
                 <t t-set="url" t-value="'/my/receipts'"/>
-                <t t-set="placeholder_count" t-value="'appointment_count'"/>
+                <t t-set="placeholder_count" t-value="'receipt_count'"/>
             </t>
         </xpath>
     </template>
