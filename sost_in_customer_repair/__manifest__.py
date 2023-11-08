@@ -16,8 +16,11 @@
         "data/mail_template.xml",
         "views/repair_request_views.xml",
         "views/repair_image_views.xml",
+        "views/stock_location_views.xml",
     ],
-    'qweb': ['static/src/xml/*.xml'],
+    'qweb': [
+            'static/src/xml/*.xml'
+        ],
     "author": "Sostenia",
     "installable": True,
 }
