@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_home_menu_documents" name="Portal layout : documents menu entries"
+              inherit_id="portal.portal_breadcrumbs" priority="22">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'receipts' or attachment_ids"
+                t-attf-class="breadcrumb-item #{'active ' if not attachment_ids else ''}">
+                Receipts
+            </li>
+        </xpath>
+    </template>
+
+    <template id="portal_my_home" name="Show Receipts" customize_show="True" inherit_id="portal.portal_my_home"
+              priority="25">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Receipts</t>
+                <t t-set="url" t-value="'/my/receipts'"/>
+                <t t-set="placeholder_count" t-value="'receipt_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="portal_my_receipt" name="My Sales Orders">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Attachments</t>
+            </t>
+            <t t-if="attachment_ids" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th>
+                            <span class='d-none d-md-inline'>Sr. No.</span>
+                        </th>
+                        <th class="text-end">Name</th>
+                        <th class="text-end">Create Date</th>
+                        <th class="text-center">Download</th>
+                    </tr>
+                </thead>
+                <t t-set="counter" t-value="1"/>
+                <t t-foreach="attachment_ids" t-as="attachment">
+                    <t t-set="attachment_url" t-value="base_url + '/web/content/ir.attachment/' + str(attachment.id)"/>
+                    <tr>
+                        <td>
+                            <t t-esc="counter"/>
+                        </td>
+                        <td class="text-end">
+                            <span t-field="attachment.name"/>
+                        </td>
+                        <td class="text-end">
+                            <span t-field="attachment.create_date"/>
+                        </td>
+                        <td style="text-align: center;">
+                            <a target="new" t-attf-href="#{attachment_url}/datas?download=true&amp;access_token=#{attachment.access_token}" title="Download"
+                               class="mr4">
+                                <i class="fa fa-download fa-1x" role="img" aria-label="Download"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <t t-set="counter" t-value="counter + 1"/>
+                </t>
+            </t>
+            <p t-else="">There are currently no orders for your account.</p>
+        </t>
+    </template>
+
+</odoo>
