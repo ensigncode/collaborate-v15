@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_repair_request_form" model="ir.ui.view">
+        <field name="name">view_repair_request_form</field>
+        <field name="model">repair.request</field>
+        <field name="arch" type="xml">
+            <form string="Repair Request">
+                <header>
+                    <field name="state" widget="statusbar" statusbar="not_ok,fixed,replaced,damage"/>
+                    <button name="action_send_mail" 
+                            type="object" string="Send Mail" 
+                            class="btn-primary"/>
+                </header>
+                <sheet>
+                    <div class="oe_title oe_inline">
+                        <h1><field name="name" placeholder="e.g. RR/0001" nolabel="1" readonly="1" force_save="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id" />
+                            <field name="product_id" />
+                        </group>
+                        <group>
+                            <field name="picking_id"/>
+                            <field name="location_id"/>
+                            <field name="location_dest_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="exta_media" string="Extra Images">
+                            <group name="repair_images" string="Extra Media">
+                                <field name="repair_image_ids" class="o_website_sale_image_list" context="{'default_name': partner_id}" mode="kanban" options="{'create_text':'Add a Media'}" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page name="description" string="Description">
+                            <group>
+                                <field name="description" string="Description"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="quick_repair_request_form" model="ir.ui.view">
+        <field name="name">view.quick.repair.request.form</field>
+        <field name="model">repair.request</field>
+        <field name="priority">1000</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="partner_id" widget="res_partner_many2one" string='Owner'/>
+                    <field name="product_id" placeholder="e.g. Product Pricing" />
+                    <field name="picking_id"/>
+                    <field name="location_id"/>
+                    <field name="location_dest_id"/>
+                    <field name="state"/>
+                </group>
+
+            </form>
+        </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="view_repair_request_kanban">
+        <field name="name">view_repair_request_kanban</field>
+        <field name="model">repair.request</field>
+        <field name="arch" type="xml">
+            
+            <kanban default_group_by="warehouse_id" 
+                    class="o_kanban_small_column o_opportunity_kanban" 
+                    on_create="quick_create"     
+                    quick_create_view="sost_in_customer_repair.quick_repair_request_form"
+                    archivable="false" sample="1">
+                <field name="warehouse_id" options='{"group_by_tooltip": {"comment": "Description"}}'/>
+
+                <field name="product_id" placeholder="e.g. Product Pricing" />
+                <field name="picking_id"/>
+                <field name="color"/>
+                <field name="location_id"/>
+                <field name="warehouse_id"/>
+                <field name="location_dest_id"/>
+                <field name="state"/>
+                <field name="location_id"/>
+
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} oe_kanban_global_click">
+                            <div class="o_dropdown_kanban dropdown">
+
+                                <a class="dropdown-toggle o-no-caret btn" role="button" data-toggle="dropdown" data-display="static" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                    <span class="fa fa-ellipsis-v"/>
+                                </a>
+                                <div class="dropdown-menu" role="menu">
+                                    <t t-if="widget.editable"><a role="menuitem" type="edit" class="dropdown-item">Edit</a></t>
+                                    <t t-if="widget.deletable"><a role="menuitem" type="delete" class="dropdown-item">Delete</a></t>
+                                    <ul class="oe_kanban_colorpicker" data-field="color"/>
+                                </div>
+                            </div>
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_title">
+                                    <strong><field name="partner_id"/></strong>
+                                </div>
+                                
+                                <div>
+                                    <span t-if="record.product_id.value" t-esc="record.product_id.value"></span>
+                                </div>
+                                <div>
+                                    <span t-if="record.location_dest_id.value" t-esc="record.location_dest_id.value"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="view_repair_request_tree" model="ir.ui.view">
+        <field name="name">view_repair_request_tree</field>
+         <field name="model">repair.request</field>
+        <field name="arch" type="xml">
+            <tree string="Repair Request">
+                <field name="partner_id"/>
+                <field name="product_id"/>
+                <field name="picking_id"/>
+                <field name="location_id"/>
+                <field name="location_dest_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>  
+
+    <record id="quick_repair_request_form" model="ir.ui.view">
+        <field name="name">view.quick.repair.request.form</field>
+        <field name="model">repair.request</field>
+        <field name="priority">1000</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="partner_id" placeholder="Customer"/>
+                    <field name="product_id" placeholder="e.g.Product" />
+                    <field name="picking_id"/>
+                   <!--  <field name="location_id"/>
+                    <field name="location_dest_id"/> -->
+                    <field name="state"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_repair_request" model="ir.actions.act_window">
+        <field name="name">Repair Request</field>
+        <field name="res_model">repair.request</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="help">Click to add an image attached to an specific record.</field>
+    </record>
+
+
+    <menuitem id="menu_customer_request" name="Repair Request"/>
+
+    <menuitem id="submenu_customer_request"
+        name="Repair Request"
+        parent="sost_in_customer_repair.menu_customer_request"
+        sequence="30"
+        action="action_repair_request"/>   
+
+</odoo>

@@ -106,8 +106,12 @@ class POSSelect(models.Model):
 			is_liquidated =  ET.SubElement(supplier_info, "IsLiquidated")
 			is_liquidated.text = 'false'
 
-			is_legalperson =  ET.SubElement(supplier_info, "IsLegalPerson")
-			is_legalperson.text = 'false'
+
+			bank_account_legal_person =  ET.SubElement(supplier_info, "IsLegalPerson")
+			if supplier_id and supplier_id.company_type == 'company':
+				bank_account_legal_person.text = 'true'
+			else:
+				bank_account_legal_person.text = 'false'
 
 			address = buyer_id.street if buyer_id.street else '' + ' ,' + buyer_id.street2 if buyer_id.street else ''  + ' , ' + buyer_id.city if buyer_id.city else ''
 			BranchTitle = BranchCode =  Account = ''
@@ -158,7 +162,7 @@ class POSSelect(models.Model):
 			vehicle_log_book_issue_date.set("p3:nil","true")
 			vehicle_log_book_seria =  ET.SubElement(vehicle_log_book, "Seria")
 			vehicle_log_book_number =  ET.SubElement(vehicle_log_book, "Number")
-			picking_type_id = self.env['stock.picking.type'].search([('sequence_code','=','POS')])
+			picking_type_id = self.env['stock.picking.type'].search([('sequence_code','=','POS'),('company_id','=',self.env.company.id)],limit=1)
 			warehouse_id = False
 			if picking_type_id:
 				location_src_id = picking_type_id.default_location_src_id
@@ -182,6 +186,15 @@ class POSSelect(models.Model):
 			merchandises =  ET.SubElement(supplier_info, "Merchandises")
 
 			for line in pos_order.lines:
+
+
+				price = pos_order.pricelist_id.get_product_price(line.product_id, line.qty or 1.0, pos_order.partner_id)
+				tax_ids = line.product_id.taxes_id.filtered(lambda r: not pos_order.company_id or r.company_id == pos_order.company_id)
+				tax_ids_after_fiscal_position = pos_order.fiscal_position_id.map_tax(tax_ids)
+				price_unit = self.env['account.tax']._fix_tax_included_price_company(price, tax_ids, tax_ids_after_fiscal_position, pos_order.company_id)
+
+
+
 				merchandises_row =  ET.SubElement(merchandises, "Row")
 				merchandises_row.set('IsManualEdited','true')
 				merchandises_row.set('CalculationScenario','-1')
