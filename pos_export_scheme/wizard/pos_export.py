@@ -185,12 +185,10 @@ class POSSelect(models.Model):
 			merchandises =  ET.SubElement(supplier_info, "Merchandises")
 			
 			for line in pos_order.lines:
-				
 				if line.price_unit > line.price_subtotal:
 					price_unit = line.price_subtotal
 				else:
 					price_unit = line.price_unit
-				
 				per_unit_tax = 0
 				total_tax = line.price_subtotal_incl - line.price_subtotal
 				if total_tax and line.qty:

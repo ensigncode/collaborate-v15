@@ -7,8 +7,11 @@ class StockLocation(models.Model):
 	_inherit = 'stock.location'
 
 	repair_type = fields.Selection([('empty','Empty'),
+									('reparation','Reparation'),
+									('repaired','Repaired'),
 									('repair','Repair'),
 									('fixed','Fixed')],string="Repair Type",default="empty")
+
 
 	def get_main_location_wh(self,main_destination_id):
 		warehouse_id = False
@@ -42,7 +45,7 @@ class StockLocation(models.Model):
 	def create(self,vals):
 		res = super(StockLocation,self).create(vals)
 		if res.repair_type:
-			res.update_repair_type_wh(self)
+			res.update_repair_type_wh()
 		return res
 
 	def write(self,vals):
@@ -58,4 +61,5 @@ class StockWarehouse(models.Model):
 	repair_location_id = fields.Many2one('stock.location',string="Repair Location")
 	fixed_location_id = fields.Many2one('stock.location',string="Fix Location")
 
-	
+	reparation_location_id = fields.Many2one('stock.location',string="Reparation Location")
+	repaired_location_id = fields.Many2one('stock.location',string="Repaired Location")

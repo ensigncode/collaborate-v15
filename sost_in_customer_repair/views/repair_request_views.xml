@@ -10,6 +10,11 @@
                     <button name="action_send_mail" 
                             type="object" string="Send Mail" 
                             class="btn-primary"/>
+
+                   <!--  <button name="action_product_replace" 
+                            type="object" string="Product Replace" 
+                            class="btn-primary"/> -->
+
                 </header>
                 <sheet>
                     <div class="oe_title oe_inline">
@@ -24,6 +29,9 @@
                             <field name="picking_id"/>
                             <field name="location_id"/>
                             <field name="location_dest_id"/>
+                            <field name="current_location_id"/>
+                            
+                            
                         </group>
                     </group>
                     <notebook>
@@ -107,12 +115,30 @@
                                     <strong><field name="partner_id"/></strong>
                                 </div>
                                 
-                                <div>
+                                <div class="mt8">
                                     <span t-if="record.product_id.value" t-esc="record.product_id.value"></span>
                                 </div>
-                                <div>
+                                
+                                <div class="mt24">
+                                    <field name="accepted_by_warehouse" invisible="1"/>
+                                    <div style="color:green;">
+                                        <strong>
+                                            <field name="wh_message_1" attrs="{'invisible':[('accepted_by_warehouse','=',False)]}"/>
+                                        </strong>
+                                    </div>
+
+                                    <div style="color:red;">
+                                        <strong>
+                                            <field name="wh_message_2" attrs="{'invisible':[('accepted_by_warehouse','!=',False)]}"/>
+                                        </strong>
+                                    </div>
+                                   
+                                </div>
+                                
+                                <div class="mt24">
                                     <span t-if="record.location_dest_id.value" t-esc="record.location_dest_id.value"></span>
                                 </div>
+                            
                             </div>
                         </div>
                     </t>
@@ -146,10 +172,7 @@
                 <group>
                     <field name="partner_id" placeholder="Customer"/>
                     <field name="product_id" placeholder="e.g.Product" />
-                    <field name="picking_id"/>
-                   <!--  <field name="location_id"/>
-                    <field name="location_dest_id"/> -->
-                    <field name="state"/>
+                   
                 </group>
             </form>
         </field>
