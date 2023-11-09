@@ -3,6 +3,21 @@
 
 from odoo import fields, models, api, _, SUPERUSER_ID
 
+class StockPicking(models.Model):
+	_inherit = 'stock.picking'
+
+	picking_repair_request_id = fields.Many2one('repair.request',string="Repair Request")
+
+	def _action_done(self):
+		res = super(StockPicking,self)._action_done()
+		if self.picking_repair_request_id and self.picking_repair_request_id.picking_ids:
+			last_picking_id = self.picking_repair_request_id.picking_ids[-1]
+			if last_picking_id and last_picking_id.id == self.id:
+				self.picking_repair_request_id.accepted_by_warehouse = True
+				self.picking_repair_request_id.current_location_id = self.location_dest_id.id
+		return res
+		
+	
 class StockLocation(models.Model):
 	_inherit = 'stock.location'
 

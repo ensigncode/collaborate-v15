@@ -10,6 +10,11 @@ class RepairRequest(models.Model):
 	_inherit = ['mail.thread', 'mail.activity.mixin']
 	_rec_name = 'partner_id'
 
+	@api.depends('picking_ids')
+	def _compute_picking_count(self):
+		for request in self:
+			request.picking_count = len(request.picking_ids)
+
 	name = fields.Char(string="Namefixed_location_id")
 	partner_id = fields.Many2one('res.partner',string="Owner")
 	product_id = fields.Many2one('product.product',string="Product")
@@ -37,9 +42,32 @@ class RepairRequest(models.Model):
 	color = fields.Integer('Color Index', default=0)
 	repair_image_ids = fields.One2many('repair.image', 'repair_request_id', string="Extra images", copy=True)
 
+	picking_ids = fields.One2many('stock.picking', 'picking_repair_request_id', string="Transfers", copy=True)
+	picking_count = fields.Integer(string='Transfer Count',compute="_compute_picking_count")
 	accepted_by_warehouse = fields.Boolean(string="Accepted By Warehouse")
 	wh_message_1 = fields.Char(default="Accepted By Warehouse")
 	wh_message_2 = fields.Char(default="Not Accepted By Warehouse")	
+
+	def action_view_pickings(self):
+		action = self.env["ir.actions.actions"]._for_xml_id("stock.action_picking_tree_all")
+		pickings = self.picking_ids
+		if len(pickings) > 1:
+			action['domain'] = [('id', 'in', pickings.ids)]
+		elif pickings:
+			form_view = [(self.env.ref('stock.view_picking_form').id, 'form')]
+			if 'views' in action:
+				action['views'] = form_view + [(state,view) for state,view in action['views'] if view != 'form']
+			else:
+				action['views'] = form_view
+			action['res_id'] = pickings.id
+		# Prepare the context.
+		picking_id = pickings.filtered(lambda l: l.picking_type_id.code == 'outgoing')
+		if picking_id:
+			picking_id = picking_id[0]
+		else:
+			picking_id = pickings[0]
+		action['context'] = dict(self._context, default_partner_id=self.partner_id.id, default_picking_type_id=picking_id.picking_type_id.id, default_origin=self.name, default_group_id=picking_id.group_id.id)
+		return action
 
 	@api.model
 	def create(self,vals_list):
@@ -49,7 +77,6 @@ class RepairRequest(models.Model):
 			aa = res.warehouse_id.reparation_location_id or res.warehouse_id.lot_stock_id
 			res.current_location_id = res.warehouse_id.reparation_location_id or res.warehouse_id.lot_stock_id
 		return result
-
 
 	# def _create_internal_transfer(self,new_warehouse_id,line_vals):
 	# 	picking_id = False
@@ -75,23 +102,16 @@ class RepairRequest(models.Model):
 	reparation_location_id = fields.Many2one('stock.location',string="Reparation Location")
 	repaired_location_id = fields.Many2one('stock.location',string="Repaired Location")
 
-
 	def _create_internal_transfer(self,new_warehouse_id,line_vals):
 		picking_id = False
-		# location_dest_id = new_warehouse_id.repair_location_id or new_warehouse_id.fixed_location_id
 		if 'location_id' in line_vals and line_vals['location_id']:
-
 			current_location_id = line_vals['location_id']
-
-			if current_location_id.repair_type == 'reparation':
+			if current_location_id.repair_type == 'reparation' or (current_location_id.repair_type != 'reparation' and   current_location_id.repair_type != 'repaired'):
 				location_dest_id = new_warehouse_id.reparation_location_id or new_warehouse_id.lot_stock_id
-
-			elif current_location_id.repair_type == 'repaired':
+			elif current_location_id.repair_type == 'repaired' or  (current_location_id.repair_type != 'reparation' and   current_location_id.repair_type != 'repaired'):
 				location_dest_id = new_warehouse_id.repaired_location_id or new_warehouse_id.lot_stock_id
-			
 			else:
 				location_dest_id =  new_warehouse_id.lot_stock_id
-
 			move_lines_vals = {}
 			line_vals.update({'location_dest_id': location_dest_id.id,
 					'location_id': current_location_id.id,
@@ -104,6 +124,7 @@ class RepairRequest(models.Model):
 					'location_id': line_vals['location_id'],
 					'location_dest_id': location_dest_id.id,
 					'move_lines': [(0, 0,line_vals)],
+					'picking_repair_request_id':self.id,
 			}
 			picking_id = self.env['stock.picking'].create(move_lines_vals)
 			self.picking_id = picking_id.id
