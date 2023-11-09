@@ -182,12 +182,21 @@ class POSSelect(models.Model):
 			redirections_total.text = str(pos_order.amount_total) or 0.0 
 			redirections_tva =  ET.SubElement(redirections, "TotalTVA")
 			redirections_tva.text = str(pos_order.amount_tax) or 0.0
-
 			merchandises =  ET.SubElement(supplier_info, "Merchandises")
-
+			
 			for line in pos_order.lines:
-				price_unit = pos_order.pricelist_id.get_product_price(line.product_id, line.qty or 1.0, pos_order.partner_id)
+				
+				if line.price_unit > line.price_subtotal:
+					price_unit = line.price_subtotal
+				else:
+					price_unit = line.price_unit
+				
+				per_unit_tax = 0
+				total_tax = line.price_subtotal_incl - line.price_subtotal
+				if total_tax and line.qty:
+					per_unit_tax = total_tax / line.qty
 
+				# price_unit = pos_order.pricelist_id.get_product_price(line.product_id, line.qty or 1.0, pos_order.partner_id)
 				merchandises_row =  ET.SubElement(merchandises, "Row")
 				merchandises_row.set('IsManualEdited','true')
 				merchandises_row.set('CalculationScenario','-1')
@@ -195,10 +204,12 @@ class POSSelect(models.Model):
 				merchandises_row.set('Name',line.product_id.display_name if line.product_id else '')
 				merchandises_row.set('UnitOfMeasure',line.product_uom_id.name if line.product_uom_id else '')
 				merchandises_row.set('Quantity',str(line.qty))
-				merchandises_row.set('UnitPriceWithoutTVA',str(line.price_unit) or str(0.0))
-				merchandises_row.set('TotalPriceWithoutTVA',str(line.price_subtotal) or str(0.0))
-				merchandises_row.set('TVA','-')
-				merchandises_row.set('TotalTVA',str(line.price_subtotal_incl - line.price_subtotal) or str(0.0))
+				# merchandises_row.set('UnitPriceWithoutTVA',str(line.price_unit) or str(0.0))
+				# merchandises_row.set('TotalPriceWithoutTVA',str(line.price_subtotal) or str(0.0))
+				merchandises_row.set('UnitPriceWithoutTVA',str(price_unit) or str(0.0))
+				merchandises_row.set('TotalPriceWithoutTVA',str(price_unit * line.qty) or str(0.0))
+				merchandises_row.set('TVA',str(per_unit_tax) or str(0.0))
+				merchandises_row.set('TotalTVA',str(total_tax) or str(0.0))
 				merchandises_row.set('TotalPrice',str(line.price_subtotal_incl) or str(0.0))
 				dynamic_merchandises =  ET.SubElement(merchandises_row, "Dynamic")
 				dynamic_merchandises =  ET.SubElement(merchandises_row, "Dynamic")
