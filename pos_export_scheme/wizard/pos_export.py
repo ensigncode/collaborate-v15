@@ -186,14 +186,7 @@ class POSSelect(models.Model):
 			merchandises =  ET.SubElement(supplier_info, "Merchandises")
 
 			for line in pos_order.lines:
-
-
-				price = pos_order.pricelist_id.get_product_price(line.product_id, line.qty or 1.0, pos_order.partner_id)
-				tax_ids = line.product_id.taxes_id.filtered(lambda r: not pos_order.company_id or r.company_id == pos_order.company_id)
-				tax_ids_after_fiscal_position = pos_order.fiscal_position_id.map_tax(tax_ids)
-				price_unit = self.env['account.tax']._fix_tax_included_price_company(price, tax_ids, tax_ids_after_fiscal_position, pos_order.company_id)
-
-
+				price_unit = pos_order.pricelist_id.get_product_price(line.product_id, line.qty or 1.0, pos_order.partner_id)
 
 				merchandises_row =  ET.SubElement(merchandises, "Row")
 				merchandises_row.set('IsManualEdited','true')
