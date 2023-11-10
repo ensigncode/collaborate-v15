@@ -106,8 +106,12 @@ class POSSelect(models.Model):
 			is_liquidated =  ET.SubElement(supplier_info, "IsLiquidated")
 			is_liquidated.text = 'false'
 
-			is_legalperson =  ET.SubElement(supplier_info, "IsLegalPerson")
-			is_legalperson.text = 'false'
+
+			bank_account_legal_person =  ET.SubElement(supplier_info, "IsLegalPerson")
+			if supplier_id and supplier_id.company_type == 'company':
+				bank_account_legal_person.text = 'true'
+			else:
+				bank_account_legal_person.text = 'false'
 
 			address = buyer_id.street if buyer_id.street else '' + ' ,' + buyer_id.street2 if buyer_id.street else ''  + ' , ' + buyer_id.city if buyer_id.city else ''
 			BranchTitle = BranchCode =  Account = ''
@@ -158,7 +162,7 @@ class POSSelect(models.Model):
 			vehicle_log_book_issue_date.set("p3:nil","true")
 			vehicle_log_book_seria =  ET.SubElement(vehicle_log_book, "Seria")
 			vehicle_log_book_number =  ET.SubElement(vehicle_log_book, "Number")
-			picking_type_id = self.env['stock.picking.type'].search([('sequence_code','=','POS')])
+			picking_type_id = self.env['stock.picking.type'].search([('sequence_code','=','POS'),('company_id','=',self.env.company.id)],limit=1)
 			warehouse_id = False
 			if picking_type_id:
 				location_src_id = picking_type_id.default_location_src_id
@@ -178,10 +182,16 @@ class POSSelect(models.Model):
 			redirections_total.text = str(pos_order.amount_total) or 0.0 
 			redirections_tva =  ET.SubElement(redirections, "TotalTVA")
 			redirections_tva.text = str(pos_order.amount_tax) or 0.0
-
 			merchandises =  ET.SubElement(supplier_info, "Merchandises")
-
+			
 			for line in pos_order.lines:
+				res = line.product_id.taxes_id.compute_all(line.product_id.list_price, product=line.product_id, partner=self.env['res.partner'])
+				unit_price_without_tax = res.get('total_excluded' or 0.0)
+
+				price_without_tax = line.price_subtotal_incl - line.price_subtotal
+				if price_without_tax and line.qty:
+					per_unit_tax = price_without_tax / line.qty
+
 				merchandises_row =  ET.SubElement(merchandises, "Row")
 				merchandises_row.set('IsManualEdited','true')
 				merchandises_row.set('CalculationScenario','-1')
@@ -189,9 +199,11 @@ class POSSelect(models.Model):
 				merchandises_row.set('Name',line.product_id.display_name if line.product_id else '')
 				merchandises_row.set('UnitOfMeasure',line.product_uom_id.name if line.product_uom_id else '')
 				merchandises_row.set('Quantity',str(line.qty))
-				merchandises_row.set('UnitPriceWithoutTVA',str(line.price_unit) or str(0.0))
+				# merchandises_row.set('UnitPriceWithoutTVA',str(line.price_unit) or str(0.0))
+				# merchandises_row.set('TotalPriceWithoutTVA',str(line.price_subtotal) or str(0.0))
+				merchandises_row.set('UnitPriceWithoutTVA',str(unit_price_without_tax) or str(0.0))
 				merchandises_row.set('TotalPriceWithoutTVA',str(line.price_subtotal) or str(0.0))
-				merchandises_row.set('TVA','-')
+				merchandises_row.set('TVA',str(per_unit_tax) or str(0.0))
 				merchandises_row.set('TotalTVA',str(line.price_subtotal_incl - line.price_subtotal) or str(0.0))
 				merchandises_row.set('TotalPrice',str(line.price_subtotal_incl) or str(0.0))
 				dynamic_merchandises =  ET.SubElement(merchandises_row, "Dynamic")
