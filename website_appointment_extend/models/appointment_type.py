@@ -148,6 +148,10 @@ class CalendarAppointmentType(models.Model):
 				**sl, 'employee_id': self._set_employee_id(sl, timezone, is_slot_available(sl, next_employee_id))},
 			slots
 		))
+		# Filter out those slots which have no employee's assigned
+		slots = list(filter(
+			lambda sl: sl.get('employee_id', False), slots
+		))
 		return slots
 
 	def _set_employee_id(self, slot, timezone, avail_employee_id):
