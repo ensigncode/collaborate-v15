@@ -19,6 +19,7 @@
         "wizard/update_product_views.xml",
         "views/res_users_views.xml",
         "views/product_category_views.xml",
+        "views/stock_picking_views.xml",
     ],
     "author": "Parth Patel",
     "installable": True,

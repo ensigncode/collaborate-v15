@@ -9,6 +9,10 @@ class StockPicking(models.Model):
         lines =  self.move_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.is_cos_category)
         moves = self.move_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.is_cos_category)
         if moves:
+            # move_lines = self.move_line_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.is_cos_category)
+            # for m_line in move_lines:
+            #     query1 = "DELETE FROM stock_move_line WHERE id = %s" %(m_line.id)
+            #     self.env.cr.execute(query1)
             update_move = moves[-1]
             update_move.product_uom_qty = 0
             if len(moves) > 1:
@@ -16,10 +20,8 @@ class StockPicking(models.Model):
                 for move in extra_moves:
                     query1 = "DELETE FROM stock_move_line WHERE move_id = %s" %(move.id)
                     self.env.cr.execute(query1)
-
                     query2 = "DELETE FROM stock_move WHERE id = %s" %(move.id)
                     self.env.cr.execute(query2)
-
             if self.sale_id:
                 sale_id = self.sale_id
             else:
@@ -39,8 +41,24 @@ class StockPicking(models.Model):
 
     def write(self,vals):
         res = super(StockPicking,self).write(vals)
-        if 'move_ids_without_package' in vals and vals['move_ids_without_package']:
-            for picking in self:
-                if picking.move_ids_without_package:
-                    picking.update_hu_lines()
+        # if 'move_ids_without_package' in vals and vals['move_ids_without_package']:
+        for picking in self:
+            if picking.move_ids_without_package:
+                picking.update_hu_lines()
         return res
+
+class StockMoveLine(models.Model):
+    _inherit = 'stock.move.line'
+
+    categ_id = fields.Many2one('product.category',related="product_id.categ_id",store=True)
+    is_cos_category = fields.Boolean(string="Is COS Product",related="categ_id.is_cos_category",store=True)
+    # move_line_ids_without_package = fields.One2many('stock.move.line', 'picking_id', 'Operations without package', domain=[('is_cos_category','=',False),'|',('package_level_id', '=', False), ('picking_type_entire_packs', '=', False)])
+
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        moves = super(StockMoveLine,self).create(vals_list)
+        for move in moves:
+            if move.move_id.picking_id:
+                move.move_id.picking_id.update_hu_lines()
+        return moves
