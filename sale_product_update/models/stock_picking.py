@@ -5,6 +5,8 @@ from odoo import models,fields,api
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
+    move_line_ids_without_package = fields.One2many('stock.move.line', 'picking_id', 'Operations without package', domain=[('is_cos_category','=',False),'|',('package_level_id', '=', False), ('picking_type_entire_packs', '=', False)])
+
     def update_hu_lines(self):
         lines =  self.move_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.is_cos_category)
         moves = self.move_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.is_cos_category)
@@ -52,7 +54,6 @@ class StockMoveLine(models.Model):
 
     categ_id = fields.Many2one('product.category',related="product_id.categ_id",store=True)
     is_cos_category = fields.Boolean(string="Is COS Product",related="categ_id.is_cos_category",store=True)
-    # move_line_ids_without_package = fields.One2many('stock.move.line', 'picking_id', 'Operations without package', domain=[('is_cos_category','=',False),'|',('package_level_id', '=', False), ('picking_type_entire_packs', '=', False)])
 
 
     @api.model_create_multi
