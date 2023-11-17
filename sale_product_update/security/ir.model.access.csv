@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+sale_product_update.access_update_product,access_update_product,sale_product_update.model_update_product,base.group_user,1,1,1,1
+sale_product_update.access_update_product_line,access_update_product_line,sale_product_update.model_update_product_line,base.group_user,1,1,1,1

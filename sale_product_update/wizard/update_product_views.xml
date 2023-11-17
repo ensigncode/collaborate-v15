@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_update_product_form" model="ir.ui.view">
+        <field name="name">view.update.product.form</field>
+        <field name="model">update.product</field>
+        <field name="arch" type="xml">
+            <form string="Description" create="false">
+                <header>
+                    <button type="object" name="action_confirm" string="Confirm" class="btn btn-primary" data-hotkey="q"/>
+                </header>
+                <sheet>
+                    <field name="name" invisible="1"/>
+                    <group>
+                        <field name="update_product_ids" nolabel="1" mode="tree">
+                            <tree editable="bottom" create="0" edit="1" delete="0" decoration-info="need_to_update == True" >
+                                <field name="sequence" invisible="1"/>
+                                <field name="order_id" readonly="1" force_save="1"/>
+                                <field name="warehouse_id" readonly="1" force_save="1"/>
+                                <field name="delivery_date" readonly="1" force_save="1"/>
+                                <field name="partner_id" readonly="1" force_save="1"/>
+                                <field name="product_code"/>
+                                <field name="need_to_update" invisible="1"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_update_product" model="ir.actions.act_window">
+        <field name="name">Update Product</field>
+        <field name="res_model">update.product</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="sale_product_update.view_update_product_form"/>
+        <field name="target">current</field>
+        <field name="binding_model_id" ref="model_update_product"/>
+        <field name="binding_view_types">form</field>
+    </record>
+
+    <menuitem id="menu_update_product"
+        sequence="20"
+        parent="sale.sale_order_menu"
+        action="action_update_product"/>
+
+        
+</odoo>
