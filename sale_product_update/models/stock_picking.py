@@ -49,8 +49,9 @@ class StockPicking(models.Model):
 			if sale_id:
 				order_line = sale_id.order_line.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.is_cos_category)
 				for line in order_line:
-					query = "DELETE FROM sale_order_line WHERE id = %s" %(line.id)
-					self.env.cr.execute(query)
+					if line:
+						query = "DELETE FROM sale_order_line WHERE id = %s" %(line.id)
+						self.env.cr.execute(query)
 				query = """
 						INSERT INTO sale_order_line(PRODUCT_ID,PRODUCT_UOM_QTY,PRICE_UNIT,ORDER_ID,NAME,CUSTOMER_LEAD,PRODUCT_UOM,SEQUENCE)
 						VALUES (%s,'%s',%s,%s,'%s','%s','%s','%s')
@@ -74,8 +75,24 @@ class StockMoveLine(models.Model):
 
 	@api.model_create_multi
 	def create(self, vals_list):
-	    moves = super(StockMoveLine,self).create(vals_list)
-	    for move in moves:
-	        if move.move_id.picking_id:
-	            move.move_id.picking_id.update_hu_lines()
-	    return moves
+		moves = super(StockMoveLine,self).create(vals_list)
+		for move in moves:
+			if move.move_id.picking_id:
+				move.move_id.picking_id.update_hu_lines()
+			if move.product_id and move.product_id.categ_id and move.product_id.categ_id.is_cos_category:				
+				move.update({'product_uom_qty':0,'qty_done':0})
+		return moves
+
+
+	def write(self, vals):
+		moves = super(StockMoveLine,self).write(vals)
+
+		if 'update_move_line' in self._context:
+			return moves
+
+		if 'product_uom_qty' in vals:
+			for move in self:
+				if move.product_id and move.product_id.categ_id and move.product_id.categ_id.is_cos_category:
+					move.with_context(update_move_line=1).update({'product_uom_qty':0,'qty_done':0})
+		return moves
+
