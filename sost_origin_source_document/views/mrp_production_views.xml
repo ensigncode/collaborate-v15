@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    
     <!-- Production Form View Inherited -->
     <record id="mrp_production_form_inherited" model="ir.ui.view">
         <field name="name">mrp_production_form_inherited</field>
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='company_id']" position='after'>
-                <field name="source_document"/>
-                <field name="orig_source_document"/>
+            <xpath expr="//page[@name='miscellaneous']//field[@name='origin']" position='after'>
+                <field name="source_document" string="New Source Doc"/>
+                <field name="orig_source_document" string="New Original Doc"/>
             </xpath>
         </field>
     </record>
