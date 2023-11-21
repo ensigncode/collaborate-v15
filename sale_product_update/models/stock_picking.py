@@ -5,7 +5,7 @@ from odoo import models,fields,api
 class StockPicking(models.Model):
 	_inherit = 'stock.picking'
 
-	# move_line_ids_without_package = fields.One2many('stock.move.line', 'picking_id', 'Operations without package', domain=[('is_cos_category','=',False),'|',('package_level_id', '=', False), ('picking_type_entire_packs', '=', False)])
+	move_line_ids_without_package = fields.One2many('stock.move.line', 'picking_id', 'Operations without package', domain=[('is_cos_category','=',False),'|',('package_level_id', '=', False), ('picking_type_entire_packs', '=', False)])
 
 	def update_hu_lines(self):
 		picking_ids = False
