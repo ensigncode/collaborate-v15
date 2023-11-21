@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<templates xml:space="preserve">
-     <t t-extend="appointment.slots_list">
-        <t t-jquery="div" t-operation="after">
-            <h3 t-if="slots.length == 0" style="color:red;" class="mt-5">Locurile disponibile s-au epuizat. Verificati disponibilitatea in zilele urmatoare!</h3>
-        </t>
-    </t>
-</templates>
