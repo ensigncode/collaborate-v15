@@ -68,7 +68,7 @@ class CalendarAppointmentType(models.Model):
 
 		# With context will be used in resource.calendar to force the referential user
 		# for work interval computing to the *user linked to the employee*
-		available_employees = [emp.with_context(tz=emp.user_id.tz) for emp in (employee or self.employee_ids)]
+		available_employees = [emp.with_context(tz=emp.user_id.tz) for emp in (employee or self.employee_ids.filtered(lambda employee:employee.company_id.id == self.env.company.id))]
 		random.shuffle(available_employees)
 
 		for slot in slots:
@@ -79,7 +79,7 @@ class CalendarAppointmentType(models.Model):
 					for key, interval_obj in available_employees[0].resource_calendar_id._work_intervals_batch(
 						first_day, last_day, resources=[employee.resource_id for employee in
 						                                [emp.with_context(tz=emp.user_id.tz) for emp in
-						                                 self.employee_ids]],
+						                                 self.employee_ids.filtered(lambda employee:employee.company_id.id == self.env.company.id)]],
 						# first_day, last_day, resources=[employee.resource_id for employee in available_employees],
 					).items()
 					for interval in interval_obj
@@ -114,7 +114,7 @@ class CalendarAppointmentType(models.Model):
 		:return: Slots
 		"""
 		slots = super(CalendarAppointmentType, self)._slots_generate(first_day, last_day, timezone, reference_date)
-		available_employees = [emp.with_context(tz=emp.user_id.tz) for emp in self.employee_ids]
+		available_employees = [emp.with_context(tz=emp.user_id.tz) for emp in self.employee_ids.filtered(lambda employee:employee.company_id.id == self.env.company.id)]
 
 		def is_slot_available(slot, next_employee_id):
 			"""
@@ -132,7 +132,8 @@ class CalendarAppointmentType(models.Model):
 
 		events = self.env['calendar.event'].search([('appointment_type_id', '=', self.id)], order="id desc")
 		if events:
-			last_event_employee_id = self.employee_ids.filtered(lambda e: e.user_id.id == events[0].user_id.id)
+			employee_ids = self.employee_ids.filtered(lambda employee:employee.company_id.id == self.env.company.id)
+			last_event_employee_id = employee_ids.filtered(lambda e: e.user_id.id == events[0].user_id.id)
 			if last_event_employee_id:
 				last_event_employee_id = last_event_employee_id[0]
 				employee_index = (available_employees.index(last_event_employee_id) + 1) % len(available_employees)
@@ -147,6 +148,10 @@ class CalendarAppointmentType(models.Model):
 			lambda sl: {**sl} if sl[timezone][0] < first_day else {
 				**sl, 'employee_id': self._set_employee_id(sl, timezone, is_slot_available(sl, next_employee_id))},
 			slots
+		))
+		# Filter out those slots which have no employee's assigned
+		slots = list(filter(
+			lambda sl: sl.get('employee_id', False), slots
 		))
 		return slots
 

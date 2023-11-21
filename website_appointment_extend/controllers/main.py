@@ -75,6 +75,8 @@ class AppointmentExtend(Appointment):
 		"""
 			Override to change the employee sequence
 		"""
+		if not self._check_appointment_is_valid_slot(appointment_type, employee_id, date_time, duration, **kwargs):
+			raise NotFound()
 		partner = self._get_customer_partner()
 		partner_data = partner.read(fields=['name', 'mobile', 'email'])[0] if partner else {}
 		day_name = format_datetime(datetime.strptime(date_time, dtf), 'EEE', locale=get_lang(request.env).code)
@@ -106,7 +108,7 @@ class AppointmentExtend(Appointment):
 		# check availability of the employee again (in case someone else booked while the client was entering the form)
 		employee = request.env['hr.employee'].sudo().browse(int(employee_id)).exists()
 
-		# Get ans of the appoinment questions.
+		# Get ans of the appointment questions.
 		newsletter_ques_id = request.env['calendar.appointment.question'].search([('appointment_type_id','=',appointment_type.id),('name','ilike', _('newsletter'))],limit=1)
 		is_present_newsletter = [que_id for que_id in kwargs if eval(que_id.split('_')[1].strip()) == newsletter_ques_id.id]
 		newsletter_ques_ans = kwargs.get(is_present_newsletter[0]) if is_present_newsletter else ''
