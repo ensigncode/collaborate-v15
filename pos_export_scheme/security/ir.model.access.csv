@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+pos_export_scheme.access_pos_select,access_pos_select,pos_export_scheme.model_pos_select,base.group_user,1,1,1,1
+pos_export_scheme.access_pos_export,access_pos_export,pos_export_scheme.model_pos_export,base.group_user,1,1,1,1
