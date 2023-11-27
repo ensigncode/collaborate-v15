@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="calendar_event_report_analaysis_view_pivot" model="ir.ui.view">
+			<field name="name">calendar.event.pivot</field>
+			<field name="model">calendar.event.report</field>
+			<field name="arch" type="xml">
+				<pivot string="Appointments" display_quantity="1" >
+					<field name="start" type="row"/>
+					<field name="location" type="row"/>
+					<field name="total_no_of_appointments" type="measure"/>
+					<field name="no_of_finished_appointments" type="measure"/>
+					<field name="finalisation_rate" type="measure"/>
+					<field name="no_of_appointments_with_so" type="measure"/>
+					<field name="appointments_with_so_tf_appointments" type="measure"/>
+					<field name="res_id"/>
+				</pivot>
+			</field>
+		</record>
+
+
+		<record id="action_appointments_pivot_analysis" model="ir.actions.act_window">
+			<field name="name">Analysis</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">calendar.event.report</field>
+			<field name="view_mode">pivot</field>
+		</record>
+
+		<menuitem
+				name="Analysis"
+				id="appointments_calendar_report_menu"
+				parent="appointment.menu_schedule_report"
+				action="action_calender_query"/>
+	</data>
+</odoo>

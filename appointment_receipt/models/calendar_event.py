@@ -3,6 +3,10 @@ import re
 
 from odoo import models, fields, api, _
 import werkzeug
+import pandas as pd
+from openpyxl import load_workbook, Workbook
+from openpyxl.styles import Border, Side, Alignment, Font
+from io import BytesIO
 
 
 class Event(models.Model):
@@ -177,3 +181,174 @@ class Event(models.Model):
 			'receipt_attachment': pdf,
 			'appointment_status_id': self.env.ref('website_appointment_extend.appointment_status_7').id,
 		})
+
+	def calender_event_data(self):
+		query = """
+				SELECT
+					ce.start AS start_date,
+					ce.location AS location,
+					count(*) AS total_no_of_appointments,
+					SUM(CASE WHEN receipt_printed IS TRUE THEN 1 ELSE 0 END) AS no_of_finished_appointments,
+					CASE WHEN COUNT(*) = 0 THEN NULL ELSE (SUM(CASE WHEN receipt_printed IS TRUE THEN 1 ELSE 0 END) / COUNT(*)) * 100 END AS finalisation_rate,
+					(SELECT COUNT(*) FROM calendar_event event 
+						LEFT JOIN crm_lead cl ON cl.id = event.opportunity_id 
+						LEFT JOIN sale_order so ON so.opportunity_id = cl.id 
+						WHERE so.opportunity_id IS NOT NULL AND event.opportunity_id IS NOT NULL
+					) AS no_of_appointments_with_so,
+					(
+						(
+							(SELECT COUNT(*) FROM calendar_event WHERE receipt_printed IS TRUE) - 
+							(
+								SELECT COUNT(*) FROM calendar_event event 
+								LEFT JOIN crm_lead cl ON cl.id = event.opportunity_id 
+								LEFT JOIN sale_order so ON so.opportunity_id = cl.id 
+								WHERE so.opportunity_id IS NOT NULL AND event.opportunity_id IS NOT NULL
+							)
+						) / 
+						CASE 
+							WHEN (SELECT COUNT(*) FROM calendar_event WHERE receipt_printed IS TRUE) > 0
+							THEN (SELECT COUNT(*) FROM calendar_event WHERE receipt_printed IS TRUE)
+							ELSE 1 -- This prevents division by zero
+						END
+					) * 100 AS appointments_with_so_tf_appointments
+				
+				FROM
+					calendar_event ce
+				
+				GROUP BY
+					ce.id
+			"""
+		self.env.cr.execute(query)
+		data = self.env.cr.dictfetchall()
+		data_dict = self.group_events_by_month(data)
+
+		# Create a new workbook
+		wb = Workbook()
+
+		# Create a worksheet
+		wrksht = wb.active
+		f_name = 'output'
+		wrksht.title = 'test'
+
+		table_header_alignment = Alignment(horizontal='left', vertical='top', text_rotation=0, wrap_text=True)
+		bold_text = Font(name="Calibri", size=11, bold=True)
+		border_bottom = Border(bottom=Side(style='thin'))
+
+		table_header = 1
+		# row_indexs = table_header + 1
+
+		wrksht.cell(row=1, column=1).value = 'Appointment month'
+		wrksht.cell(row=1, column=1).font = bold_text
+		wrksht.cell(row=1, column=1).alignment = table_header_alignment
+		wrksht.cell(row=1, column=1).border = border_bottom
+
+		wrksht.cell(row=1, column=2).value = 'Appointment location'
+		wrksht.cell(row=1, column=2).font = bold_text
+		wrksht.cell(row=1, column=2).alignment = table_header_alignment
+		wrksht.cell(row=1, column=2).border = border_bottom
+
+		wrksht.cell(row=1, column=3).value = 'Total no of appointments'
+		wrksht.cell(row=1, column=3).font = bold_text
+		wrksht.cell(row=1, column=3).alignment = table_header_alignment
+		wrksht.cell(row=1, column=3).border = border_bottom
+
+		wrksht.cell(row=1, column=4).value = 'No of finished appointments'
+		wrksht.cell(row=1, column=4).font = bold_text
+		wrksht.cell(row=1, column=4).alignment = table_header_alignment
+		wrksht.cell(row=1, column=4).border = border_bottom
+
+		wrksht.cell(row=1, column=5).value = 'Finalization rate'
+		wrksht.cell(row=1, column=5).font = bold_text
+		wrksht.cell(row=1, column=5).alignment = table_header_alignment
+		wrksht.cell(row=1, column=5).border = border_bottom
+
+		wrksht.cell(row=1, column=6).value = 'No of aapointments with SO'
+		wrksht.cell(row=1, column=6).font = bold_text
+		wrksht.cell(row=1, column=6).alignment = table_header_alignment
+		wrksht.cell(row=1, column=6).border = border_bottom
+
+		wrksht.cell(row=1, column=7).value = '"%" apointments with SO from total finished appointments'
+		wrksht.cell(row=1, column=7).font = bold_text
+		wrksht.cell(row=1, column=7).alignment = table_header_alignment
+		wrksht.cell(row=1, column=7).border = border_bottom
+
+		table_col = 1
+		table_row = table_header + 1
+		for month in data_dict:
+			wrksht.cell(row=table_row, column=table_col).value = month
+			for d in data_dict.get(month)['events']:
+				wrksht.cell(row=table_row, column=table_col+1).value = d.get('location')
+				wrksht.cell(row=table_row, column=table_col+2).value = d.get('total_no_of_appointments')
+				wrksht.cell(row=table_row, column=table_col+3).value = d.get('no_of_finished_appointments')
+				wrksht.cell(row=table_row, column=table_col+4).value = d.get('finalisation_rate')
+				wrksht.cell(row=table_row, column=table_col+5).value = d.get('no_of_appointments_with_so')
+				wrksht.cell(row=table_row, column=table_col+6).value = d.get('appointments_with_so_tf_appointments')
+				table_row += 1
+			wrksht.cell(row=table_row, column=table_col+1).value = 'Total'
+			wrksht.cell(row=table_row, column=table_col+1).font = bold_text
+
+			wrksht.cell(row=table_row, column=table_col+2).value = data_dict.get(month)['total_total_no_of_appointments']
+			wrksht.cell(row=table_row, column=table_col+2).font = bold_text
+
+			wrksht.cell(row=table_row, column=table_col+3).value = data_dict.get(month)['total_no_of_finished_appointments']
+			wrksht.cell(row=table_row, column=table_col+3).font = bold_text
+
+			wrksht.cell(row=table_row, column=table_col+4).value = sum(data_dict.get(month)['total_finalisation_rate'])/len(data_dict.get(month)['total_finalisation_rate'])
+			wrksht.cell(row=table_row, column=table_col+4).font = bold_text
+
+			wrksht.cell(row=table_row, column=table_col+5).value = data_dict.get(month)['total_no_of_appointments_with_so']
+			wrksht.cell(row=table_row, column=table_col+5).font = bold_text
+
+			wrksht.cell(row=table_row, column=table_col+6).value = sum(data_dict.get(month)['total_appointments_with_so_tf_appointments'])/len(data_dict.get(month)['total_appointments_with_so_tf_appointments'])
+			wrksht.cell(row=table_row, column=table_col+6).font = bold_text
+
+			table_row += 1
+
+		wrksht.column_dimensions['A'].width = 10
+		wrksht.column_dimensions['B'].width = 14
+		wrksht.column_dimensions['C'].width = 14
+		wrksht.column_dimensions['D'].width = 14
+		wrksht.column_dimensions['E'].width = 14
+		wrksht.column_dimensions['F'].width = 14
+		wrksht.column_dimensions['G'].width = 14
+		
+
+		fp = BytesIO()
+		wb.save(fp)
+		fp.seek(0)
+		data = fp.read()
+		fp.close()
+
+		wiz_id = self.env['print.report.wizard'].create({'file':base64.b64encode(data)})
+
+		return {
+			'type': 'ir.actions.act_url',
+			'url': 'web/content/?model=print.report.wizard&download=true&field=file&id=%s&filename=%s.xlsx' % (wiz_id.id, f_name),
+			'target': 'self',
+		}
+
+	def group_events_by_month(self,data):
+		grouped_events = {}
+		
+		for event in data:
+			start_date = event['start_date']
+			month_year_key = f"{start_date.strftime('%b')}-{start_date.year}"
+
+			if month_year_key not in grouped_events:
+				grouped_events[month_year_key] = {
+					'events': [], 
+					'total_total_no_of_appointments': 0,
+					'total_no_of_finished_appointments':0, 
+					'total_finalisation_rate': [],
+					'total_no_of_appointments_with_so':0,
+					'total_appointments_with_so_tf_appointments':[]
+				}
+
+			grouped_events[month_year_key]['events'].append(event)
+			grouped_events[month_year_key]['total_total_no_of_appointments'] += event['total_no_of_appointments']
+			grouped_events[month_year_key]['total_no_of_finished_appointments'] += event['no_of_finished_appointments']
+			grouped_events[month_year_key]['total_finalisation_rate'].append(event['finalisation_rate'])
+			grouped_events[month_year_key]['total_no_of_appointments_with_so'] += event['no_of_appointments_with_so']
+			grouped_events[month_year_key]['total_appointments_with_so_tf_appointments'].append(event['appointments_with_so_tf_appointments'])
+
+		return grouped_events

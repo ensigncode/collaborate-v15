@@ -1,0 +1,3 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+appointment_receipt.access_calendar_event_report,access_calendar_event_report,appointment_receipt.model_calendar_event_report,base.group_user,1,1,1,1
+appointment_receipt.access_print_report_wizard,access_print_report_wizard,appointment_receipt.model_print_report_wizard,base.group_user,1,1,1,1
