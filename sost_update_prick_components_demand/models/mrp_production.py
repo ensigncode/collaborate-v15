@@ -11,6 +11,8 @@ class StockPicking(models.Model):
 		if self.raw_production_id:
 			for move in self.move_ids_without_package:
 				move._compute_reserved_availability()
+				# move.do_unreserve()
+				# move._action_assign()
 				move_line_ids = move.move_line_ids
 				if move_line_ids:
 					move_line_ids[0].product_uom_qty = move.reserved_availability
@@ -62,7 +64,11 @@ class StockMove(models.Model):
 						final_product_qty = move.product_uom._compute_quantity(
 							product_uom_qty, move.product_id.uom_id, rounding_method='HALF-UP')
 					print('\n\n-------final_product_qty------',final_product_qty)
-					move.reserved_availability = final_product_qty
+					
+					if final_product_qty > 0:
+						move.reserved_availability = final_product_qty
+					else:
+						move.reserved_availability = reserved_availability
 				else:
 					move.reserved_availability = reserved_availability
 
@@ -78,22 +84,22 @@ class StockMove(models.Model):
 
 	@api.depends('product_id', 'product_uom', 'product_uom_qty','is_production','raw_material_production_id.qty_producing','raw_material_production_id.product_qty')
 	def _compute_product_qty(self):
-	    for move in self:
-	        move.product_qty  = 1
-	        if move.is_production and move.raw_material_production_id:
-	            final_product_qty = 0
-	            if move.raw_material_production_id.state == 'done':
-	                product_qty = move.raw_material_production_id.product_qty 
-	            else:
-	                product_qty = move.raw_material_production_id.qty_producing
-	            if product_qty > 0:
-	                product_uom_qty = (move.product_uom_qty * move.raw_material_production_id.qty_producing) / move.raw_material_production_id.product_qty 
-	                final_product_qty = move.product_uom._compute_quantity(
-	                    product_uom_qty, move.product_id.uom_id, rounding_method='HALF-UP')
-	            move.product_qty = final_product_qty
-	        else:
-	            move.product_qty = move.product_uom._compute_quantity(
-	                move.product_uom_qty, move.product_id.uom_id, rounding_method='HALF-UP')
+		for move in self:
+			move.product_qty  = 1
+			if move.is_production and move.raw_material_production_id:
+				final_product_qty = 0
+				if move.raw_material_production_id.state == 'done':
+					product_qty = move.raw_material_production_id.product_qty 
+				else:
+					product_qty = move.raw_material_production_id.qty_producing
+				if product_qty > 0:
+					product_uom_qty = (move.product_uom_qty * move.raw_material_production_id.qty_producing) / move.raw_material_production_id.product_qty 
+					final_product_qty = move.product_uom._compute_quantity(
+						product_uom_qty, move.product_id.uom_id, rounding_method='HALF-UP')
+				move.product_qty = final_product_qty
+			else:
+				move.product_qty = move.product_uom._compute_quantity(
+					move.product_uom_qty, move.product_id.uom_id, rounding_method='HALF-UP')
 
 
 
@@ -170,26 +176,28 @@ class MRPProduction(models.Model):
 
 	def action_confirm(self):
 		res = super(MRPProduction,self).action_confirm()
-		print('\n\n=========self.picking_ids=====',self.picking_ids)
 		if self.picking_ids:
 			for picking in self.picking_ids:
 				picking.raw_production_id = self.id
-
-				# _compute_reserved_availability
 		return res
 
 
 	def write(self,vals):
-	    res = super(MRPProduction,self).write(vals)
-	    if 'qty_producing' in vals:
-	        for production in self:
-	            if production.production_picking_ids:
-	                for picking in production.production_picking_ids:
-	                	picking.move_update_qty()
-	                    # move_ids = picking.move_ids_without_package
-	                    # for move in move_ids:
-	                    #     move_line_ids = move.move_line_ids
-	                    #     for move_line in 
-	                    #     move.product_uom_qty = move.reserved_availability
+		res = super(MRPProduction,self).write(vals)
+		if 'qty_producing' in vals:
+			for production in self:
+				picking_ids = production.production_picking_ids.filtered(lambda x:x.state != 'done')
+				if picking_ids:
+					for picking in picking_ids:
+						# for move in picking.move_ids_without_package:
+						# 	move._compute_reserved_availability()
+						picking.do_unreserve()
+						picking.action_assign()
+						# picking.move_update_qty()
+						# move_ids = picking.move_ids_without_package
+						# for move in move_ids:
+						#     move_line_ids = move.move_line_ids
+						#     for move_line in 
+						#     move.product_uom_qty = move.reserved_availability
 
-	    return res
+		return res
