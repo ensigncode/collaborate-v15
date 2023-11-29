@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <record id="view_stock_picking_form_inherited" model="ir.ui.view">
+        <field name="name">view_stock_picking_form_inherited</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_confirm']" position="after">
+                <button name="move_update_qty" string="Action Test" type="object" class="oe_highlight" invisible="1"/>                    
+            </xpath>
+        </field>
+    </record>
+
+
     <record id="mrp_production_form_view_inherited" model="ir.ui.view">
         <field name="name">mrp_production_form_view_inherited</field>
         <field name="model">mrp.production</field>
@@ -8,6 +20,23 @@
             <xpath expr="//field[@name='move_raw_ids']//tree/field[@name='price_unit']" position="after">
                 <field name="is_production" invisible="1"/>
             </xpath>
+
+           <!--  <xpath expr="//field[@name='move_raw_ids']//tree/field[@name='product_uom_qty']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_raw_ids']//tree/field[@name='quantity_done']" position="after">
+                <field name="product_uom_qty" invisible="1"/>
+                
+            </xpath>
+ -->
+            <!-- <field name="product_uom_qty" widget="mrp_should_consume" force_save="1" string="To Consume" attrs="{'readonly': ['&amp;', ('parent.state', '!=', 'draft'), '|', '&amp;', ('parent.state', 'not in', ('confirmed', 'progress', 'to_close')), ('parent.is_planned', '!=', True), ('parent.is_locked', '=', True)]}" width="1"/> -->
+
+           <!--  <xpath expr="//field[@name='move_raw_ids']//tree/field[@name='product_uom']" position="before">
+                <field name="production_product_uom_qty" widget="mrp_should_consume" force_save="1" string="To Consume" attrs="{'readonly': ['&amp;', ('parent.state', '!=', 'draft'), '|', '&amp;', ('parent.state', 'not in', ('confirmed', 'progress', 'to_close')), ('parent.is_planned', '!=', True), ('parent.is_locked', '=', True)]}" width="1"/>
+            </xpath> -->
+            <!-- <xpath expr="//field[@name='move_raw_ids']//tree/field[@name='product_uom_qty']" position="after">
+                 <field name="production_product_uom_qty"/>
+            </xpath> -->
         </field>
     </record>
 </odoo>
