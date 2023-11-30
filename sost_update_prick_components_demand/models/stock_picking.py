@@ -12,7 +12,7 @@ class StockPicking(models.Model):
 		picking = self
 		picking.do_unreserve()
 		if picking.state:
-			for move in picking.move_ids_without_package.filtered(lambda x:x.reserved_availability > 0):
+			for move in picking.move_ids_without_package:
 				move._compute_reserved_availability()
 				if move.move_line_ids:
 					move.move_line_ids[0].product_uom_qty = move.reserved_availability
