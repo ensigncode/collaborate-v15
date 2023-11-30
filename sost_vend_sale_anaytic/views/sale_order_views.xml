@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="view_so_analytic_account_inherited" model="ir.ui.view">
+            <field name="name">view_so_analytic_account_inherited</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_shipping_id']" position="after">
+                    <field name="generate_analytic" attrs="{'readonly':[('state','=','sale')]}"/>
+                    <field name="analytic_account_id" force_save="1" readonly="1" invisible="1"/>  
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
