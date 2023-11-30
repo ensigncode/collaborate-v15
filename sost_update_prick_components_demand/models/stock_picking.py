@@ -10,17 +10,17 @@ class StockPicking(models.Model):
 
 	def move_update_qty(self):
 		picking = self
-		picking.do_unreserve()
+		# picking.do_unreserve()
 		if picking.state:
 			for move in picking.move_ids_without_package:
-				move._compute_reserved_availability()
+				move._compute_reserved_availability()	
 				if move.move_line_ids:
 					move.move_line_ids[0].product_uom_qty = move.reserved_availability
 				else:
 					move.state = 'waiting'
-					move_line = self.env['stock.move.line'].create(dict(move._prepare_move_line_vals(), qty_done=move.reserved_availability))
+					move_line = self.env['stock.move.line'].create(dict(move._prepare_move_line_vals(), qty_done=0))
 					move.write({'move_line_ids': [(4, move_line.id)]})
-				move._action_assign()
+				# move._action_assign()
 		return True
 
 class StockMoveLine(models.Model):
@@ -67,7 +67,8 @@ class StockMove(models.Model):
 			for move in self:
 				reserved_availability = move.product_id.uom_id._compute_quantity(
 					result.get(move.id, 0.0), move.product_uom, rounding_method='HALF-UP')
-				if move.picking_id.raw_production_id:
+
+				if reserved_availability > 0 and move.picking_id.raw_production_id:
 					raw_production_id = move.picking_id.raw_production_id
 					final_product_qty = 0
 					if raw_production_id.state == 'done':
@@ -78,8 +79,9 @@ class StockMove(models.Model):
 						product_uom_qty = (move.product_uom_qty * raw_production_id.qty_producing) / raw_production_id.product_qty 
 						final_product_qty = move.product_uom._compute_quantity(
 							product_uom_qty, move.product_id.uom_id, rounding_method='HALF-UP')
-					
-					if final_product_qty > 0:
+					# print('===reserved_availability==',reserved_availability)
+					# print('===final_product_qty==',final_product_qty)
+					if reserved_availability > final_product_qty and final_product_qty > 0:
 						move.reserved_availability = final_product_qty
 					else:
 						move.reserved_availability = reserved_availability
