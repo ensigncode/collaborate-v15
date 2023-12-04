@@ -12,6 +12,7 @@
     "data": [
         "views/purchase_order_views.xml",
         "views/sale_order_views.xml",
+        "views/stock_picking_views.xml",
     ],
     "author": "Parth Patel",
     "installable": True,

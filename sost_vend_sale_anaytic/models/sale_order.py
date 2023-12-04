@@ -8,7 +8,6 @@ class SaleOrder(models.Model):
 	generate_analytic = fields.Boolean(string="Generate Analytic",copy=False)
 	analytic_account_id = fields.Many2one('account.analytic.account',string="Analytic Account",copy=False)
 	
-
 	def create_analytic_account_vals(self):
 		vals = {
 			'name':self.partner_id.display_name,
@@ -47,6 +46,16 @@ class SaleOrder(models.Model):
 		if not self.analytic_account_id and self.generate_analytic:
 			analytic_account_id = self.create_analytic_account()
 			self.analytic_account_id = analytic_account_id.id
+
+
+		print('\n\n===self.analytic_account_id======',self.analytic_account_id)
+		print('\n\n===self.picking_ids======',self.picking_ids)
+		
+		if self.picking_ids and self.analytic_account_id:
+			for picking in self.picking_ids:
+				picking.account_analytic_id = self.analytic_account_id.id
+				for move in picking.move_ids_without_package:
+					move.account_analytic_id = self.analytic_account_id.id
 		return res
 
 
@@ -58,3 +67,5 @@ class SaleOrderLine(models.Model):
 		if self.order_id.analytic_account_id:
 			values['analytic_account_id'] = self.order_id.analytic_account_id.id
 		return values
+
+		
