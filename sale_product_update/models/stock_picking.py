@@ -22,12 +22,9 @@ class StockPicking(models.Model):
 		moves = self.move_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.is_cos_category)
 		if moves:
 			update_move = moves[-1]
-
 		if update_move:
-			
 			query1 = "UPDATE stock_move SET PRODUCT_UOM_QTY='%s' WHERE id =  %s" %(0,update_move.id)
 			self.env.cr.execute(query1)
-
 			for picking in picking_ids:
 				lines =  picking.move_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.is_cos_category)
 				moves = picking.move_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.is_cos_category)
@@ -49,7 +46,7 @@ class StockPicking(models.Model):
 			if sale_id:
 				order_line = sale_id.order_line.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.is_cos_category)
 				for line in order_line:
-					if line:
+					if line.exists():
 						query = "DELETE FROM sale_order_line WHERE id = %s" %(line.id)
 						self.env.cr.execute(query)
 				query = """
@@ -83,13 +80,10 @@ class StockMoveLine(models.Model):
 				move.update({'product_uom_qty':0,'qty_done':0})
 		return moves
 
-
 	def write(self, vals):
 		moves = super(StockMoveLine,self).write(vals)
-
 		if 'update_move_line' in self._context:
 			return moves
-
 		if 'product_uom_qty' in vals:
 			for move in self:
 				if move.product_id and move.product_id.categ_id and move.product_id.categ_id.is_cos_category:
