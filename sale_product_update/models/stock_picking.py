@@ -43,12 +43,24 @@ class StockPicking(models.Model):
 							VALUES (%s,'%s','%s',%s,'%s','%s','%s','%s','%s','%s')
 					""" %(update_move.product_id.id,update_move.product_id.display_name,update_move.picking_id.date.strftime('%Y-%m-%d %H:%M:%S'),update_move.picking_id.company_id.id,picking.id,'0',update_move.product_id.uom_id.id,update_move.picking_id.location_id.id,update_move.picking_id.location_dest_id.id,'make_to_stock')
 					self.env.cr.execute(query)
+					self.env.cr.commit()
 			if sale_id:
 				order_line = sale_id.order_line.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.is_cos_category)
-				for line in order_line:
-					if line.exists():
-						query = "DELETE FROM sale_order_line WHERE id = %s" %(line.id)
-						self.env.cr.execute(query)
+				if order_line:
+					model_ids = tuple(order_line.ids)
+					query = "DELETE FROM sale_order_line WHERE id IN %s"
+					self.env.cr.execute(query, [model_ids])
+					self.env.cr.commit()
+
+					# query = "DELETE FROM sale_order_line WHERE id in %s" %(line.id)
+					# self.env.cr.execute(query)
+
+				# for line in order_line:
+
+				# 	if line.exists():
+				# 		query = "DELETE FROM sale_order_line WHERE id = %s" %(line.id)
+				# 		self.env.cr.execute(query)
+
 				query = """
 						INSERT INTO sale_order_line(PRODUCT_ID,PRODUCT_UOM_QTY,PRICE_UNIT,ORDER_ID,NAME,CUSTOMER_LEAD,PRODUCT_UOM,SEQUENCE)
 						VALUES (%s,'%s',%s,%s,'%s','%s','%s','%s')
