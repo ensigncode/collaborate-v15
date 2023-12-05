@@ -19,12 +19,11 @@ class StockMove(models.Model):
 			if move.move_line_ids and move.product_id.tracking == 'lot' and move.purchase_line_id:
 				for move_line in move.move_line_ids[0]:
 					if not move_line.lot_name:
-						
 						partner_ref = ''
-						if move.purchase_line_id.order_id.product_id.default_code:
-							product_name = move.purchase_line_id.order_id.product_id.default_code
+						if move.product_id.default_code:
+							product_name = move.product_id.default_code
 						else:
-							product_name = move.purchase_line_id.order_id.product_id.name
+							product_name = move.product_id.name
 						lot_serial = self.env['ir.sequence'].next_by_code('stock.lot.serial')
 
 						if move.purchase_line_id.order_id.partner_ref:
