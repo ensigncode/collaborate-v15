@@ -51,16 +51,6 @@ class StockPicking(models.Model):
 					query = "DELETE FROM sale_order_line WHERE id IN %s"
 					self.env.cr.execute(query, [model_ids])
 					self.env.cr.commit()
-
-					# query = "DELETE FROM sale_order_line WHERE id in %s" %(line.id)
-					# self.env.cr.execute(query)
-
-				# for line in order_line:
-
-				# 	if line.exists():
-				# 		query = "DELETE FROM sale_order_line WHERE id = %s" %(line.id)
-				# 		self.env.cr.execute(query)
-
 				query = """
 						INSERT INTO sale_order_line(PRODUCT_ID,PRODUCT_UOM_QTY,PRICE_UNIT,ORDER_ID,NAME,CUSTOMER_LEAD,PRODUCT_UOM,SEQUENCE)
 						VALUES (%s,'%s',%s,%s,'%s','%s','%s','%s')

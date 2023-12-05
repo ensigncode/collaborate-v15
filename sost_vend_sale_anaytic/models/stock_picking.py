@@ -15,7 +15,24 @@ class StockMove(models.Model):
 
 	def _action_assign(self, force_qty=False):
 		res = super(StockMove, self)._action_assign()
-		print('\n\n========PICKING___-',self)
-		# for move in self.move_ids_without_package:
-		# 	print('\n=-----------move--',move)
+		for move in self:
+			if move.move_line_ids and move.product_id.tracking == 'lot' and move.purchase_line_id:
+				for move_line in move.move_line_ids[0]:
+					if not move_line.lot_name:
+						
+						partner_ref = ''
+						if move.purchase_line_id.order_id.product_id.default_code:
+							product_name = move.purchase_line_id.order_id.product_id.default_code
+						else:
+							product_name = move.purchase_line_id.order_id.product_id.name
+						lot_serial = self.env['ir.sequence'].next_by_code('stock.lot.serial')
+
+						if move.purchase_line_id.order_id.partner_ref:
+							partner_ref = move.purchase_line_id.order_id.partner_ref
+							lot_name = partner_ref + ' - ' + product_name + ' - ' + lot_serial
+						else:
+							lot_name = product_name + ' - ' + lot_serial
+
+						move_line.lot_name = lot_name
+						move_line.qty_done = move.product_uom_qty
 		return res

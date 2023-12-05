@@ -3,7 +3,7 @@
     "name": "Sost. Account Anaytic",
     "category": "Stock",
     "summary": "Sost. Account Anaytic",
-    "version": "15.0.0.1",
+    "version": "15.0.0.2",
     "license": "LGPL-3",
     "depends": [
             "sale_management",
