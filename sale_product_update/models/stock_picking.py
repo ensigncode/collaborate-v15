@@ -25,6 +25,7 @@ class StockPicking(models.Model):
 		if update_move:
 			query1 = "UPDATE stock_move SET PRODUCT_UOM_QTY='%s' WHERE id =  %s" %(0,update_move.id)
 			self.env.cr.execute(query1)
+			self.env.cr.commit()
 			for picking in picking_ids:
 				lines =  picking.move_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.is_cos_category)
 				moves = picking.move_ids_without_package.filtered(lambda x:x.product_id.categ_id and x.product_id.categ_id.is_cos_category)
@@ -35,8 +36,10 @@ class StockPicking(models.Model):
 				for move in extra_moves:
 					query1 = "DELETE FROM stock_move_line WHERE move_id = %s" %(move.id)
 					self.env.cr.execute(query1)
+					self.env.cr.commit()
 					query2 = "DELETE FROM stock_move WHERE id = %s" %(move.id)
 					self.env.cr.execute(query2)
+					self.env.cr.commit()
 				if self.id != picking.id and update_move:
 					query = """
 							INSERT INTO stock_move(PRODUCT_ID,NAME,DATE,COMPANY_ID,PICKING_ID,PRODUCT_UOM_QTY,PRODUCT_UOM,LOCATION_ID,LOCATION_DEST_ID,PROCURE_METHOD)
@@ -56,6 +59,7 @@ class StockPicking(models.Model):
 						VALUES (%s,'%s',%s,%s,'%s','%s','%s','%s')
 				""" %(update_move.product_id.id,'0','0',sale_id.id,update_move.product_id.display_name,'0',update_move.product_id.uom_id.id,'11')
 				self.env.cr.execute(query)
+				self.env.cr.commit()
 		return True
 
 	def write(self,vals):
