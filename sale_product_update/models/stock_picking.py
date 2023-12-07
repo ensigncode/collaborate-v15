@@ -66,9 +66,6 @@ class StockPicking(models.Model):
 
 	def write(self,vals):
 		res = super(StockPicking,self).write(vals)
-
-		print('\n\n\n===vals=============',vals)
-
 		if 'move_ids_without_package' in vals and vals['move_ids_without_package']:
 			for picking in self:
 				if picking.move_ids_without_package:
@@ -83,8 +80,6 @@ class StockMoveLine(models.Model):
 
 	@api.model_create_multi
 	def create(self, vals_list):
-
-		print('\n\n===StockMoveLine=============CREATE---')
 		moves = super(StockMoveLine,self).create(vals_list)
 		for move in moves:
 			if move.move_id.picking_id:
@@ -95,8 +90,6 @@ class StockMoveLine(models.Model):
 
 	def write(self, vals):
 		moves = super(StockMoveLine,self).write(vals)
-		print('\n\n===StockMoveLine=============WRITE---')
-
 		if 'update_move_line' in self._context:
 			return moves
 		if 'product_uom_qty' in vals:
