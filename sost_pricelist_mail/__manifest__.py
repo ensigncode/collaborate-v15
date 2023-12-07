@@ -16,8 +16,7 @@
         "wizard/update_pricelist_views.xml",
         "views/product_pricelist_views.xml",
     ],
-    'qweb': [
-    ],
+    'qweb': [],
     "author": "Sostenia",
     "installable": True,
 }

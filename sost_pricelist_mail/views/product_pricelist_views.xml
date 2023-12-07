@@ -14,7 +14,7 @@
                 </header>
             </xpath>
             <xpath expr="//page[@name='pricelist_rules']" position='after'>
-                <page name="pricelist_rules" string="Price Rules">
+                <page name="pricelist_rules" string="Price Rules" invisible="1">
                     <field name="pricelist_info_ids" nolabel="1">
                         <tree string="Pricelist Infos" editable="bottom">
                             <field name="product_tmpl_id" readonly="1" force_save="1"/>

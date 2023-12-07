@@ -13,7 +13,13 @@
             'sale',
             'sale_management',
             'sale_stock',
+            'stock_barcode',
+    ],
+    'assets': {
+        'web.assets_qweb': [
+            'sale_product_update/static/src/components/line.xml',
         ],
+    },
     "data": [
         "security/ir.model.access.csv",
         "wizard/update_product_views.xml",
