@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_pricelist_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <div class="oe_structure"/>
+                <h2 class="mt64">
+                    <span t-field="doc.name"/>
+                </h2>
+                <div class="row mt32 mb32" id="informations">
+                    <div t-if="doc.currency_id" class="col-auto col-3 mw-100 mb-2">
+                        <strong>Currency:</strong>
+                        <p class="m-0" t-field="doc.currency_id.name"/>
+                    </div>
+                    <div t-if="doc.company_id.name" class="col-auto col-3 mw-100 mb-2">
+                        <strong>Company:</strong>
+                        <p class="m-0" t-field="doc.company_id.name"/>
+                    </div>
+                </div>  
+
+                <table class="table table-sm o_main_table">
+                    <thead style="display: table-row-group">
+                        <tr>
+                            <th name="th_description" class="text-left">Product</th>
+                            <th name="th_quantity" class="text-right">Currency</th>
+                            <th name="th_priceunit" class="text-center">Availablity Message</th>
+                            <th name="th_startdate" class="text-right">Start Date</th>
+                            <th name="th_enddate" class="text-right">End Date</th>
+                        </tr>
+                    </thead>
+                    <tbody class="pricelist_info_tbody">
+                        <t t-foreach="doc.pricelist_info_ids" t-as="line">
+                            <tr>
+                                <td  class="text-left">
+                                    <t t-if="line.product_variant_id">
+                                        <t t-esc="line.product_variant_id.display_name"/>
+                                    </t>
+                                </td>
+                                <td class="text-right">
+                                    <t t-if="line.currency_id">
+                                        <t t-esc="line.currency_id.name"/>
+                                    </t>
+                                </td>
+
+                                <td  class="text-center">
+                                    <t t-if="line.availablity_message">
+                                        <t t-esc="line.availablity_message"/>
+                                    </t>
+                                </td>
+                                <td class="text-right">
+                                    <t t-if="line.start_date">
+                                        <t t-esc="line.start_date"/>
+                                    </t>
+                                </td>
+                                <td class="text-right">
+                                    <t t-if="line.end_date">
+                                        <t t-esc="line.end_date"/>
+                                    </t>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_pricelist">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="sost_pricelist_mail.report_pricelist_document"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_pricelist" model="ir.actions.report">
+        <field name="name">Pricelist</field>
+        <field name="model">product.pricelist</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sost_pricelist_mail.report_pricelist</field>
+        <field name="report_file">sost_pricelist_mail.report_pricelist</field>
+        <field name="print_report_name"></field>
+        <field name="binding_model_id" eval="False"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

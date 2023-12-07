@@ -7,13 +7,19 @@
                 Update Product in Order, 
                 and in associated Transfers
             ''',
-    "version": "15.0.2.0.0",
+    "version": "15.0.0.0.5",
     "license": "LGPL-3",
     "depends": [
             'sale',
             'sale_management',
             'sale_stock',
+            'stock_barcode',
+    ],
+    'assets': {
+        'web.assets_qweb': [
+            'sale_product_update/static/src/components/line.xml',
         ],
+    },
     "data": [
         "security/ir.model.access.csv",
         "wizard/update_product_views.xml",

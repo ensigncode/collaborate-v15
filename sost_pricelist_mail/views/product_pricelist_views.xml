@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Production Form View Inherited -->
+    <record id="product_pricelist_view_inherited" model="ir.ui.view">
+        <field name="name">product_pricelist_view_inherited</field>
+        <field name="model">product.pricelist</field>
+        <field name="inherit_id" ref="product.product_pricelist_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position='before'>
+                <header>
+                    <button name="action_pricelist_info" 
+                        string="Update Pricelist" class="btn btn-primary" 
+                        type="object"/>
+                </header>
+            </xpath>
+            <xpath expr="//page[@name='pricelist_rules']" position='after'>
+                <page name="pricelist_rules" string="Price Rules" invisible="1">
+                    <field name="pricelist_info_ids" nolabel="1">
+                        <tree string="Pricelist Infos" editable="bottom">
+                            <field name="product_tmpl_id" readonly="1" force_save="1"/>
+                            <field name="product_variant_id" string="Product"  readonly="1" force_save="1"/>
+                            <field name="currency_id"  readonly="1" force_save="1"/>
+                            <field name="price_unit"/>
+                            <field name="availablity_message"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -10,12 +10,12 @@ class PivotInheritReport(models.Model):
 
 	def _select_sale(self, fields=None):
 		res = super(PivotInheritReport, self)._select_sale(fields)
-		res += """, (SUM(l.margin)/s.amount_untaxed)*100 AS margin_per,COALESCE(py.amount,0) AS total_payment, t.brand_id AS brand_id """
+		res += """, (SUM(l.margin)/COALESCE(NULLIF(s.amount_untaxed, 0), 1))*100 AS margin_per,COALESCE(py.amount,0) AS total_payment, t.brand_id AS brand_id """
 		return res
 
 	def _select_pos(self, fields=None):
 		fields[
-			'margin_percent'] = ', (SUM(l.price_subtotal - COALESCE(l.total_cost,0) / CASE COALESCE(pos.currency_rate, 0) WHEN 0 THEN 1.0 ELSE pos.currency_rate END) / SUM(l.price_subtotal))*100 AS margin_per'
+			'margin_percent'] = ', (SUM(l.price_subtotal - COALESCE(l.total_cost,0) / CASE COALESCE(pos.currency_rate, 0) WHEN 0 THEN 1.0 ELSE pos.currency_rate END) / SUM(COALESCE(NULLIF(l.price_subtotal, 0), 1)))*100 AS margin_per'
 		fields[
 			'total_payment'] = ', (SELECT sum(amount) FROM account_payment AS ap WHERE move_id IN (SELECT id FROM account_move am WHERE ref=am.name)) AS total_payment'
 		fields['brand_id'] = ', t.brand_id AS brand_id'
