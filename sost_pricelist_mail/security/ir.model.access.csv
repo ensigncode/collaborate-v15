@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+sost_pricelist_mail.access_update_pricelist,access_update_pricelist,sost_pricelist_mail.model_update_pricelist,base.group_user,1,1,1,1
+sost_pricelist_mail.access_update_pricelist_line,access_update_pricelist_line,sost_pricelist_mail.model_update_pricelist_line,base.group_user,1,1,1,1
+sost_pricelist_mail.access_pricelist_info,access_pricelist_info,sost_pricelist_mail.model_pricelist_info,base.group_user,1,1,1,1
