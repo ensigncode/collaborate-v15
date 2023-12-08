@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_mrp_report_form_inherited" model="ir.ui.view">
+        <field name="name">mrp.report</field>
+        <field name="model">view_mrp_report_form_inherited</field>
+        <field name="inherit_id" ref="mrp_report_prime.view_mrp_report_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='mrp_name']" position='after'>
+                <field name="order_id"/>
+                <field name="client_order_ref"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
