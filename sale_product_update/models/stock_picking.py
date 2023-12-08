@@ -34,9 +34,9 @@ class StockPicking(models.Model):
 				elif self.id == picking.id:
 					extra_moves = moves[0:len(moves)-1]
 				for move in extra_moves:
-					query1 = "DELETE FROM stock_move_line WHERE move_id = %s" %(move.id)
-					self.env.cr.execute(query1)
-					self.env.cr.commit()
+					# query1 = "DELETE FROM stock_move_line WHERE move_id = %s" %(move.id)
+					# self.env.cr.execute(query1)
+					# self.env.cr.commit()
 
 					query2 = "DELETE FROM stock_move WHERE id = %s" %(move.id)
 					self.env.cr.execute(query2)
