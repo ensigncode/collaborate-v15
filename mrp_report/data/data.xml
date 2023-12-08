@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="draft" model="mrp.state">
+        <field name="name">Draft</field>
+        <field name="state">draft</field>
+    </record>
+
+    <record id="confirmed" model="mrp.state">
+        <field name="name">Confirm</field>
+        <field name="state">confirmed</field>
+    </record>
+    <record id="done" model="mrp.state">
+        <field name="name">Done</field>
+        <field name="state">done</field>
+    </record>
+</odoo>
