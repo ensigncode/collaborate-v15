@@ -5,9 +5,9 @@
         POS Apply Multiple Coupon
     """,
     'category': 'Point Of Sale',
-    'version': '15.0.1.0.1',
+    'version': '15.0.1.0.2',
 
-    'depends': ['point_of_sale','pos_coupon'],
+    'depends': ['point_of_sale','pos_coupon', 'pos_sale'],
 
     'data': [
         # Security
