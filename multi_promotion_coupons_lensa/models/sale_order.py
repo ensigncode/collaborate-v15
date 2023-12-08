@@ -111,5 +111,4 @@ class SaleOrderLine(models.Model):
             elif sale_line.display_type == 'line_note':
                 if results:
                     results[-1]['customer_note'] = sale_line.name
-
         return results
