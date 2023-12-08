@@ -36,12 +36,11 @@ class StockPicking(models.Model):
 				for move in extra_moves:
 					query1 = "DELETE FROM stock_move_line WHERE move_id = %s" %(move.id)
 					self.env.cr.execute(query1)
-					# self.env.cr.commit()
+					self.env.cr.commit()
 
-					# if move:
 					query2 = "DELETE FROM stock_move WHERE id = %s" %(move.id)
 					self.env.cr.execute(query2)
-					# self.env.cr.commit()
+					self.env.cr.commit()
 				if self.id != picking.id and update_move:
 					query = """
 							INSERT INTO stock_move(PRODUCT_ID,NAME,DATE,COMPANY_ID,PICKING_ID,PRODUCT_UOM_QTY,PRODUCT_UOM,LOCATION_ID,LOCATION_DEST_ID,PROCURE_METHOD)
