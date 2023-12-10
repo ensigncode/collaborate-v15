@@ -51,22 +51,22 @@ class OperationTypeReport(models.TransientModel):
                     weight_uom_name = line.product_id.weight_uom_name
                     vals.update({'weight':str(weight),'weight_uom_name':weight_uom_name})
                 
-                mrp_report_id = self.env["mrp.report"].create(vals)
+                mrp_report_id = self.env["mrp.report.wizard"].create(vals)
                 if mrp_report_id:
                     res_ids.append(mrp_report_id.id)
         if res_ids:
             return {
                 'type': 'ir.actions.act_window',
                 'view_mode': 'tree',
-                'res_model': "mrp.report",
+                'res_model': "mrp.report.wizard",
                 'target': 'current',
                 'name':'MRP Report',
                 'domain': [('id','in',res_ids)],
             }
 
 class MRPReport(models.TransientModel):
-    _name = "mrp.report"
-    _description = "MRP Report"
+    _name = "mrp.report.wizard"
+    _description = "MRP Report Wizard"
 
     product_id = fields.Many2one('product.product',string="Product")
     product_qty = fields.Float(string="Produced Quantity")
@@ -78,6 +78,5 @@ class MRPReport(models.TransientModel):
     material_uom_id  = fields.Many2one('uom.uom',string="UOM ")
     weight = fields.Char(string="Weight")
     weight_uom_name  = fields.Char(string=" UOM   ")
-    order_id = fields.Many2one('sale.order')
     mrp_name =  fields.Char(string="MRP")
     mrp_id =  fields.Many2one('mrp.production',string="Production")

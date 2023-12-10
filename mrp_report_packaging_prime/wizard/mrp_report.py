@@ -5,7 +5,8 @@ from odoo.exceptions import UserError
 
 
 class MRPReport(models.TransientModel):
-    _inherit = "mrp.report"
+    _inherit = "mrp.report.wizard"
 
-    packaging_type_id = fields.Many2one('packaging.type',string="Packaging Type",related="product_id.product_tmpl_id.packaging_type_id")
+    packaging_type_id = fields.Many2one('packaging.type',string="Packaging Type",related="product_id.packaging_type_id")
 
+    # packaging_type_id = fields.Many2one('packaging.type',string="Packaging Type")
