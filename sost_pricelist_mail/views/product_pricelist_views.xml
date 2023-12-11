@@ -9,7 +9,7 @@
             <xpath expr="//sheet" position='before'>
                 <header>
                     <button name="action_pricelist_info" 
-                        string="Update Pricelist" class="btn btn-primary" 
+                        string="Send Pricelist" class="btn btn-primary" 
                         type="object"/>
                 </header>
             </xpath>

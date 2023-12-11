@@ -193,6 +193,10 @@ class MRPConsumeReport(models.TransientModel):
                                 cost_value = line_raw_material_moves['cost']
                             if 'qty' in line_raw_material_moves and cost_value:
                                 unit_price =  cost_value / line_raw_material_moves['qty']
+                            
+                            if not unit_price:
+                                unit_price = line.price_unit
+
                         if mrp.state == 'done':
                             producting_qty = mrp.product_qty
                         else:

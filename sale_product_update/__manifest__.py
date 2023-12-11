@@ -7,7 +7,7 @@
                 Update Product in Order, 
                 and in associated Transfers
             ''',
-    "version": "15.0.0.0.5",
+    "version": "15.0.0.0.6",
     "license": "LGPL-3",
     "depends": [
             'sale',

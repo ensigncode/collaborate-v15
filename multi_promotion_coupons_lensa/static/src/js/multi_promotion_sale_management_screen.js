@@ -5,6 +5,8 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
     const { useListener } = require('web.custom_hooks');
     const { useState } = owl.hooks;
     const models = require('point_of_sale.models');
+    const { sprintf } = require('web.utils');
+    const { parse } = require('web.field_utils');
 
     const PromotionSaleOrderManagementScreen = (SaleOrderManagementScreen) =>
           class extends SaleOrderManagementScreen {
@@ -140,8 +142,8 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                         new_line.is_program_reward = line.is_reward_line
                         new_line.program_id = sale_order.code_promo_program_id[0]
                         new_line.coupon_id = sale_order.applied_coupon_ids[0]
-                        console.log(">>>>>>>>>>>>>.new_line", new_line)
                         this.env.pos.get_order().add_orderline(new_line);
+                        debugger;
                     }
                   }
                   else {
@@ -219,6 +221,8 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                   if (!order.activePromoProgramIds.includes(sale_order.code_promo_program_id[0])){
                     order.activePromoProgramIds.push(sale_order.code_promo_program_id[0]);
                   }
+                order.trigger('update-rewards');
+
                   this.close();
                 }
 
