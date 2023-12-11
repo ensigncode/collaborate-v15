@@ -13,6 +13,8 @@ class MRPProduction(models.Model):
 		if self.picking_ids:
 			for picking in self.picking_ids:
 				picking.raw_production_id = self.id
+			for picking in self.picking_ids.filtered(lambda x:x.state == 'assigned'):
+				picking.do_unreserve()
 		return res
 
 
@@ -23,7 +25,7 @@ class MRPProduction(models.Model):
 				done_picking_id =  production.production_picking_ids.filtered(lambda x:x.state == 'done')
 				picking_ids = production.production_picking_ids.filtered(lambda x:x.state != 'done')
 				if done_picking_id:
-					picking_ids = picking_ids.filtered(lambda x:x.id > done_picking_id.id)
+					picking_ids = picking_ids.filtered(lambda x:x.id > done_picking_id[-1].id)
 				if picking_ids:
 					for picking in picking_ids:
 						picking.move_update_qty()

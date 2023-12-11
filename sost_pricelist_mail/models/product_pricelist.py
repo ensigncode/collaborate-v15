@@ -21,39 +21,40 @@ class PricelistInfo(models.Model):
 class ProductPricelist(models.Model):
 	_inherit = 'product.pricelist'
 
+
 	pricelist_info_ids = fields.One2many('pricelist.info','pricelist_info_id')
 
 	def action_pricelist_info(self):
 		pricelist_lines = []
-		for item in self.item_ids:
+		for item in self.item_ids.filtered(lambda x:x.applied_on in ('1_product','0_product_variant')):
 			availablity_message = ''
-			if item.date_start and item.date_end:
-				date_start = item.date_start.date()
-				date_end = item.date_end.date()
-				availablity_message = 'Available from %s - %s' %(date_start.strftime('%d/%m/%Y'),date_end.strftime('%d/%m/%Y'))
+			vals = item.get_item_data()
+			# if item.date_start and item.date_end:
+			# 	date_start = item.date_start.date()
+			# 	date_end = item.date_end.date()
+			# 	availablity_message = 'Available from %s - %s' %(date_start.strftime('%d/%m/%Y'),date_end.strftime('%d/%m/%Y'))
 
-			if item.date_start and not item.date_end:
-				date_start = item.date_start.date()
-				date_end = date.today()
-				availablity_message = 'Available from %s - %s' %(date_start.strftime('%d/%m/%Y'),date_end.strftime('%d/%m/%Y'))
+			# if item.date_start and not item.date_end:
+			# 	date_start = item.date_start.date()
+			# 	date_end = date.today()
+			# 	availablity_message = 'Available from %s - %s' %(date_start.strftime('%d/%m/%Y'),date_end.strftime('%d/%m/%Y'))
 
-			if item.date_end and not item.date_start:
-				date_start = date.today()
-				date_end = item.date_end.date()
-				availablity_message = 'Available from %s - %s' %(date_start.strftime('%d/%m/%Y'),date_end.strftime('%d/%m/%Y'))
+			# if item.date_end and not item.date_start:
+			# 	date_start = date.today()
+			# 	date_end = item.date_end.date()
+			# 	availablity_message = 'Available from %s - %s' %(date_start.strftime('%d/%m/%Y'),date_end.strftime('%d/%m/%Y'))
 
-			if not item.date_end and not item.date_start:
-				date_start = date.today()
-				date_end = date.today()
-				availablity_message = 'Available from %s - %s' %(date_start.strftime('%d/%m/%Y'),date_end.strftime('%d/%m/%Y'))
-
+			# if not item.date_end and not item.date_start:
+			# 	date_start = date.today()
+			# 	date_end = date.today()
+			# 	availablity_message = 'Available from %s - %s' %(date_start.strftime('%d/%m/%Y'),date_end.strftime('%d/%m/%Y'))
 			vals = {
 				'product_tmpl_id':item.product_tmpl_id.id if item.product_tmpl_id else False,
 				'product_variant_id':item.product_id.id if item.product_id else False,
 				'currency_id':item.currency_id.id if item.currency_id else False,
-				'availablity_message':availablity_message,
-				'start_date':item.date_start.date() if item.date_start else date.today(),
-				'end_date':item.date_end.date() if item.date_end else date.today(),
+				'availablity_message':vals['availablity_message'],
+				'start_date':vals['date_start'],
+				'end_date':vals['date_end'],
 				'price_unit':item.price,
 			}
 			pricelist_lines.append((0,0,vals))
@@ -69,5 +70,39 @@ class ProductPricelist(models.Model):
 			'view_id': self.env.ref('sost_pricelist_mail.view_update_pricelist_form').id,
 			'res_id':res_id.id,
 		}
+
+
+class ProductPricelistItem(models.Model):
+	_inherit = 'product.pricelist.item'
+
+	def get_item_data(self):
+		item = self
+		date_start = date.today()
+		date_end = date.today()
+		vals = {'availablity_message':'','start_date':'','end_date':'','date_start':date_start,'date_end':date_end}
+
+		if item.date_start and item.date_end:
+			date_start = item.date_start.date()
+			date_end = item.date_end.date()
+			availablity_message = 'Available from %s - %s' %(date_start.strftime('%d/%m/%Y'),date_end.strftime('%d/%m/%Y'))
+
+		if item.date_start and not item.date_end:
+			date_start = item.date_start.date()
+			date_end = date.today()
+			availablity_message = 'Available from %s - %s' %(date_start.strftime('%d/%m/%Y'),date_end.strftime('%d/%m/%Y'))
+
+		if item.date_end and not item.date_start:
+			date_start = date.today()
+			date_end = item.date_end.date()
+			availablity_message = 'Available from %s - %s' %(date_start.strftime('%d/%m/%Y'),date_end.strftime('%d/%m/%Y'))
+
+		if not item.date_end and not item.date_start:
+			date_start = date.today()
+			date_end = date.today()
+			availablity_message = 'Available from %s - %s' %(date_start.strftime('%d/%m/%Y'),date_end.strftime('%d/%m/%Y'))
+		vals.update({'availablity_message':availablity_message,'start_date':date_start.strftime('%d/%m/%Y'),'end_date':date_end.strftime('%d/%m/%Y'),'date_end':date_end,'date_start':date_start})
+		return vals
+
+
 
 

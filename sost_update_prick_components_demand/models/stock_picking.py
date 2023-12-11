@@ -2,6 +2,7 @@
 
 from odoo import _, api,fields, models
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
+from odoo.tools.misc import clean_context, OrderedSet
 
 class StockPicking(models.Model):
 	_inherit = "stock.picking"
@@ -10,7 +11,6 @@ class StockPicking(models.Model):
 
 	def move_update_qty(self):
 		picking = self
-		# picking.do_unreserve()
 		if picking.state:
 			for move in picking.move_ids_without_package:
 				move._compute_reserved_availability()	
@@ -20,8 +20,16 @@ class StockPicking(models.Model):
 					move.state = 'waiting'
 					move_line = self.env['stock.move.line'].create(dict(move._prepare_move_line_vals(), qty_done=0))
 					move.write({'move_line_ids': [(4, move_line.id)]})
-				# move._action_assign()
 		return True
+
+	def action_assign(self):
+		res = super(StockPicking,self).action_assign()
+		if self.raw_production_id:
+			if 'manual_action_assign' not in self._context and self.state == 'assigned':
+				self.do_unreserve()
+			else:
+				self.move_update_qty()
+		return res
 
 class StockMoveLine(models.Model):
 	_inherit = "stock.move.line"
@@ -67,7 +75,6 @@ class StockMove(models.Model):
 			for move in self:
 				reserved_availability = move.product_id.uom_id._compute_quantity(
 					result.get(move.id, 0.0), move.product_uom, rounding_method='HALF-UP')
-
 				if reserved_availability > 0 and move.picking_id.raw_production_id:
 					raw_production_id = move.picking_id.raw_production_id
 					final_product_qty = 0
@@ -79,8 +86,6 @@ class StockMove(models.Model):
 						product_uom_qty = (move.product_uom_qty * raw_production_id.qty_producing) / raw_production_id.product_qty 
 						final_product_qty = move.product_uom._compute_quantity(
 							product_uom_qty, move.product_id.uom_id, rounding_method='HALF-UP')
-					# print('===reserved_availability==',reserved_availability)
-					# print('===final_product_qty==',final_product_qty)
 					if reserved_availability > final_product_qty and final_product_qty > 0:
 						move.reserved_availability = final_product_qty
 					else:

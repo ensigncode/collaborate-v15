@@ -14,18 +14,18 @@ class UpdatePricelist(models.Model):
 	def update_pricelist_send_mail(self):
 		update_pricelist_lines = []
 		self.pricelist_id.pricelist_info_ids = [(6,0,[])]
-		for line in self.update_pricelist_line_ids:
-			vals = {
-				'product_tmpl_id':line.product_tmpl_id.id if line.product_tmpl_id else False,
-				'product_variant_id':line.product_variant_id.id if line.product_variant_id else False, 
-				'currency_id':line.currency_id.id if line.currency_id else False,
-				'availablity_message':line.availablity_message,
-				'start_date':line.start_date or '',
-				'end_date':line.end_date or '',
-				'price_unit':line.price_unit,
-			}
-			update_pricelist_lines.append((0,0,vals))
-		self.pricelist_id.pricelist_info_ids = update_pricelist_lines
+		# for line in self.update_pricelist_line_ids:
+		# 	vals = {
+		# 		'product_tmpl_id':line.product_tmpl_id.id if line.product_tmpl_id else False,
+		# 		'product_variant_id':line.product_variant_id.id if line.product_variant_id else False, 
+		# 		'currency_id':line.currency_id.id if line.currency_id else False,
+		# 		'availablity_message':line.availablity_message,
+		# 		'start_date':line.start_date or '',
+		# 		'end_date':line.end_date or '',
+		# 		'price_unit':line.price_unit,
+		# 	}
+		# 	update_pricelist_lines.append((0,0,vals))
+		# self.pricelist_id.pricelist_info_ids = update_pricelist_lines
 		template_id = self.env.ref('sost_pricelist_mail.template_pricelist_mail')
 		email_values = {
             'recipient_ids':[(6,0,self.partner_ids.ids)]
