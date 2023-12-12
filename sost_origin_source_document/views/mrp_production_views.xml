@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Production Form View Inherited -->
+    <record id="mrp_production_form_inherited" model="ir.ui.view">
+        <field name="name">mrp_production_form_inherited</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='miscellaneous']//field[@name='origin']" position='after'>
+                <field name="orig_source_document" string="Original Source Doc"/>
+                <field name="source_document" string="Source Doc"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Production Tree View Inherited -->
+    <record id="mrp_production_tree_inherited" model="ir.ui.view">
+        <field name="name">mrp_production_tree_inherited</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position='after'>
+                <field name="orig_source_document" optional="hide"/>
+                <field name="source_document" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

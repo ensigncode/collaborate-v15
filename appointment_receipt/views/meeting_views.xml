@@ -9,15 +9,16 @@
             <field name="arch" type="xml">
                 <xpath expr="//notebook" position="inside">
                     <field name="attendee_id" invisible="1"/>
+                    <field name="receipt_printed" invisible="1"/>
                     <page name="receipt" string="Receipt">
                         <button name="print_prescription"
                                 style="background-color: lightblue;border-block-color: black;width: 13%;font-size: 132%;"
                                 string="Print" type="object" icon="fa-print text-primary"/>
-                        <h2 class="text-muted " style="text-align: -webkit-center;">Lensa <field class="col-5 p-2" style="width: auto;" name="location"/></h2>
+                        <h2 class="text-muted " style="text-align: -webkit-center;">Lensa <field class="col-5 p-2" style="width: auto;" attrs="{'readonly': [('receipt_printed', '=', True)]}" name="location"/></h2>
                         <h1 style="text-align: -webkit-center;">PRESCRIPTIE OPTOMETRICA
                             <span t-field="prescription_code"/>
                         </h1>
-                        <h3 style="text-align: -webkit-center;"><field name="attendee_id" readonly="0"/> - varsta: <field class="col-1" name="varsta"/> ani</h3>
+                        <h3 style="text-align: -webkit-center;"><field name="attendee_id" attrs="{'readonly': [('receipt_printed', '=', True)]}" readonly="0"/> - varsta: <field class="col-1" attrs="{'readonly': [('receipt_printed', '=', True)]}" name="varsta"/> ani</h3>
                         <br/>
                         <div class="row" style="font-size: 18px;">
                             <div class="col-1"></div>
@@ -36,30 +37,30 @@
                                         <tr>
                                             <td rowspan="2" style="text-align: -webkit-center;vertical-align: inherit;">V.D.</td>
                                             <td>O.D.</td>
-                                            <td><field name="vd_od_sf"/></td>
-                                            <td><field name="vd_od_cil"/></td>
-                                            <td><field name="vd_od_ax"/></td>
-                                            <td rowspan="2" style="text-align: -webkit-center;vertical-align: inherit;"><field name="vd_dp"/></td>
+                                            <td><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="vd_od_sf"/></td>
+                                            <td><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="vd_od_cil"/></td>
+                                            <td><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="vd_od_ax"/></td>
+                                            <td rowspan="2" style="text-align: -webkit-center;vertical-align: inherit;"><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="vd_dp"/></td>
                                         </tr>
                                         <tr>
                                             <td>O.S.</td>
-                                            <td><field name="vd_os_sf"/></td>
-                                            <td><field name="vd_os_cil"/></td>
-                                            <td><field name="vd_os_ax"/></td>
+                                            <td><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="vd_os_sf"/></td>
+                                            <td><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="vd_os_cil"/></td>
+                                            <td><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="vd_os_ax"/></td>
                                         </tr>
                                         <tr>
                                             <td rowspan="2" style="text-align: -webkit-center;vertical-align: inherit;">V.A.</td>
                                             <td>O.D.</td>
-                                            <td><field name="va_od_sf"/></td>
-                                            <td><field name="va_od_cil"/></td>
-                                            <td><field name="va_od_ax"/></td>
-                                            <td rowspan="2" style="text-align: -webkit-center;vertical-align: inherit;"><field name="va_dp"/></td>
+                                            <td><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="va_od_sf"/></td>
+                                            <td><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="va_od_cil"/></td>
+                                            <td><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="va_od_ax"/></td>
+                                            <td rowspan="2" style="text-align: -webkit-center;vertical-align: inherit;"><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="va_dp"/></td>
                                         </tr>
                                         <tr>
                                             <td>O.S.</td>
-                                            <td><field name="va_os_sf"/></td>
-                                            <td><field name="va_os_cil"/></td>
-                                            <td><field name="va_os_ax"/></td>
+                                            <td><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="va_os_sf"/></td>
+                                            <td><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="va_os_cil"/></td>
+                                            <td><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="va_os_ax"/></td>
                                         </tr>
                                     </tbody>
 
@@ -70,19 +71,19 @@
                                     <tbody>
                                         <tr>
                                             <td class="float-right">A.V. F.C.: O.D.</td>
-                                            <td><field name="av_fc_od"/></td>
+                                            <td><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="av_fc_od"/></td>
                                         </tr>
                                         <tr>
                                             <td class="float-right">A.V. F.C.: O.S.</td>
-                                            <td><field name="av_fc_os"/></td>
+                                            <td><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="av_fc_os"/></td>
                                         </tr>
                                         <tr>
                                             <td class="float-right">A.V. C.C.: O.D.</td>
-                                            <td><field name="av_cc_od"/></td>
+                                            <td><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="av_cc_od"/></td>
                                         </tr>
                                         <tr>
                                             <td class="float-right">A.V. C.C.: O.S.</td>
-                                            <td><field name="av_cc_os"/></td>
+                                            <td><field attrs="{'readonly': [('receipt_printed', '=', True)]}" name="av_cc_os"/></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -93,11 +94,11 @@
                             <div class="col-1"></div>
                             <div class="container col-10">
                               <div class="row">
-                                <div class="col m-2">DIAGNOSTIC: <field class="ml-1 col-6" name="diagnostic"/></div>
-                                <div class="col m-2">RECOMANDARE: <field class="ml-1 col-6" name="recomandare"/></div>
+                                <div class="col m-2">DIAGNOSTIC: <field class="ml-1 col-6" attrs="{'readonly': [('receipt_printed', '=', True)]}" name="diagnostic"/></div>
+                                <div class="col m-2">RECOMANDARE: <field class="ml-1 col-6" attrs="{'readonly': [('receipt_printed', '=', True)]}" name="recomandare"/></div>
                                 <div class="w-100"></div>
-                                <div class="col m-2">Data: <field class="ml-1 col-6" name="prescription_date" t-options="{'format':'dd/mm/yyyy'}"/></div>
-                                <div class="col m-2">Optometrist: <field class="ml-1 col-6" name="optometrist_id" options="{'no_create_edit': True}"/></div>
+                                <div class="col m-2">Data: <field class="ml-1 col-6" attrs="{'readonly': [('receipt_printed', '=', True)]}" name="prescription_date" t-options="{'format':'dd/mm/yyyy'}"/></div>
+                                <div class="col m-2">Optometrist: <field class="ml-1 col-6" attrs="{'readonly': [('receipt_printed', '=', True)]}" name="optometrist_id" options="{'no_create_edit': True}"/></div>
                               </div>
                             </div>
                             <div class="col-1"></div>
@@ -105,7 +106,7 @@
                         <div class="row ml-1"  style="font-size: 18px;">
                             <div class="col-1"></div>
                             <label for="observation" string="Observatii:" style="opacity: 0.9;font-weight: 400;line-height: 1.5;color: #444B5A;font-size:21px;"/>
-                            <div class="col-md-8"><field class="col-8" name="observation" /></div>
+                            <div class="col-md-8"><field class="col-8" attrs="{'readonly': [('receipt_printed', '=', True)]}" name="observation" /></div>
                         </div>
                     </page>
                 </xpath>
