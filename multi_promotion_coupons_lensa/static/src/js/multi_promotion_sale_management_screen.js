@@ -11,6 +11,8 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
     const PromotionSaleOrderManagementScreen = (SaleOrderManagementScreen) =>
           class extends SaleOrderManagementScreen {
             async _onClickSaleOrder(event) {
+                // Resetting the programs
+                this.env.pos.get_order().resetPrograms();
                 const clickedOrder = event.detail;
                 const { confirmed, payload: selectedOption } = await this.showPopup('SelectionPopup',
                     {
@@ -143,14 +145,13 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                         new_line.program_id = sale_order.code_promo_program_id[0]
                         new_line.coupon_id = sale_order.applied_coupon_ids[0]
                         this.env.pos.get_order().add_orderline(new_line);
-                        debugger;
                     }
                   }
                   else {
                     // apply a downpayment
-                    if (this.env.pos.config.down_payment_product_id){
 
-                        let lines = sale_order.order_line;
+                    if (this.env.pos.config.down_payment_product_id){
+                        let lines = sale_order.order_line.filter((line) => !line.is_reward_line);
                         let tab = [];
 
                         for (let i=0; i<lines.length; i++) {
@@ -215,13 +216,12 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                         await this.showPopup('ErrorPopup', { title, body });
                     }
                   }
-
                   currentPOSOrder.trigger('change');
                   var order = this.env.pos.get_order();
                   if (!order.activePromoProgramIds.includes(sale_order.code_promo_program_id[0])){
                     order.activePromoProgramIds.push(sale_order.code_promo_program_id[0]);
                   }
-                order.trigger('update-rewards');
+                  order.trigger('update-rewards');
 
                   this.close();
                 }
