@@ -13,6 +13,10 @@ class StockPicking(models.Model):
 		picking = self
 		if picking.state:
 			for move in picking.move_ids_without_package:
+				mrp_line_id = move.picking_id.raw_production_id.move_raw_ids.filtered(lambda x:x.product_id.id == move.product_id.id)
+				if mrp_line_id:
+					product_uom_qty = mrp_line_id[0].product_uom_qty
+					move.product_uom_qty = product_uom_qty
 				move._compute_reserved_availability()	
 				if move.move_line_ids:
 					move.move_line_ids[0].product_uom_qty = move.reserved_availability
@@ -82,10 +86,12 @@ class StockMove(models.Model):
 						product_qty = raw_production_id.product_qty 
 					else:
 						product_qty = raw_production_id.qty_producing
+
 					if product_qty > 0:
 						product_uom_qty = (move.product_uom_qty * raw_production_id.qty_producing) / raw_production_id.product_qty 
 						final_product_qty = move.product_uom._compute_quantity(
 							product_uom_qty, move.product_id.uom_id, rounding_method='HALF-UP')
+					
 					if reserved_availability > final_product_qty and final_product_qty > 0:
 						move.reserved_availability = final_product_qty
 					else:

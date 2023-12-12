@@ -10,7 +10,8 @@
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
                     <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                        
+                        Hello, <br/><br/>
+                        Kindly do consider the pricelist detail information from below:<br/>
                     </p>
                 </div>
             </field>

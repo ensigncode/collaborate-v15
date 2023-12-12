@@ -3,7 +3,7 @@
     "name": "Update Prick Components",
     "category": "Stock",
     "summary": "Update Prick Components",
-    "version": "15.0.0.1",
+    "version": "15.0.0.4",
     "license": "LGPL-3",
     "depends": [
             "mrp",
