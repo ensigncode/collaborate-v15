@@ -12,6 +12,8 @@
     'images' : [],
     'depends' : [
                 'stock',
+                'sale_management',
+
             ],
     'data': [
         'views/stock_picking_type_views.xml',

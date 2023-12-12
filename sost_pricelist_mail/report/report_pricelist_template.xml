@@ -23,7 +23,6 @@
                         <tr>
                             <th name="th_description" class="text-left">Product</th>
                             <th name="th_quantity" class="text-right">Currency</th>
-                            <th name="th_priceunit" class="text-center">Availablity Message</th>
                             <th name="th_startdate" class="text-right">Start Date</th>
                             <th name="th_enddate" class="text-right">End Date</th>
                         </tr>
@@ -31,7 +30,6 @@
                     <tbody class="pricelist_info_tbody">
                         <t t-foreach="doc.item_ids.filtered(lambda x:x.applied_on in ('1_product','0_product_variant'))" t-as="line">
                             <t t-set="get_data" t-value="line.get_item_data()"/>
-
                             <tr>
                                 <td  class="text-left">
                                     <t t-if="line.product_id">
@@ -42,10 +40,6 @@
                                     <t t-if="line.currency_id">
                                         <t t-esc="line.currency_id.name"/>
                                     </t>
-                                </td>
-
-                                <td  class="text-center">
-                                    <t t-esc="get_data['availablity_message']"/>
                                 </td>
                                 <td class="text-right">
                                     <t t-esc="get_data['start_date']"/>
@@ -70,12 +64,12 @@
     </template>
 
     <record id="action_report_pricelist" model="ir.actions.report">
-        <field name="name">Pricelist</field>
+        <field name="name">Product Pricelist</field>
         <field name="model">product.pricelist</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">sost_pricelist_mail.report_pricelist</field>
         <field name="report_file">sost_pricelist_mail.report_pricelist</field>
-        <field name="print_report_name"></field>
+        <field name="print_report_name">Product PriceList</field>
         <field name="binding_model_id" ref="product.model_product_pricelist"/>
         <field name="binding_type">report</field>
     </record>
