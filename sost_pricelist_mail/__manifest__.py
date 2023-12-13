@@ -10,8 +10,10 @@
         'sale_management',
     ],
     "data": [
+        "security/ir.model.access.csv",
         "report/report_pricelist_template.xml",
         "data/mail_template.xml",
+        "wizard/update_pricelist_views.xml",
         "wizard/mail_compose_message_views.xml",
         "views/product_pricelist_views.xml",
     ],

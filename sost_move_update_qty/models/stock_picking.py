@@ -23,7 +23,6 @@ class StockMove(models.Model):
 
 
     def _action_assign(self, force_qty=False):
-        print('\n\n\n=========_action_assign==========')
         """ Reserve stock moves by creating their stock move lines. A stock move is
         considered reserved once the sum of `reserved_qty` for all its move lines is
         equal to its `product_qty`. If it is less, the stock move is considered
@@ -54,7 +53,6 @@ class StockMove(models.Model):
         print('=======self.picking_id==',self.picking_id)
         print('=======self.picking_id.picking_type_id.check_existing_stock==',self.picking_id.picking_type_id.check_existing_stock)
         print('========self.picking_id.origin==',self.picking_id.origin)
-
         if self.picking_id.picking_type_id.check_existing_stock and self.picking_id.origin:
             location_dest_id = self.picking_id.location_dest_id
             domain = [
@@ -103,8 +101,15 @@ class StockMove(models.Model):
     #         res.update_demand_qty()
     #     return results
 
-# class StockPicking(models.Model):
-#     _inherit = "stock.picking"      
+class StockPicking(models.Model):
+    _inherit = "stock.picking"    
+
+
+    def update_demand_qty(self):
+        for move in self.move_ids_without_package:
+            move.update_demand_qty()
+        return True
+
 
     # def action_assign(self):
     #     """ Reserve stock moves by creating their stock move lines. A stock move is

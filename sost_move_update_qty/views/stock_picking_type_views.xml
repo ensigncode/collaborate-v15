@@ -10,4 +10,16 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_picking_inherit" model="ir.ui.view">
+        <field name="name">view_picking_inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_confirm']" position="after">
+                <button name="update_demand_qty" string="Update Demand Qty" type="object" class="oe_stat_button" icon="fa-cubes"/>
+            </xpath>
+
+        </field>
+    </record>
 </odoo>

@@ -15,7 +15,7 @@
                     </p>
                 </div>
             </field>
-            <field name="report_template" ref="sost_pricelist_mail.action_report_pricelist"/>
+            <field name="report_template" ref="sost_pricelist_mail.action_report_pricelist_mail"/>
             <field name="report_name">Product PriceList</field>
             <field name="lang"></field>
             <field name="auto_delete" eval="True"/>
