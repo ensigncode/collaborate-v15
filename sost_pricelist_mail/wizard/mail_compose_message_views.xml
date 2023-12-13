@@ -6,21 +6,7 @@
         <field name="inherit_id" ref="mail.email_compose_message_wizard_form"/>
         <field name="arch" type="xml">
             <xpath expr="//footer" position="before">
-                <field name="is_product_pricelist"/>
-               <!--  <notebook>
-                    <page string="Price List" name="update_pricelist_line" attrs="{'invisible': [('is_product_pricelist', '=', False)]}">
-                        <field name="update_pricelist_line_ids" nolabel="1">
-                            <tree editable="bottom" create="false">
-                                <field name="product_tmpl_id" readonly="1" force_save="1"/>
-                                <field name="product_variant_id" readonly="1" force_save="1"/>
-                                <field name="currency_id" readonly="1" force_save="1"/>
-                                <field name="price_unit"  readonly="1" force_save="1"/>
-                                <field name="start_date"  readonly="1" force_save="1"/>
-                                <field name="end_date"  readonly="1" force_save="1"/>
-                            </tree>
-                        </field>
-                    </page>
-                </notebook> -->
+                <field name="is_product_pricelist" invisible="1"/>
             </xpath>
         </field>
     </record>
