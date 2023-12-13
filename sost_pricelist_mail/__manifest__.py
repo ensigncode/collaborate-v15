@@ -3,7 +3,7 @@
     "name": "Sost. Product Pricelist",
     "category": "product",
     "summary": "Sost. Product Pricelist",
-    "version": "16.0.0.0.1",
+    "version": "16.0.0.0.2",
     "license": "LGPL-3",
     "depends": [
         'product',
