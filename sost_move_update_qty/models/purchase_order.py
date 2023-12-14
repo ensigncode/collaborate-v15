@@ -71,10 +71,10 @@ class PurchaseOrderLine(models.Model):
     #     return res
 
 
-    @api.model_create_multi
-    def create(self,vals):
-        res = super(PurchaseOrderLine,self).create(vals)
-        for line in res:
-            line.update_remaining_qty()
-        return res
+    # @api.model_create_multi
+    # def create(self,vals):
+    #     res = super(PurchaseOrderLine,self).create(vals)
+    #     for line in res:
+    #         line.update_remaining_qty()
+    #     return res
 
