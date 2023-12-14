@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="view_purchase_order_inherited" model="ir.ui.view">
+        <field name="name">view_purchase_order_inherited</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']//tree/field[@name='product_qty']" position="after">
+                <field name="check_product_stock"/>  
+                <field name="check_product_qty"/>                
+            </xpath>
+            <xpath expr="//button[@name='print_quotation']" position="after">
+                <button name="action_product_exiting_stock" 
+                        string="Check Existing Stock" type="object"  
+                        data-hotkey="w" class="btn-primary" />
+                <button name="apply_product_qty" string="Apply Product Qty" 
+                        type="object" class="btn-primary" data-hotkey="q"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

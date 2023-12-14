@@ -64,7 +64,7 @@ class StockMove(models.Model):
         print('=======self.picking_id==',self.picking_id)
         print('=======self.picking_id.picking_type_id.check_existing_stock==',self.picking_id.picking_type_id.check_existing_stock)
         print('========self.picking_id.origin==',self.picking_id.origin)
-        if self.picking_id.picking_type_id.check_existing_stock and self.picking_id.origin:
+        if self.picking_id.picking_type_id.code != 'incoming' and self.picking_id.picking_type_id.check_existing_stock and self.picking_id.origin:
             location_dest_id = self.picking_id.location_dest_id
             domain = [
                 ('product_id','=',self.product_id.id),
