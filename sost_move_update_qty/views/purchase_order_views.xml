@@ -12,9 +12,11 @@
             <xpath expr="//button[@name='print_quotation']" position="after">
                 <button name="action_product_exiting_stock" 
                         string="Check Existing Stock" type="object"  
-                        data-hotkey="w" class="btn-primary" />
+                        data-hotkey="w" class="btn-primary" 
+                        attrs="{'invisible':[('state','in',('purchase','cancel'))]}"/>
                 <button name="apply_product_qty" string="Apply Product Qty" 
-                        type="object" class="btn-primary" data-hotkey="q"/>
+                        type="object" class="btn-primary" data-hotkey="q" 
+                        attrs="{'invisible':[('state','in',('purchase','cancel'))]}"/>
             </xpath>
         </field>
     </record>
