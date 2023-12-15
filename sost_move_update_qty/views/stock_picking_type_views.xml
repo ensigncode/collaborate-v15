@@ -33,8 +33,8 @@
                         attrs="{'invisible':[('state','=','done')]}"/>
             </xpath>
             <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_qty']" position="after">
-                <field name="subcontract_avail_qty" optional="hide"/>                
-                <field name="intial_demand_qty" optional="hide"/>
+                <field name="subcontract_avail_qty" invisible="1"/>                
+                <field name="intial_demand_qty" invisible="1"/>
             </xpath>
         </field>
     </record>
