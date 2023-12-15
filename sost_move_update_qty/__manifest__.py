@@ -16,7 +16,7 @@
             ],
     'data': [
         'views/stock_picking_type_views.xml',
-        'views/purchase_order_views.xml',
+        # 'views/purchase_order_views.xml',
     ],
     'demo': [
     ],
