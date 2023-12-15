@@ -10,6 +10,7 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
 
     const PromotionSaleOrderManagementScreen = (SaleOrderManagementScreen) =>
           class extends SaleOrderManagementScreen {
+
             async _onClickSaleOrder(event) {
                 // Resetting the programs
                 this.env.pos.get_order().resetPrograms();
@@ -151,7 +152,7 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                     // apply a downpayment
 
                     if (this.env.pos.config.down_payment_product_id){
-                        let lines = sale_order.order_line.filter((line) => !line.is_reward_line);
+                        let lines = sale_order.order_line.filter(line => !line.is_reward_line);
                         let tab = [];
 
                         for (let i=0; i<lines.length; i++) {
@@ -175,6 +176,10 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                         else{
                             down_payment = sale_order.amount_total;
                         }
+
+						// Little hack to add the reward amount(negative)
+                        down_payment -= sale_order.reward_amount;
+
 
                         const { confirmed, payload } = await this.showPopup('NumberPopup', {
                             title: sprintf(this.env._t("Percentage of %s"), this.env.pos.format_currency(sale_order.amount_total)),
@@ -216,14 +221,14 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                         await this.showPopup('ErrorPopup', { title, body });
                     }
                   }
-                  currentPOSOrder.trigger('change');
-                  var order = this.env.pos.get_order();
-                  if (!order.activePromoProgramIds.includes(sale_order.code_promo_program_id[0])){
-                    order.activePromoProgramIds.push(sale_order.code_promo_program_id[0]);
-                  }
-                  order.trigger('update-rewards');
+					var order = this.env.pos.get_order();
+                    if (!order.activePromoProgramIds.includes(sale_order.code_promo_program_id[0])){
+                        order.activePromoProgramIds.push(sale_order.code_promo_program_id[0]);
+                    }
+                    order.trigger('change');
+					order.trigger('update-rewards');
 
-                  this.close();
+                    this.close();
                 }
 
             }
@@ -232,7 +237,7 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                 const sale_order = await this.rpc({
                     model: 'sale.order',
                     method: 'read',
-                    args: [[id],['order_line', 'partner_id', 'pricelist_id', 'fiscal_position_id', 'amount_total', 'amount_untaxed', 'applied_coupon_ids', 'code_promo_program_id', 'no_code_promo_program_ids']],
+                    args: [[id],['order_line', 'partner_id', 'pricelist_id', 'fiscal_position_id', 'amount_total', 'amount_untaxed', 'amount_undiscounted', 'reward_amount', 'applied_coupon_ids', 'code_promo_program_id', 'no_code_promo_program_ids']],
                     context: this.env.session.user_context,
                 });
 
