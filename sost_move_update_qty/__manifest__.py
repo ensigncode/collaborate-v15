@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
     'name' : 'Sost. Move Update Demand Qty',
-    'version' : '15.0.0.0.3',
+    'version' : '15.0.0.0.5',
     'summary': 'Sost. Move Update Demand Qty',
     'sequence': 10,
     'description': """
@@ -16,7 +16,6 @@
             ],
     'data': [
         'views/stock_picking_type_views.xml',
-        'views/purchase_order_views.xml',
     ],
     'demo': [
     ],
