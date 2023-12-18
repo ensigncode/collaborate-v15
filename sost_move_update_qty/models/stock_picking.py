@@ -18,19 +18,6 @@ class StockLocation(models.Model):
                     count = 1
         return main_destination_id
 
-
-    def write(self,vals):
-        res = super(StockLocation,self).write(vals)
-        if 'is_subcontract' in vals:
-            self.update_parent_location()
-        return res
-
-    @api.model
-    def create(self,vals):
-        res = super(StockLocation,self).create(vals)
-        res.update_parent_location()
-        return res
-
 class StockMove(models.Model):
     _inherit = "stock.move"
 
