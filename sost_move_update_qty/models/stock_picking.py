@@ -61,7 +61,7 @@ class StockPicking(models.Model):
 
     def update_move_demand_qty(self):
         location_ids = self.env['stock.location'].search([('is_subcontract','=',True)])
-        if self.picking_type_id.check_existing_stock and location_ids:
+        if location_ids:
             for move in self.move_ids_without_package:
                 domain = [
                     ('product_id','=',move.product_id.id),
@@ -82,6 +82,7 @@ class StockPicking(models.Model):
                 if len(move.move_line_ids) > 1:
                     for line in move.move_line_ids:
                         line.qty_done = 0
+                # print('===v===========remaining_qty--',remaining_qty)
                 move.with_context(update_move_product_uom=1).write({'qty_available':get_loc_dest_qty,'subcontract_avail_qty':get_loc_dest_qty,'product_uom_qty':remaining_qty})
         return True
 
