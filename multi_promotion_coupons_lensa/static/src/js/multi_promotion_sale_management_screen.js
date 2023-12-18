@@ -7,6 +7,8 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
     const models = require('point_of_sale.models');
     const { sprintf } = require('web.utils');
     const { parse } = require('web.field_utils');
+    var { Gui } = require('point_of_sale.Gui');
+
 
     const PromotionSaleOrderManagementScreen = (SaleOrderManagementScreen) =>
           class extends SaleOrderManagementScreen {
@@ -177,8 +179,13 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                             down_payment = sale_order.amount_total;
                         }
 
+                        // Get product lines and sum of that product price.
+                        const rewardLines = sale_order.order_line.filter(line => !line.is_reward_line);
+                        const sumOfPriceTotal = rewardLines.reduce((sum, line) => sum + line.price_total, 0);
+
 						// Little hack to add the reward amount(negative)
-                        down_payment -= sale_order.reward_amount;
+                        // down_payment -= sale_order.reward_amount;
+                        down_payment = sumOfPriceTotal;
 
 
                         const { confirmed, payload } = await this.showPopup('NumberPopup', {
@@ -255,7 +262,35 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
 
                 return sale_order[0];
             }
+
         }
+        
+        
+        var _order_super = models.Order.prototype;
+        models.Order = models.Order.extend({
+            resetPrograms () {
+                let deactivatedCount = 0;
+                if (this.bookedCouponCodes) {
+                    const couponIds = Object.values(this.bookedCouponCodes).map((couponCode) => couponCode.coupon_id);
+                    if (couponIds.length > 0) {
+                        this.trigger('reset-coupons', couponIds);
+                    }
+                    this.bookedCouponCodes = {};
+                    deactivatedCount += couponIds.length;
+                }
+                if (this.activePromoProgramIds.length > 0) {
+                    const codeNeededPromoProgramIds = this.activePromoProgramIds.filter((program_id) => {
+                        return this.pos.coupon_programs_by_id[program_id].promo_code_usage === 'code_needed';
+                    });
+                    this.activePromoProgramIds = this._getAutomaticPromoProgramIds();
+                    deactivatedCount += codeNeededPromoProgramIds.length;
+                }
+                if (deactivatedCount > 0) Gui.showNotification('Active coupons and promo codes were deactivated.');
+                this.trigger('update-rewards');
+            }
+        
+    })
+    
 
     Registries.Component.extend(SaleOrderManagementScreen, PromotionSaleOrderManagementScreen);
 
