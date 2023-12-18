@@ -6,12 +6,38 @@ class StockLocation(models.Model):
 
     is_subcontract = fields.Boolean(string="Is Subcontract")
 
+    def update_parent_location(self):
+        main_destination_id = self
+        if main_destination_id:
+            count = 0
+            while count == 0:
+                if main_destination_id.location_id and main_destination_id.location_id.usage == 'internal':
+                    main_destination_id = main_destination_id.location_id
+                    main_destination_id.is_subcontract = self.is_subcontract
+                else:
+                    count = 1
+        return main_destination_id
+
+
+    def write(self,vals):
+        res = super(StockLocation,self).write(vals)
+        if 'is_subcontract' in vals:
+            self.update_parent_location()
+        return res
+
+    @api.model
+    def create(self,vals):
+        res = super(StockLocation,self).create(vals)
+        res.update_parent_location()
+        return res
+
 class StockMove(models.Model):
     _inherit = "stock.move"
 
     subcontract_avail_qty = fields.Float(string="Subcontract Available Quantity")
     subcontract_need_qty = fields.Float(string="Subcontract Need Quantity")
     intial_demand_qty = fields.Float(string="Intial Demand Qty")
+    qty_available = fields.Float(string="Qty Available")
 
     @api.model
     def create(self,vals):
@@ -44,15 +70,24 @@ class StockPicking(models.Model):
                 quant_ids = self.env['stock.quant'].search(domain)
                 get_loc_dest_qty = 0
                 if quant_ids:
-                    get_loc_dest_qty = sum(quant.quantity for quant in quant_ids)
+                    get_loc_dest_qty = sum(quant.available_quantity for quant in quant_ids)
                 product_uom_qty = move.intial_demand_qty
                 remaining_qty = 0
                 if get_loc_dest_qty > product_uom_qty:
                     remaining_qty = 0
                 elif get_loc_dest_qty < product_uom_qty:
                     remaining_qty = product_uom_qty - get_loc_dest_qty
-                # print('\n========remaining_qty==',remaining_qty)
-                # print('=======get_loc_dest_qty==',get_loc_dest_qty)
-                # print('\n========intial_demand_qty==',product_uom_qty)
-                move.with_context(update_move_product_uom=1).write({'subcontract_avail_qty':get_loc_dest_qty,'product_uom_qty':remaining_qty})
+                if move.move_line_ids:
+                    move.move_line_ids[0].qty_done = remaining_qty
+                if len(move.move_line_ids) > 1:
+                    for line in move.move_line_ids:
+                        line.qty_done = 0
+                move.with_context(update_move_product_uom=1).write({'qty_available':get_loc_dest_qty,'subcontract_avail_qty':get_loc_dest_qty,'product_uom_qty':remaining_qty})
         return True
+
+
+
+    def action_assign(self):
+        res = super(StockPicking,self).action_assign()
+        self.update_move_demand_qty()
+        return res
