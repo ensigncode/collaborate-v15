@@ -85,10 +85,3 @@ class StockPicking(models.Model):
                 # print('===v===========remaining_qty--',remaining_qty)
                 move.with_context(update_move_product_uom=1).write({'qty_available':get_loc_dest_qty,'subcontract_avail_qty':get_loc_dest_qty,'product_uom_qty':remaining_qty})
         return True
-
-
-
-    def action_assign(self):
-        res = super(StockPicking,self).action_assign()
-        self.update_move_demand_qty()
-        return res
