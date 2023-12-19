@@ -26,7 +26,8 @@ class StockStorageCategory(models.Model):
 	_inherit = 'stock.storage.category'
 
 	auto_putaway_rule = fields.Boolean(string="Auto Putaway Rules")
-
+	storage_location = fields.Integer(string="Storage Location")
+	
 	def _default_location_id(self):
 		wh = self.env['stock.warehouse'].search([('company_id', '=', self.env.company.id)], limit=1)
 		input_loc, _ = wh._get_input_output_locations(wh.reception_steps, wh.delivery_steps)

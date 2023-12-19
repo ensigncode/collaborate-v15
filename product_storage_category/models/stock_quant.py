@@ -90,6 +90,8 @@ class StockQuant(models.Model):
 				for l_data in line_data:
 					l_data.update({'operation_type':'existing','location_in_id':main_destination_id.id})
 					rule_line_data.append((0,0,l_data))
+
+					
 				rule_vals = {'quant_ids':[(6,0,quant_ids.ids)],'product_putaway_rule_line_ids':rule_line_data}
 				rule_id = self.env['product.putaway.rule'].create(rule_vals)
 				return {
@@ -123,7 +125,6 @@ class StockQuant(models.Model):
 
 	@api.model
 	def _unlink_zero_quants(self):
-		print('\n\n\n====_unlink_zero_quants==============')
 		""" _update_available_quantity may leave quants with no
 		quantity and no reserved_quantity. It used to directly unlink
 		these zero quants but this proved to hurt the performance as
