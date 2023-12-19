@@ -244,7 +244,7 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                 const sale_order = await this.rpc({
                     model: 'sale.order',
                     method: 'read',
-                    args: [[id],['order_line', 'partner_id', 'pricelist_id', 'fiscal_position_id', 'amount_total', 'amount_untaxed', 'amount_undiscounted', 'reward_amount', 'applied_coupon_ids', 'code_promo_program_id', 'no_code_promo_program_ids']],
+                    args: [[id],['order_line', 'partner_id', 'pricelist_id', 'fiscal_position_id', 'amount_total', 'amount_untaxed', 'amount_undiscounted', 'reward_amount', 'applied_coupon_ids', 'code_promo_program_id', 'no_code_promo_program_ids', 'code_promo_program_ids']],
                     context: this.env.session.user_context,
                 });
 
