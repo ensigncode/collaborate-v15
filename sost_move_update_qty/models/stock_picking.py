@@ -44,7 +44,9 @@ class StockMove(models.Model):
         return res
 
 class StockPicking(models.Model):
-    _inherit = "stock.picking"    
+    _inherit = "stock.picking"
+
+    update_demand_qty = fields.Boolean(string="Update Demand Qty") 
 
     def update_move_demand_qty(self):
         location_ids = self.env['stock.location'].search([('is_subcontract','=',True)])
@@ -64,11 +66,7 @@ class StockPicking(models.Model):
                     remaining_qty = 0
                 elif get_loc_dest_qty < product_uom_qty:
                     remaining_qty = product_uom_qty - get_loc_dest_qty
-                # if move.move_line_ids:
-                #     move.move_line_ids[0].qty_done = remaining_qty
-                # if len(move.move_line_ids) > 1:
-                #     for line in move.move_line_ids:
-                #         line.qty_done = 0
-                # print('===v===========remaining_qty--',remaining_qty)
                 move.with_context(update_move_product_uom=1).write({'qty_available':get_loc_dest_qty,'subcontract_avail_qty':get_loc_dest_qty,'product_uom_qty':remaining_qty})
+                move._action_assign(force_qty=remaining_qty)
+            self.update_demand_qty = True
         return True

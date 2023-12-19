@@ -30,13 +30,15 @@
             <xpath expr="//button[@name='action_confirm']" position="after">
                 <button name="update_move_demand_qty" string="Update Demand Qty" 
                         type="object" class="oe_stat_button" icon="fa-cubes" 
-                        attrs="{'invisible':[('state','=','done')]}"/>
+                        states="assigned"/>
             </xpath>
             <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_qty']" position="after">
-                <field name="subcontract_avail_qty" optional="hide"/>                
                 <field name="qty_available" optional="hide"/> 
                 <field name="intial_demand_qty" optional="hide"/>
             </xpath>
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="update_demand_qty" invisible="1"/>                
+            </xpath>            
         </field>
     </record>
 </odoo>
