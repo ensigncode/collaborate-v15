@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='allow_new_product']" position="after">
             	<field name="auto_putaway_rule"/>
+                <field name="storage_location"/>
             </xpath>
         </field>
     </record>

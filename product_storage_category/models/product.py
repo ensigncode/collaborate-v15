@@ -98,6 +98,10 @@ class ProductProduct(models.Model):
                 
                 for line in storage_category_lines:
                     storage_category_id = line.storage_category_id
+
+                    main_destination_id = destination_id.with_context(default_storage_category_id=storage_category_id).get_main_location()
+
+
                     vals = {'storage_category_id':storage_category_id.id,'product_id':self.id,'location_in_id':main_destination_id.id}
                     storage_category_id = line.storage_category_id
                     domain = [
