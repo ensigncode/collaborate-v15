@@ -60,7 +60,6 @@ class StockPicking(models.Model):
 						VALUES (%s,'%s',%s,%s,'%s','%s','%s','%s')
 				""" %(update_move.product_id.id,'0','0',sale_id.id,update_move.product_id.display_name,'0',update_move.product_id.uom_id.id,'11')
 				self.env.cr.execute(query)
-				# self.env.cr.commit()
 		return True
 
 	def write(self,vals):

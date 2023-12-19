@@ -49,7 +49,8 @@ class StockPicking(models.Model):
     update_demand_qty = fields.Boolean(string="Update Demand Qty") 
 
     def update_move_demand_qty(self):
-        location_ids = self.env['stock.location'].search([('is_subcontract','=',True)])
+        location_ids = self.location_dest_id   
+        # location_ids = self.env['stock.location'].search([('is_subcontract','=',True)])
         if location_ids:
             for move in self.move_ids_without_package:
                 domain = [
