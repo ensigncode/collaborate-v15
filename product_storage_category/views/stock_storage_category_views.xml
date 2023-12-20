@@ -9,6 +9,11 @@
             	<field name="auto_putaway_rule"/>
                 <field name="storage_location"/>
             </xpath>
+            <xpath expr="//field[@name='product_capacity_ids']//tree//field[@name='quantity']" position="after">
+                <field name="auto_putaway_rule" invisible="1"/>
+            </xpath>
+
+            
         </field>
     </record>
 

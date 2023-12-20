@@ -21,13 +21,19 @@ class StockStorageCategoryCapacity(models.Model):
 			prod_storage_category_line_id = self.env['product.storage.category.lines'].create({'storage_category_id':res.storage_category_id.id,'storage_capacity':res.quantity,'product_tmp_id':res.product_id.product_tmpl_id.id})
 			res.prod_storage_category_line_id = prod_storage_category_line_id.id
 		return res
+
+class StockStorageCategoryCapacity(models.Model):
+	_inherit = 'stock.storage.category.capacity'
 	
+	auto_putaway_rule = fields.Boolean(string="Auto Putaway Rules",related="storage_category_id.auto_putaway_rule")
+
 class StockStorageCategory(models.Model):
 	_inherit = 'stock.storage.category'
 
 	auto_putaway_rule = fields.Boolean(string="Auto Putaway Rules")
 	storage_location = fields.Integer(string="Storage Location")
-	
+
+
 	def _default_location_id(self):
 		wh = self.env['stock.warehouse'].search([('company_id', '=', self.env.company.id)], limit=1)
 		input_loc, _ = wh._get_input_output_locations(wh.reception_steps, wh.delivery_steps)
