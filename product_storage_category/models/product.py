@@ -78,6 +78,7 @@ class ProductTemplate(models.Model):
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
+
     def get_rule_lines(self,location_dest_id,occupied_locations):
         lines = []
         destination_id = location_dest_id
@@ -87,7 +88,11 @@ class ProductProduct(models.Model):
         occupied_location_id = False
         if destination_id:
             main_destination_id = destination_id.get_main_location()
-            storage_category_lines = self.product_storage_line_ids
+            # storage_category_lines = self.product_storage_line_ids
+
+
+            storage_category_lines = self.env['stock.storage.category.capacity'].search([('product_id','=',self.id),('auto_putaway_rule','=',True)])
+            
             if not storage_category_lines:
                 create_product_rule = False
             
@@ -98,10 +103,9 @@ class ProductProduct(models.Model):
                 
                 for line in storage_category_lines:
                     storage_category_id = line.storage_category_id
+                    print('\n\n===storage_category_id==',storage_category_id,storage_category_id.name)
 
-                    main_destination_id = destination_id.with_context(default_storage_category_id=storage_category_id).get_main_location()
-
-
+                    # storage_category_id = line.storage_category_id
                     vals = {'storage_category_id':storage_category_id.id,'product_id':self.id,'location_in_id':main_destination_id.id}
                     storage_category_id = line.storage_category_id
                     domain = [
@@ -136,5 +140,62 @@ class ProductProduct(models.Model):
             issue_product_rule = True
 
         return {'create_product_rule':create_product_rule,'issue_product_rule':issue_product_rule,'occupied_location_id':occupied_location_id,'vals':vals} 
+
+
+
+    # def get_rule_lines(self,location_dest_id,occupied_locations):
+    #     lines = []
+    #     destination_id = location_dest_id
+    #     vals = {}
+    #     create_product_rule = False
+    #     issue_product_rule = False
+    #     occupied_location_id = False
+    #     if destination_id:
+    #         main_destination_id = destination_id.get_main_location()
+    #         storage_category_lines = self.product_storage_line_ids
+    #         if not storage_category_lines:
+    #             create_product_rule = False
+            
+    #         rule_ids = self.env['stock.putaway.rule'].search([('product_id','=',self.id)])
+    #         if not rule_ids and storage_category_lines:
+    #             if storage_category_lines or not rule_ids:
+    #                 create_product_rule = True
+                
+    #             for line in storage_category_lines:
+    #                 storage_category_id = line.storage_category_id
+    #                 vals = {'storage_category_id':storage_category_id.id,'product_id':self.id,'location_in_id':main_destination_id.id}
+    #                 storage_category_id = line.storage_category_id
+    #                 domain = [
+    #                     ('storage_category_id','=',storage_category_id.id),
+    #                 ]
+    #                 storage_category_location_ids = self.env['stock.location'].search(domain)
+    #                 if not storage_category_location_ids:
+    #                     create_product_rule = False
+    #                 if storage_category_location_ids and create_product_rule:
+    #                     storage_category_location_ids = storage_category_location_ids.filtered(lambda x:x.id not in occupied_locations)
+    #                     rule_ids = self.env['stock.putaway.rule'].search([('location_out_id','in',storage_category_location_ids.ids)])
+    #                     location_rule_ids = []
+    #                     left_location_ids = []
+    #                     if not rule_ids:
+    #                         left_location_ids = storage_category_location_ids.ids
+    #                     else:
+    #                         for rule in rule_ids:
+    #                             location_rule_ids += rule.location_out_id.ids 
+    #                         for location in storage_category_location_ids:
+    #                             if location.id not in location_rule_ids:
+    #                                 left_location_ids.append(location.id)
+
+    #                     if left_location_ids:
+    #                         issue_product_rule = False
+    #                         vals.update({'location_out_id':left_location_ids[0]})
+    #                         occupied_location_id = left_location_ids[0]
+
+    #                     else:
+    #                         issue_product_rule = True
+
+    #     if create_product_rule and not occupied_location_id and  not rule_ids:
+    #         issue_product_rule = True
+
+    #     return {'create_product_rule':create_product_rule,'issue_product_rule':issue_product_rule,'occupied_location_id':occupied_location_id,'vals':vals} 
 
 
