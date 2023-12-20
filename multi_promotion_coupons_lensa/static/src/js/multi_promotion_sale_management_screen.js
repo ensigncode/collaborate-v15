@@ -235,7 +235,6 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                       if (!order.activePromoProgramIds.includes(sale_order.code_promo_program_ids[i])){
                           order.activePromoProgramIds.push(sale_order.code_promo_program_ids[i]);
                       }
-                     
                   }
                   order.trigger('change');
                   order.trigger('update-rewards');
@@ -283,7 +282,6 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                     this.bookedCouponCodes = {};
                     deactivatedCount += couponIds.length;
                 }
-                console.log(">>>>>>>>>>>>>>>>>>")
                 if (this.activePromoProgramIds.length > 0) {
                     const codeNeededPromoProgramIds = this.activePromoProgramIds.filter((program_id) => {
                         return this.pos.coupon_programs_by_id[program_id].promo_code_usage === 'code_needed';
@@ -374,26 +372,7 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                 for (const key in groupedGlobalDiscounts) {
                     groupedGlobalDiscounts[key].forEach(rewardLine => theOnlyGlobalDiscount.push(rewardLine));
                 }
-                console.log('>>>>>>> Log',groupedGlobalDiscounts);
-                // - Get the messages for the discarded global_discounts
-                if (theOnlyGlobalDiscount.length > 0) {
-                    const theOnlyGlobalDiscountKey = [
-                        theOnlyGlobalDiscount[0].program.id,
-                        theOnlyGlobalDiscount[0].coupon_id,
-                    ].join(',');
-                    for (let [key, discounts] of Object.entries(groupedGlobalDiscounts)) {
-                        if (key !== theOnlyGlobalDiscountKey) {
-                            const notAwarded = new CouponPOS.Reward({
-                                program: discounts[0].program,
-                                coupon_id: discounts[0].coupon_id,
-                                reason: 'Not the greatest global discount.',
-                                awarded: false,
-                            });
-                            rewardsContainer.add([notAwarded]);
-                        }
-                    }
-                }
-    
+//
                 // - Add the calculated rewards.
                 rewardsContainer.add([
                     ...freeProducts,
