@@ -1,6 +1,7 @@
 odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_screen', function (require) {
 
     const SaleOrderManagementScreen = require('pos_sale.SaleOrderManagementScreen');
+    const CouponPOS = require('pos_coupon.pos');
     const Registries = require('point_of_sale.Registries');
     const { useListener } = require('web.custom_hooks');
     const { useState } = owl.hooks;
@@ -228,14 +229,18 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                         await this.showPopup('ErrorPopup', { title, body });
                     }
                   }
-					var order = this.env.pos.get_order();
-                    if (!order.activePromoProgramIds.includes(sale_order.code_promo_program_id[0])){
-                        order.activePromoProgramIds.push(sale_order.code_promo_program_id[0]);
-                    }
-                    order.trigger('change');
-					order.trigger('update-rewards');
+                  var order = this.env.pos.get_order();
+                  for (var i = 0; i < sale_order.code_promo_program_ids.length; i++){
 
-                    this.close();
+                      if (!order.activePromoProgramIds.includes(sale_order.code_promo_program_ids[i])){
+                          order.activePromoProgramIds.push(sale_order.code_promo_program_ids[i]);
+                      }
+                     
+                  }
+                  order.trigger('change');
+                  order.trigger('update-rewards');
+
+                  this.close();
                 }
 
             }
@@ -278,6 +283,7 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                     this.bookedCouponCodes = {};
                     deactivatedCount += couponIds.length;
                 }
+                console.log(">>>>>>>>>>>>>>>>>>")
                 if (this.activePromoProgramIds.length > 0) {
                     const codeNeededPromoProgramIds = this.activePromoProgramIds.filter((program_id) => {
                         return this.pos.coupon_programs_by_id[program_id].promo_code_usage === 'code_needed';
@@ -287,7 +293,117 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                 }
                 if (deactivatedCount > 0) Gui.showNotification('Active coupons and promo codes were deactivated.');
                 this.trigger('update-rewards');
-            }
+            },
+
+            _calculateRewards: async function () {
+                const rewardsContainer = new CouponPOS.RewardsContainer();
+    
+                if (this._getRegularOrderlines().length === 0) {
+                    return rewardsContainer;
+                }
+    
+                const {
+                    freeProductPrograms,
+                    fixedAmountDiscountPrograms,
+                    onSpecificPrograms,
+                    onCheapestPrograms,
+                    onOrderPrograms,
+                } = await this._getValidActivePrograms(rewardsContainer);
+    
+                const collectRewards = (validPrograms, rewardGetter) => {
+                    const allRewards = [];
+                    for (let [program, coupon_id] of validPrograms) {
+                        const [rewards, reason] = rewardGetter(program, coupon_id);
+                        if (reason) {
+                            const notAwarded = new Reward({ awarded: false, reason, program, coupon_id });
+                            rewardsContainer.add([notAwarded]);
+                        }
+                        allRewards.push(...rewards);
+                    }
+                    return allRewards;
+                };
+    
+                // - Gather the product rewards
+                const freeProducts = collectRewards(freeProductPrograms, this._getProductRewards.bind(this));
+    
+                // - Gather the fixed amount discounts
+                const fixedAmountDiscounts = collectRewards(fixedAmountDiscountPrograms, this._getFixedDiscount.bind(this));
+    
+                // - Gather the specific discounts
+                const specificDiscountGetter = (program, coupon_id) => {
+                    return this._getSpecificDiscount(program, coupon_id, freeProducts);
+                };
+                const specificDiscounts = collectRewards(onSpecificPrograms, specificDiscountGetter);
+    
+                // - Collect the discounts from on order and on cheapest discount programs.
+                const globalDiscounts = [];
+                const onOrderDiscountGetter = (program, coupon_id) => {
+                    return this._getOnOrderDiscountRewards(program, coupon_id, freeProducts);
+                };
+                globalDiscounts.push(...collectRewards(onOrderPrograms, onOrderDiscountGetter));
+                globalDiscounts.push(...collectRewards(onCheapestPrograms, (program, coupon_id) => this._getOnCheapestProductDiscount(program, coupon_id, freeProducts)));
+    
+                // - Group the discounts by program id.
+                const groupedGlobalDiscounts = {};
+                for (let discount of globalDiscounts) {
+                    const key = [discount.program.id, discount.coupon_id].join(',');
+                    if (!(key in groupedGlobalDiscounts)) {
+                        groupedGlobalDiscounts[key] = [discount];
+                    } else {
+                        groupedGlobalDiscounts[key].push(discount);
+                    }
+                }
+    
+                // - We select the group of discounts with highest total amount.
+                // Note that the result is an Array that might contain more than one
+                // discount lines. This is because discounts are grouped by tax.
+                let currentMaxTotal = 0;
+                let currentMaxKey = null;
+                for (let key in groupedGlobalDiscounts) {
+                    const discountRewards = groupedGlobalDiscounts[key];
+                    const newTotal = discountRewards.reduce((sum, discReward) => sum + discReward.discountAmount, 0);
+                    if (newTotal > currentMaxTotal) {
+                        currentMaxTotal = newTotal;
+                        currentMaxKey = key;
+                    }
+                }
+
+                const theOnlyGlobalDiscount = [];
+                
+                // Add multiple reward object in theOnlyGlobalDiscount.
+                for (const key in groupedGlobalDiscounts) {
+                    groupedGlobalDiscounts[key].forEach(rewardLine => theOnlyGlobalDiscount.push(rewardLine));
+                }
+                console.log('>>>>>>> Log',groupedGlobalDiscounts);
+                // - Get the messages for the discarded global_discounts
+                if (theOnlyGlobalDiscount.length > 0) {
+                    const theOnlyGlobalDiscountKey = [
+                        theOnlyGlobalDiscount[0].program.id,
+                        theOnlyGlobalDiscount[0].coupon_id,
+                    ].join(',');
+                    for (let [key, discounts] of Object.entries(groupedGlobalDiscounts)) {
+                        if (key !== theOnlyGlobalDiscountKey) {
+                            const notAwarded = new CouponPOS.Reward({
+                                program: discounts[0].program,
+                                coupon_id: discounts[0].coupon_id,
+                                reason: 'Not the greatest global discount.',
+                                awarded: false,
+                            });
+                            rewardsContainer.add([notAwarded]);
+                        }
+                    }
+                }
+    
+                // - Add the calculated rewards.
+                rewardsContainer.add([
+                    ...freeProducts,
+                    ...fixedAmountDiscounts,
+                    ...specificDiscounts,
+                    ...theOnlyGlobalDiscount,
+                ]);
+    
+                return rewardsContainer;
+            },
         
     })
     
