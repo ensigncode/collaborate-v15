@@ -13,7 +13,7 @@ class Product(models.Model):
                 result = super().name_get()
                 final_result = []
                 for res in result:
-                    quant_ids = self.env['stock.quant'].search([('product_id','=',res[0]),('location_id','=',location_dest_id.id)])
+                    quant_ids = self.env['stock.quant'].search([('product_id','=',res[0]),('location_id','=',location_dest_id.id),('on_hand','=',True)])
                     available_qty = sum(quant.available_quantity for quant in quant_ids)
                     final_result.append((res[0], res[1] + ' (%s)' % str(available_qty).split('.')[0]))
                 return final_result
