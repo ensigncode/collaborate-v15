@@ -4,67 +4,148 @@
         <t t-call="web.external_layout">
             <div class="page">
                 <div class="oe_structure"/>
-                <h2 class="mt64">
-                    <span t-field="doc.name"/>
-                </h2>
-                <div class="row mt32 mb32" id="informations">
-                    <div t-if="doc.currency_id" class="col-auto col-3 mw-100 mb-2">
-                        <strong>Currency:</strong>
-                        <p class="m-0" t-field="doc.currency_id.name"/>
-                    </div>
-                    <div t-if="doc.company_id.name" class="col-auto col-3 mw-100 mb-2">
-                        <strong>Company:</strong>
-                        <p class="m-0" t-field="doc.company_id.name"/>
-                    </div>
-                </div>  
+                <div style="margin-top:64px;">
+                    <h2 class="mt64">
+                        <span t-field="doc.name"/>
+                    </h2>
+                    <div class="row mt32 mb32" id="informations">
+                        <div t-if="doc.currency_id" class="col-auto col-3 mw-100 mb-2">
+                            <strong>Currency:</strong>
+                            <p class="m-0" t-field="doc.currency_id.name"/>
+                        </div>
+                        <div t-if="doc.company_id.name" class="col-auto col-3 mw-100 mb-2">
+                            <strong>Company:</strong>
+                            <p class="m-0" t-field="doc.company_id.name"/>
+                        </div>
+                    </div>  
 
-                <table class="table table-sm o_main_table">
-                    <thead style="display: table-row-group">
-                        <tr>
-                            <th name="th_description" class="text-left">Product</th>
-                            <th name="th_quantity" class="text-right">Currency</th>
-                            <th name="th_priceunit" class="text-center">Availablity Message</th>
-                            <th name="th_startdate" class="text-right">Start Date</th>
-                            <th name="th_enddate" class="text-right">End Date</th>
-                        </tr>
-                    </thead>
-                    <tbody class="pricelist_info_tbody">
-                        <t t-foreach="doc.item_ids.filtered(lambda x:x.applied_on in ('1_product','0_product_variant'))" t-as="line">
-                            <t t-set="get_data" t-value="line.get_item_data()"/>
-
+                    <table class="table table-sm o_main_table">
+                        <thead style="display: table-row-group">
                             <tr>
-                                <td  class="text-left">
-                                    <t t-if="line.product_id">
-                                        <t t-esc="line.product_id.display_name"/>
-                                    </t>
-                                </td>
-                                <td class="text-right">
-                                    <t t-if="line.currency_id">
-                                        <t t-esc="line.currency_id.name"/>
-                                    </t>
-                                </td>
-
-                                <td  class="text-center">
-                                    <t t-esc="get_data['availablity_message']"/>
-                                </td>
-                                <td class="text-right">
-                                    <t t-esc="get_data['start_date']"/>
-                                </td>
-                                <td class="text-right">
-                                    <t t-esc="get_data['end_date']"/>
-                                </td>
+                                <th name="th_description" class="text-left">Product</th>
+                                <th name="th_quantity" class="text-right">Price</th>
+                                <th name="th_quantity" class="text-right">Currency</th>
+                                <th name="th_startdate" class="text-right">Start Date</th>
+                                <th name="th_enddate" class="text-right">End Date</th>
                             </tr>
-                        </t>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="pricelist_info_tbody">
+                            <t t-foreach="doc.item_ids.filtered(lambda x:x.applied_on in ('1_product','0_product_variant'))" t-as="line">
+                                <t t-set="get_data" t-value="line.get_item_data()"/>
+                                <tr>
+                                    <td  class="text-left">
+                                        <t t-if="line.applied_on == '1_product'">
+                                            <t t-if="line.product_tmpl_id">
+                                                <t t-esc="line.product_tmpl_id.display_name"/>
+                                            </t>
+                                        </t>
+                                        <t t-if="line.applied_on == '0_product_variant'">
+                                            <t t-if="line.product_id">
+                                                <t t-esc="line.product_id.display_name"/>
+                                            </t>
+                                        </t>                                    
+                                    </td>
+                                     <td class="text-right">
+                                        <t t-if="line.price">
+                                            <t t-esc="line.price"/>
+                                        </t>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-if="line.currency_id">
+                                            <t t-esc="line.currency_id.name"/>
+                                        </t>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-esc="get_data['start_date']"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-esc="get_data['end_date']"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </t>
     </template>
+
+
+    <template id="report_pricelist_document_mail">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <div class="oe_structure"/>
+                <div style="margin-top:64px;">
+                    <h2 class="mt64">
+                        <span t-field="doc.name"/>
+                    </h2>
+                    <div class="row mt32 mb32" id="informations">
+                        <div t-if="doc.currency_id" class="col-auto col-3 mw-100 mb-2">
+                            <strong>Currency:</strong>
+                            <p class="m-0" t-field="doc.currency_id.name"/>
+                        </div>
+                        <div t-if="doc.company_id.name" class="col-auto col-3 mw-100 mb-2">
+                            <strong>Company:</strong>
+                            <p class="m-0" t-field="doc.company_id.name"/>
+                        </div>
+                    </div>  
+
+                    <table class="table table-sm o_main_table">
+                        <thead style="display: table-row-group">
+                            <tr>
+                                <th name="th_description" class="text-left">Product</th>
+                                <th name="th_quantity" class="text-right">Price</th>
+                                <th name="th_quantity" class="text-right">Currency</th>
+                                <th name="th_startdate" class="text-right">Start Date</th>
+                                <th name="th_enddate" class="text-right">End Date</th>
+                            </tr>
+                        </thead>
+                        <tbody class="pricelist_info_tbody">
+                            <t t-foreach="doc.pricelist_info_ids" t-as="line">
+                                <tr>
+                                    <td  class="text-left">
+                                        <t t-if="line.product_variant_id">
+                                            <t t-esc="line.product_variant_id.display_name"/>
+                                        </t>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-if="line.price_unit">
+                                            <t t-esc="line.price_unit"/>
+                                        </t>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-if="line.currency_id">
+                                            <t t-esc="line.currency_id.name"/>
+                                        </t>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-esc="line.start_date"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-esc="line.end_date"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
 
     <template id="report_pricelist">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <t t-call="sost_pricelist_mail.report_pricelist_document"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_pricelist_mail">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="sost_pricelist_mail.report_pricelist_document_mail"/>
             </t>
         </t>
     </template>
@@ -75,8 +156,19 @@
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">sost_pricelist_mail.report_pricelist</field>
         <field name="report_file">sost_pricelist_mail.report_pricelist</field>
-        <field name="print_report_name"></field>
+        <field name="print_report_name">'PriceList'</field>
         <field name="binding_model_id" ref="product.model_product_pricelist"/>
+        <field name="binding_type">report</field>
+    </record>
+
+     <record id="action_report_pricelist_mail" model="ir.actions.report">
+        <field name="name">Product_Pricelist</field>
+        <field name="model">product.pricelist</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sost_pricelist_mail.report_pricelist_mail</field>
+        <field name="report_file">sost_pricelist_mail.report_pricelist_mail</field>
+        <field name="print_report_name">'Product_PriceList'</field>
+        <field name="binding_model_id" eval="False"/>
         <field name="binding_type">report</field>
     </record>
 </odoo>
