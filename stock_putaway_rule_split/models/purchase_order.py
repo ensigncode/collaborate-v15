@@ -39,14 +39,20 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
+    def get_putaway_rules(self,destination_location_id):
+        """
+            Filter product putaway rules
+        """
+        return self.product_id.putaway_rule_ids.filtered(
+            lambda p_rule: p_rule.storage_category_id and p_rule.location_in_id.id == destination_location_id
+        )
+
     def _prepare_split_stock_putaway(self, qty):
         """
             Preparing splitting of the stock rules
         """
         dest_location_id = (self.orderpoint_id and not (self.move_ids | self.move_dest_ids)) and self.orderpoint_id.location_id.id or self.order_id._get_destination_location()
-        putaway_rules = self.product_id.putaway_rule_ids.filtered(
-            lambda p_rule: p_rule.storage_category_id and p_rule.location_in_id.id == dest_location_id
-        )
+        putaway_rules = self.get_putaway_rules(dest_location_id)
         quantity_list = []
         qty_to_remaining = qty
         for location_id in list(set(putaway_rules.mapped('storage_category_id.location_ids'))):
