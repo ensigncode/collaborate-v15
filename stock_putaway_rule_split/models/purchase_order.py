@@ -55,16 +55,17 @@ class PurchaseOrderLine(models.Model):
         putaway_rules = self.get_putaway_rules(dest_location_id)
         quantity_list = []
         qty_to_remaining = qty
-        for location_id in list(set(putaway_rules.mapped('storage_category_id.location_ids'))):
-            product_capacity_lines = location_id.storage_category_id.product_capacity_ids.filtered(
-                lambda pc_line: pc_line.product_id.id == self.product_id.id)
-            for p_cap_line in product_capacity_lines:
-                if qty_to_remaining <= 0:
-                    break
-                quantity_list.append(
-                    p_cap_line.quantity if p_cap_line.quantity <= qty_to_remaining else qty_to_remaining
-                )
-                qty_to_remaining -= p_cap_line.quantity
+        while qty_to_remaining > 0:
+            for storage_category_id in list(set(putaway_rules.mapped('storage_category_id'))):
+                product_capacity_lines = storage_category_id.product_capacity_ids.filtered(
+                    lambda pc_line: pc_line.product_id.id == self.product_id.id)
+                for p_cap_line in product_capacity_lines:
+                    if qty_to_remaining <= 0:
+                        break
+                    quantity_list.append(
+                        p_cap_line.quantity if p_cap_line.quantity <= qty_to_remaining else qty_to_remaining
+                    )
+                    qty_to_remaining -= p_cap_line.quantity
         if qty_to_remaining:
             quantity_list.append(qty_to_remaining)
         return quantity_list
