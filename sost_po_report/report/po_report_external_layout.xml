@@ -74,7 +74,10 @@
 
                         </div>
                         <div class="col-6" style="background:#f5f5f5">
-                            <strong >ORDERED BY : </strong><t t-esc="doc.user_id.name"/><br/>
+                            <strong >ORDERED BY : </strong>
+                            <t t-if="doc.user_id">
+                                <t t-esc="doc.user_id.name"/>
+                            </t><t t-else=""><t t-esc="doc.create_uid.name"/></t><br/>
                             <strong >PAYMENT TERMS : </strong><t t-esc="doc.payment_term_id.name"/>
                         </div>
                     </div>

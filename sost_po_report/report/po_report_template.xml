@@ -64,7 +64,10 @@
 
                         </div>
                         <div class="col-6" style="background:#f5f5f5">
-                            <strong>SIGNATURE/ APPROVED BY : </strong><t t-esc="doc.approved_by_id.name"/>
+                            <strong>SIGNATURE/ APPROVED BY : </strong>
+                            <t t-if="doc.approved_by_id">
+                                <t t-esc="doc.approved_by_id.name"/>
+                            </t>
                         </div>
                     </div>
                     <div class="row p-3">

@@ -20,14 +20,11 @@ class PurchaseOrder(models.Model):
 	@api.depends('order_line.taxes_id')
 	def _compute_tax_use(self):
 		tax_use = False
-		if self.order_line and self.order_line[0]:
-			for line in self.order_line[0]:
-				if line.taxes_id:
-					self.tax_use = True
-				else:
-					self.tax_use = tax_use
-		else:
-			self.tax_use = tax_use
+		for order in self:
+			have_taxes = order.order_line.filtered(lambda x:x.taxes_id)
+			if have_taxes:
+				tax_use = True 
+			order.tax_use = tax_use
 
 	def merge_purchase_order_lines(self):
 		merged_lines = {}
@@ -55,6 +52,5 @@ class PurchaseOrderLine(models.Model):
 
 class ResPartner(models.Model):
 	_inherit = "res.partner"
-
 
 	nrc = fields.Char(string="NRC")
