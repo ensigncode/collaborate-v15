@@ -19,7 +19,10 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
-    @api.depends('move_dest_ids','move_dest_ids.group_id','move_dest_ids.group_id.sale_id')
+    @api.depends('move_dest_ids',
+            'move_dest_ids.group_id',
+            'move_dest_ids.group_id.sale_id',
+            'product_id','order_id.order_ids')
     def _compute_sost_so(self):
         for line in self:
             sost_so_id = False

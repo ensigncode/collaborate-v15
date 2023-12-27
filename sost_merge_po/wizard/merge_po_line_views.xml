@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-	<record id="view_merge_po_line_form" model="ir.ui.view">
-		<field name="name">view_merge_po_line_form</field>
+	<record id="view_merge_po_line_form_sost" model="ir.ui.view">
+		<field name="name">view_merge_po_line_form_sost</field>
 		<field name="model">merge.po.line</field>
 		<field name="arch" type="xml">
 			<form string="Merge Purchase Order">
 				<field name="po_ids" widget="many2many_tags" invisible="1"/>
-				<field name="merge_po_ids" nolabel="1">
-					<tree editable="bottom" create="false">
+				<field name="merge_po_ids" nolabel="1" readonly="1">
+					<tree create="0" edit="0">
 						<field name="po_id"  readonly="1" force_save="1"/>
 						<field name="partner_id"  readonly="1" force_save="1"/>
 						<field name="state"  readonly="1" force_save="1"/>
@@ -24,7 +24,7 @@
 	</record>
 	
 	<record id="action_merge_po_line" model="ir.actions.act_window">
-		<field name="name">Merge Purchases</field>
+		<field name="name">Merge Purchase Order</field>
 		<field name="res_model">merge.po.line</field>
 		<field name="view_mode">form</field>
 		<field name="target">new</field>

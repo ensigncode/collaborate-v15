@@ -11,10 +11,12 @@
     "depends": [
                 "purchase",
                 "purchase_stock",
+                "sost_origin_so",
         ],
     "data": [
         "security/ir.model.access.csv",
         "wizard/merge_po_line_views.xml",
+        "views/purchase_order_views.xml",
     ],
     "author": "Parth Patel",
     "installable": True,

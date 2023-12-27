@@ -33,7 +33,26 @@ class MergePOLine(models.Model):
                     for line in po.order_line:
                         line.order_id = last_po_id.id
                     po.active = False
+                po_line_ids = last_po_id.mapped('order_line')
+                sale_ids = po_line_ids.mapped('sost_so_id')
+                for sale in sale_ids:
+                    sale_po_line_ids = po_line_ids.filtered(lambda x:x.sost_so_id.id == sale.id)
+                    line_remove = []
+                    for sale_po_line in sale_po_line_ids:
+                        if sale_po_line not in line_remove:
+                            product_sale_po_line_ids = sale_po_line_ids.filtered(lambda x:x.price_unit == sale_po_line.price_unit and x.product_id.id == sale_po_line.product_id.id and x.id != sale_po_line.id)
+                            if product_sale_po_line_ids:
+                                for product_sale_po_line in product_sale_po_line_ids:
+                                    sale_po_line.product_qty += product_sale_po_line.product_qty
+                                    product_sale_po_line.ignore = True
+
+                                    line_remove.append(product_sale_po_line)
+            if line_remove:
+                for line in line_remove:
+                    line.unlink()
         return True
+
+
 
 
 class MergePO(models.Model):
