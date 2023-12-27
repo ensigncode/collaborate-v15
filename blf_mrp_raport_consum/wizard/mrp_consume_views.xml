@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_mrp_consume_report_form" model="ir.ui.view">
+		<field name="name">view_mrp_consume_report_form</field>
+		<field name="model">mrp.consume.report</field>
+		<field name="arch" type="xml">
+			<form string="MRP Consume Report">
+				<sheet>
+					<group>
+						<group>
+							<field name="start_date" required="1"/>
+							<field name="end_date" required="1"/>
+
+							<field name="operation_type_ids" required="1" 
+								widget="many2many_tags" 
+								domain="[('code','=','mrp_operation')]" 
+								options="{'no_create': True, 'no_create_edit': True}"/>
+
+							<field name="state_ids" required="1" widget="many2many_tags" 
+								options="{'no_create': True, 'no_create_edit': True}"/>
+						</group>
+					</group>
+				</sheet>
+				<footer>
+                    <button name="action_confirm" string="Confirm"
+                           class="btn btn-primary" type="object" />
+                    <button special="cancel" string="Cancel" />
+                </footer>
+			</form>
+		</field> 
+	</record>
+
+	<record id="view_mrp_consume_form" model="ir.ui.view">
+		<field name="name">view_mrp_consume_form</field>
+		<field name="model">mrp.consume</field>
+		<field name="arch" type="xml">
+			<tree string="MRP Consume">
+				<field name="company_id" optional="hide"/>
+				<field name="src_location_id" optional="hide"/>
+				<field name="scheduled_date" optional="hide"/>
+				<field name="mrp_name" optional="show"/>
+				<field name="origin" optional="hide"/>
+				<field name="mrp_id" invisible="1"/>
+				<field name="product_code" optional="hide"/>
+				<field name="product_id" optional="show"/>
+				<field name="producting_qty" optional="show"/>
+				<field name="material_code"  optional="hide"/>
+				<field name="material_id" optional="show"/>
+				<field name="material_uom_id" optional="show"/>
+				<field name="consumed_qty" optional="show"/>
+				<field name="unit_price"  sum="Unit Price" optional="show"/>
+				<field name="cost_value"  sum="Cost Value" optional="show"/>
+				<field name="currency_id" optional="show"/>
+			</tree>
+		</field> 
+	</record>
+
+	<record id="action_mrp_consumption_report" model="ir.actions.act_window">
+        <field name="name">MRP Consumption</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.consume</field>
+        <field name="target">current</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <record id="action_mrp_consume_report" model="ir.actions.act_window">
+        <field name="name">MRP Consumption Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.consume.report</field>
+        <field name="target">new</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_mrp_consume_report_form"/>
+    </record>
+
+	<menuitem id="menu_mrp_consume"
+        name="MRP Consumption"
+        parent="mrp.menu_mrp_reporting"
+        sequence="28"
+        action="action_mrp_consume_report"/>   
+</odoo>

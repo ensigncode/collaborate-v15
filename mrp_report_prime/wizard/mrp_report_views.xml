@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_operation_type_form" model="ir.ui.view">
+		<field name="name">view_operation_type_form</field>
+		<field name="model">operation.type.report</field>
+		<field name="arch" type="xml">
+			<form string="Operation Type Report">
+				<sheet>
+					<group>
+						<group>
+							<field name="start_date" required="1"/>
+							<field name="end_date" required="1"/>
+
+							<field name="operation_type_ids" required="1" 
+								widget="many2many_tags" 
+								domain="[('code','=','mrp_operation')]" 
+								options="{'no_create': True, 'no_create_edit': True}"/>
+
+							<field name="state_ids" required="1" widget="many2many_tags" 
+								options="{'no_create': True, 'no_create_edit': True}"/>
+						</group>
+					</group>
+				</sheet>
+				<footer>
+                    <button name="action_confirm" string="Confirm"
+                           class="btn btn-primary" type="object" />
+                    <button special="cancel" string="Cancel" />
+                </footer>
+			</form>
+		</field> 
+	</record>
+	
+	<record id="view_mrp_report_wizard_form" model="ir.ui.view">
+		<field name="name">view_mrp_report_wizard_form</field>
+		<field name="model">mrp.report.wizard</field>
+		<field name="arch" type="xml">
+			<tree string="MRP Report">
+				<field name="mrp_name"/>
+				<field name="mrp_id" invisible="1"/>
+				<field name="product_id"/>
+				<field name="product_qty"/>
+				<field name="uom_id"/>
+				<field name="mrp_date"/>
+				<field name="material_id"/>
+				<field name="consumed_qty"/>
+				<field name="material_uom_id"/>
+				<field name="weight"/>
+				<field name="weight_uom_name" string="UOM"/>
+			</tree>
+		</field> 
+	</record>
+
+	<record id="action_mrp_report_wizard" model="ir.actions.act_window">
+        <field name="name">MRP Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.report.wizard</field>
+        <field name="target">current</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <record id="action_operation_type_report" model="ir.actions.act_window">
+        <field name="name">Operation Type Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">operation.type.report</field>
+        <field name="target">new</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_operation_type_form"/>
+    </record>
+
+	<menuitem id="menu_data_import"
+        name="MRP Report"
+        parent="mrp.menu_mrp_reporting"
+        sequence="28"
+        action="action_operation_type_report"/>   
+</odoo>

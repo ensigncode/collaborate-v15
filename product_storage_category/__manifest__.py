@@ -12,11 +12,12 @@
             'stock',
             'sale_stock',
             'sale_management',
-            ],
+            'purchase_stock',
+        ],
     "data": [
         'security/ir.model.access.csv',
         'wizard/update_putaway_rule_views.xml',
-        
+        'wizard/product_putaway_rule_views.xml',
         'views/product_views.xml',
         'views/stock_storage_category_views.xml',
     ],

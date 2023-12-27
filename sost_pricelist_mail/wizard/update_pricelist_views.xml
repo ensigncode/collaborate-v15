@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_update_pricelist_form" model="ir.ui.view">
+		<field name="name">view_update_pricelist_form</field>
+		<field name="model">update.pricelist</field>
+		<field name="arch" type="xml">
+			<form string="Update Pricelist">
+				<group>
+					<group>
+						<field name="partner_ids" widget="many2many_tags" required="1" options="{'no_create':1}"/>
+					</group>
+					<group></group>
+				</group>
+				<field name="update_pricelist_line_ids" nolabel="1">
+					<tree editable="bottom" create="false">
+						<field name="product_tmpl_id" readonly="1" force_save="1"/>
+						<field name="product_variant_id" readonly="1" force_save="1"/>
+						<field name="currency_id" readonly="1" force_save="1"/>
+						<field name="price_unit"  readonly="1" force_save="1"/>
+						<field name="availablity_message"  readonly="1" force_save="1"/>
+						<field name="start_date"  readonly="1" force_save="1"/>
+						<field name="end_date"  readonly="1" force_save="1"/>
+					</tree>
+				</field>
+				<footer>
+					<button name="update_pricelist_send_mail" string="Send Mail"
+						type="object" class="oe_highlight" />
+					<button string="Cancel" class="oe_link" special="cancel" />
+				</footer>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_update_pricelist" model="ir.actions.act_window">
+		<field name="name">Update Pricelist</field>
+		<field name="res_model">update.pricelist</field>
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	</record>
+</odoo>

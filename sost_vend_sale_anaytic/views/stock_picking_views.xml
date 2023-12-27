@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="view_stock_picking_analytic_account_inherited" model="ir.ui.view">
+            <field name="name">view_stock_picking_analytic_account_inherited</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='origin']" position="after">
+                    <field name="account_analytic_id" attrs="{'readonly':[('state','=','done')]}"/>  
+                </xpath>
+
+                <xpath expr="//field[@name='move_ids_without_package']//tree//field[@name='product_qty']" position="after">
+                    <field name="account_analytic_id"/>  
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>
+

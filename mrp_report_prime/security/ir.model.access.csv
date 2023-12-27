@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_operation_type_report,access_operation_type_report,model_operation_type_report,base.group_user,1,1,1,1
+access_mrp_report_wizard,access_mrp_report_wizard,model_mrp_report_wizard,base.group_user,1,1,1,1
+access_mrp_state,access_mrp_state,model_mrp_state,base.group_user,1,1,1,1
