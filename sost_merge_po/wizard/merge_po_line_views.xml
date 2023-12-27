@@ -10,6 +10,7 @@
 					<tree editable="bottom" create="false">
 						<field name="po_id"  readonly="1" force_save="1"/>
 						<field name="partner_id"  readonly="1" force_save="1"/>
+						<field name="state"  readonly="1" force_save="1"/>
 						<field name="merge_po_id"  readonly="1" force_save="1" invisible="1"/>
 					</tree>
 				</field>

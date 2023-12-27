@@ -27,6 +27,10 @@ class MergePOLine(models.Model):
         for partner in partner_ids:
             po_line_ids = self.merge_po_ids.filtered(lambda x:x.partner_id.id == partner.id)
             print('\n\n===merge_po--po_line_ids--==',po_line_ids)
+
+
+
+
             
 
         print('\n\n===partner_ids----==',partner_ids)
@@ -38,5 +42,6 @@ class MergePO(models.Model):
     _description = 'Merge PO'
 
     po_id = fields.Many2one('purchase.order',string="Purchase Order")
+    state = fields.Selection(related="po_id.state")
     partner_id = fields.Many2one('res.partner',string="Vendor")
     merge_po_id = fields.Many2one('merge.po.line',string="Merge PO")

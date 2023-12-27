@@ -8,13 +8,13 @@ class PurchaseOrder(models.Model):
     @api.depends('order_line.move_dest_ids','order_line.move_dest_ids.group_id','order_line.move_dest_ids.group_id.sale_id')
     def _compute_sost_so(self):
         for order in self:
-            order_id = False
+            order_id = [(6,0,[])]
             order_ids = order.order_line.move_dest_ids.group_id.sale_id | order.order_line.move_ids.move_dest_ids.group_id.sale_id
             if order_ids:
-                order_id = order_ids[0]
-            order.order_id = order_id
+                order_id = [(6,0,order_ids.ids)]
+            order.order_ids = order_id
 
-    order_id = fields.Many2one('sale.order',string="Sale Origin",compute="_compute_sost_so",store=True)
+    order_ids = fields.Many2many('sale.order',string="Sale Origin",compute="_compute_sost_so",store=True)
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
