@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="po_report_template_form_external_layout">
+        <t t-call="web.html_container">
+            <t t-if="not o" t-set="o" t-value="doc"/>
+            <style>
+                  .box{
+                        background: blue;
+                        height:63px;
+                      }
+                      .font_color {
+                      color:white
+                      }
+            </style>
+            <t t-if="company_id">
+                <t t-set="company_id" t-value="company_id"/>
+            </t>
+            <t t-else="else">
+                <t t-set="company_id" t-value="res_company"/>
+            </t>
+            <div class="header">
+                <div class=" row">
+                    <div class="col-6">
+                         <img t-if="company_id.logo" t-attf-src="data:image/png;base64,{{company_id.logo}}" />
+                    </div>
+                    <div class="col-6 mt-4" style="background: #0E86D4; height:75px;padding:15px;color:white">
+                            <b>
+                                <div style="font-size:18px">
+                                    PURCHASE ORDER <span style="padding-left: 50px;"> <t t-esc="doc.name"/> </span>
+                                </div>
+                                <div style="font-size:15px">
+                                    Order Date: <t t-if="doc.date_order"><t t-esc="doc.date_order.date()" t-options='{"widget": "date","format": "dd-MM-yyyy"}'/></t> <span style="padding-left: 46px;">Incoterms : <t t-esc="doc.incoterm_id.code"/></span>
+                                </div>
+                                
+                            </b>
+                    </div>
+                </div>
+            </div>
+            <div t-attf-class="footer o_standard_footer o_company_#{company_id.id}_layout">
+                <!-- <div class="last-page"> -->
+                    <div class="row zero_min_height">
+                        <div class="col-12">
+                            <div style="border-top: 2px solid #0E86D4;"></div>
+                        </div>
+                    </div>
+                     <div class="row p-3">
+                        <div class="col-6" style="background:#f5f5f5">
+                            <span>
+                                <strong><div style="font-size:20px"><t t-esc="doc.company_id.partner_id.name"/></div></strong>
+                                    <t t-esc="doc.company_id.partner_id.street"/>,
+                                    <t t-if="doc.company_id.partner_id.street2">
+                                        <t t-esc="doc.company_id.partner_id.street2"/>,
+                                    </t>
+                                    <t t-if="doc.company_id.partner_id.city">
+                                        <t t-esc="doc.company_id.partner_id.city"/>, 
+                                    </t>
+                                    <t t-if="doc.company_id.partner_id.state_id">
+                                        <t t-esc="doc.company_id.partner_id.state_id.name"/>, 
+                                    </t>
+                                    <t t-esc="doc.company_id.partner_id.country_id.name"/>
+                                    <t t-esc="doc.company_id.partner_id.zip"/><br/>
+                            </span>
+                            <strong>VAT : </strong><t t-esc="doc.company_id.partner_id.vat"/> &#160;&#160;&#160;<strong>NRC : </strong>   <t t-esc="doc.company_id.partner_id.nrc"/>
+
+                        </div>
+                        <div class="col-6" style="background:#f5f5f5">
+                            <strong>SIGNATURE/ APPROVED BY : </strong>
+                            <t t-if="doc.approved_by_id">
+                                <t t-esc="doc.approved_by_id.name"/>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="row p-3">
+                        <div class="col-12">
+                            <strong>ADDITIONAL NOTES:</strong><br/>
+                            <t t-raw="doc.notes"/>
+                        </div>
+                    </div>
+                <!-- </div> -->
+            </div>
+            <div class="article" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+                <t t-out="0"/>
+            </div>
+        </t>
+    </template>
+</odoo>

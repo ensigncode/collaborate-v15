@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+sost_merge_po.access_merge_po_line,access_merge_po_line,sost_merge_po.model_merge_po_line,base.group_user,1,1,1,1
+sost_merge_po.access_merge_po,access_merge_po,sost_merge_po.model_merge_po,base.group_user,1,1,1,1
