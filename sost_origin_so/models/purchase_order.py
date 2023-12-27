@@ -27,5 +27,7 @@ class PurchaseOrderLine(models.Model):
             if order_ids:
                 sost_so_id = order_ids[0]
             line.sost_so_id = sost_so_id
+            line.sost_order = ','.join(order.name for order in order_ids) if order_ids else 'Stock'
 
     sost_so_id = fields.Many2one('sale.order',string="Sale Order",compute="_compute_sost_so",store=True)
+    sost_order = fields.Char(string="Order",compute="_compute_sost_so")

@@ -16,7 +16,7 @@ class MergePOLine(models.Model):
         active_ids = ctx['active_ids']
         po_ids = self.env['purchase.order'].browse(active_ids)
         merge_pos = []
-        for po_id in po_ids:
+        for po_id in po_ids.filtered(lambda x:x.state in ('draft','sent')):
             merge_pos.append((0,0,{'po_id':po_id.id,'partner_id':po_id.partner_id.id}))
         res['merge_po_ids'] = merge_pos
         res['po_ids'] = [(6,0,po_ids.ids)]
@@ -26,14 +26,13 @@ class MergePOLine(models.Model):
         partner_ids = self.merge_po_ids.mapped('partner_id')
         for partner in partner_ids:
             po_line_ids = self.merge_po_ids.filtered(lambda x:x.partner_id.id == partner.id)
-            print('\n\n===merge_po--po_line_ids--==',po_line_ids)
-
-
-
-
-            
-
-        print('\n\n===partner_ids----==',partner_ids)
+            po_ids = po_line_ids.mapped('po_id')
+            if len(po_ids) > 1:
+                last_po_id = po_ids[0]
+                for po in po_ids.filtered(lambda x:x.id != last_po_id.id):
+                    for line in po.order_line:
+                        line.order_id = last_po_id.id
+                    po.active = False
         return True
 
 
