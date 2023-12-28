@@ -11,8 +11,14 @@
                                 .table-bordered {
                                     border-color: black;
                                 }
+                                .all_fornt {
+                                font-family:'Arial MT', sans-serif;
+                                }
+                                 .address_font{
+                                font-family: Verdana, sans-serif;
+                                }
                             </style>
-                     <div class="row">
+                     <div class="row address_font">
                         <div class="col-6">
                             <div>
                                 <strong >Shipping Address</strong>
@@ -67,69 +73,75 @@
                             <div style="border-top: 2px solid #0E86D4;"></div>
                         </div>
                     </div>
-                    <div class="row p-3">
-                        <div class="col-6" style="background:#f5f5f5">
-                            <strong >PRIME REFERENCE : </strong><t t-esc="doc.partner_ref"/><br/>
-                            <strong >DELIVERY DATE : </strong><t t-if="doc.date_planned"><t t-esc="doc.date_planned.date()" t-options='{"widget": "date","format": "dd-MM-yyyy"}'/></t>
+                    <div class="all_fornt">
+                        <div class="row p-3">
+                            <div class="col-6" style="background:#f5f5f5">
+                                <strong >PRIME REFERENCE : </strong><t t-esc="doc.partner_ref"/><br/>
+                                <strong >DELIVERY DATE : </strong><t t-if="doc.date_planned"><t t-esc="doc.date_planned.date()" t-options='{"widget": "date","format": "dd-MM-yyyy"}'/></t>
 
+                            </div>
+                            <div class="col-6" style="background:#f5f5f5">
+                                <strong >ORDERED BY : </strong>
+                                <t t-if="doc.user_id">
+                                    <t t-esc="doc.user_id.name"/>
+                                </t><t t-else=""><t t-esc="doc.create_uid.name"/></t><br/>
+                                <strong >PAYMENT TERMS : </strong><t t-esc="doc.payment_term_id.name"/>
+                            </div>
                         </div>
-                        <div class="col-6" style="background:#f5f5f5">
-                            <strong >ORDERED BY : </strong>
-                            <t t-if="doc.user_id">
-                                <t t-esc="doc.user_id.name"/>
-                            </t><t t-else=""><t t-esc="doc.create_uid.name"/></t><br/>
-                            <strong >PAYMENT TERMS : </strong><t t-esc="doc.payment_term_id.name"/>
-                        </div>
-                    </div>
 
-                     <div class="row">
-                        <div class="col-12">
-                            <div style="border-top: 2px solid #0E86D4;"></div>
+                         <div class="row">
+                            <div class="col-12">
+                                <div style="border-top: 2px solid #0E86D4;"></div>
+                            </div>
                         </div>
-                    </div>
-                     <table class="mt-5 table table-striped" >
-                        <thead>
-                            <tr>
-                                <th class="text-left">POS</th>
-                                <th class="text-left" width="130px">ITEM CODE</th>
-                                <th class="text-left">DESCRIPTION</th>
-                                <th class="text-right">U.M</th>
-                                <th class="text-right">QTY</th>
-                                <th class="text-right" width="120px">UNIT PRICE</th>
-                                <t t-if="doc.tax_use">
-                                    <th width="80px" class="text-right">TAX</th>
-                                </t>
-                                <th class="text-right" width="120px">VALUE </th>
-                                <th class="text-right">NOTES</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-set="sr_no" t-value="0"/>
-                            <t t-set="merged_lines" t-value="doc.merge_purchase_order_lines()"/>
-                            <t t-foreach="merged_lines.items()" t-as="merged_line">
-                                <t t-set="sr_no" t-value="sr_no + 1"/>
+                         <table class="mt-5 table table-striped" >
+                            <thead>
                                 <tr>
-                                    <td class="text-left"><t t-esc="sr_no"/></td>
-                                    <td class="text-left"><t t-esc="merged_line[1]['order_line'].product_id.default_code"/></td>
-                                    <td class="text-left"><t t-esc="merged_line[1]['order_line'].name"/></td>
-                                    <td class="text-right"><t t-esc="merged_line[1]['order_line'].product_uom.name"/></td>
-                                    <td class="text-right"><t t-esc="merged_line[1]['quantity']"/></td>
-                                    <td class="text-right"><t t-esc="merged_line[1]['order_line'].price_unit"/></td>
+                                    <th class="text-left">POS</th>
+                                    <th class="text-left" width="130px">ITEM CODE</th>
+                                    <th class="text-left">DESCRIPTION</th>
+                                    <th class="text-right">U.M</th>
+                                    <th class="text-right">QTY</th>
+                                    <th class="text-right" width="120px">UNIT PRICE</th>
                                     <t t-if="doc.tax_use">
-                                        <td class="text-right"><span t-out="', '.join(map(lambda x: (x.name), merged_line[1]['order_line'].taxes_id))"/></td>
+                                        <th width="80px" class="text-right">TAX</th>
                                     </t>
-                                    <td class="text-right"><t t-esc="merged_line[1]['subtotal']"/></td>
-                                    <td class="text-left"><t t-esc="', '.join(merged_line[1]['notes'])"/></td>
+                                    <th class="text-right" width="120px">VALUE </th>
+                                    <th class="text-right">NOTES</th>
                                 </tr>
-                            </t>
-                        </tbody>
-                    </table>
-                     <div id="total" class="row justify-content-end">
-                        <div class="col-4">
-                            <table class="table table-sm">
-                                <t t-set="tax_totals" t-value="json.loads(doc.tax_totals_json)"/>
-                                <t t-call="account.document_tax_totals"/>
-                            </table>
+                            </thead>
+                            <tbody>
+                                <t t-set="sr_no" t-value="0"/>
+                                <t t-set="merged_lines" t-value="doc.merge_purchase_order_lines()"/>
+                                <t t-foreach="merged_lines.items()" t-as="merged_line">
+                                    <t t-set="sr_no" t-value="sr_no + 1"/>
+                                    <tr>
+                                        <td class="text-left"><t t-esc="sr_no"/></td>
+                                        <td class="text-left"><t t-esc="merged_line[1]['order_line'].product_id.default_code"/></td>
+                                        <td class="text-left"><t t-esc="merged_line[1]['order_line'].name"/></td>
+                                        <td class="text-right"><t t-esc="merged_line[1]['order_line'].product_uom.name"/></td>
+                                        <td class="text-right"><t t-esc="merged_line[1]['quantity']"/></td>
+                                        <td class="text-right"><t t-esc="merged_line[1]['order_line'].price_unit"/></td>
+                                        <t t-if="doc.tax_use">
+                                            <td class="text-right"><span t-out="', '.join(map(lambda x: (x.name), merged_line[1]['order_line'].taxes_id))"/></td>
+                                        </t>
+                                        <td class="text-right"><t t-esc="merged_line[1]['subtotal']"/></td>
+                                        <td class="text-left">
+                                             <t t-foreach="merged_line[1]['notes']" t-as="note">
+                                                <t t-esc="note"/><br/>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                         <div id="total" class="row justify-content-end">
+                            <div class="col-4">
+                                <table class="table table-sm">
+                                    <t t-set="tax_totals" t-value="json.loads(doc.tax_totals_json)"/>
+                                    <t t-call="account.document_tax_totals"/>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
