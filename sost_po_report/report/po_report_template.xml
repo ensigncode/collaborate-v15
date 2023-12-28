@@ -11,6 +11,12 @@
                       .font_color {
                       color:white
                       }
+                     .all_fornt {
+                                font-family:'Arial MT', sans-serif;
+                                }
+                     .address_font{
+                    font-family: Verdana, sans-serif;
+                    }
             </style>
             <t t-if="company_id">
                 <t t-set="company_id" t-value="company_id"/>
@@ -19,7 +25,7 @@
                 <t t-set="company_id" t-value="res_company"/>
             </t>
             <div class="header">
-                <div class=" row">
+                <div class="row all_fornt">
                     <div class="col-6">
                          <img t-if="company_id.logo" t-attf-src="data:image/png;base64,{{company_id.logo}}" />
                     </div>
@@ -44,7 +50,7 @@
                         </div>
                     </div>
                      <div class="row p-3">
-                        <div class="col-6" style="background:#f5f5f5">
+                        <div class="col-6 address_font" style="background:#f5f5f5">
                             <span>
                                 <strong><div style="font-size:20px"><t t-esc="doc.company_id.partner_id.name"/></div></strong>
                                     <t t-esc="doc.company_id.partner_id.street"/>,
@@ -63,14 +69,14 @@
                             <strong>VAT : </strong><t t-esc="doc.company_id.partner_id.vat"/> &#160;&#160;&#160;<strong>NRC : </strong>   <t t-esc="doc.company_id.partner_id.nrc"/>
 
                         </div>
-                        <div class="col-6" style="background:#f5f5f5">
+                        <div class="col-6 all_fornt" style="background:#f5f5f5">
                             <strong>SIGNATURE/ APPROVED BY : </strong>
                             <t t-if="doc.approved_by_id">
                                 <t t-esc="doc.approved_by_id.name"/>
                             </t>
                         </div>
                     </div>
-                    <div class="row p-3">
+                    <div class="row p-3 all_fornt">
                         <div class="col-12">
                             <strong>ADDITIONAL NOTES:</strong><br/>
                             <t t-raw="doc.notes"/>

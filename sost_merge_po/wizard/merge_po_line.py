@@ -24,6 +24,8 @@ class MergePOLine(models.Model):
 
     def merge_pos(self):
         partner_ids = self.merge_po_ids.mapped('partner_id')
+        line_remove = []
+        
         for partner in partner_ids:
             po_line_ids = self.merge_po_ids.filtered(lambda x:x.partner_id.id == partner.id)
             po_ids = po_line_ids.mapped('po_id')
