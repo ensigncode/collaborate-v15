@@ -5,18 +5,44 @@
                
                 <div class="page">
                     <style>
-                                .table-striped tbody tr:nth-child(odd) {
-                                    background-color: #f2f2f2;
-                                  }
-                                .table-bordered {
-                                    border-color: black;
-                                }
-                                .all_fornt {
-                                font-family:'Arial MT', sans-serif;
-                                }
-                                 .address_font{
-                                font-family: Verdana, sans-serif;
-                                }
+                        @font-face {
+                            font-family: 'Arial MT';
+                            src: 
+                                 url('/sost_po_report/static/src/fonts/Arial-MT-Std-Regular.otf') format('truetype');
+                                 
+                            font-weight : normal;
+                            font-style: $style;
+                        }
+                        @font-face {
+                            font-family: 'Verdana';
+                            src: 
+                                 url('/sost_po_report/static/src/fonts/Verdana.ttf') format('truetype');
+                                 
+                            font-weight : normal;
+                            font-style: $style;
+                        }
+                        @font-face {
+                            font-family: 'Verdanabold';
+                            src: url('/sost_po_report/static/src/fonts/Verdana_Bold.ttf') format('truetype');
+                        }
+                        .v-bold {
+                        font-family:'Verdanabold';
+                        }
+                        .table-striped tbody tr:nth-child(odd) {
+                            background-color: #f2f2f2;
+                          }
+                        .table-bordered {
+                            border-color: black;
+                        }
+                        body {
+                        font-family:'Arial MT', sans-serif;
+                        }
+                         .address_font{
+                        font-family: Verdana;
+                        }
+
+
+                                
                             </style>
                      <div class="row address_font">
                         <div class="col-6">
@@ -24,8 +50,8 @@
                                 <strong >Shipping Address</strong>
                                 <div style="border-top: 2px solid #0E86D4;"></div>
                                 <br/>
-                                 <span>
-                                    <strong><div style="font-size:25px"><t t-esc="doc.company_id.partner_id.name"/></div></strong><br/>
+                                 <span class="address_font">
+                                    <strong><div style="font-size:25px; font-family: Lucida Console, Courier New, monospace;"><t t-esc="doc.company_id.partner_id.name"/></div></strong><br/>
                                     <t t-esc="doc.company_id.partner_id.street"/>,
                                     <t t-if="doc.company_id.partner_id.street2">
                                         <t t-esc="doc.company_id.partner_id.street2"/>,
@@ -47,7 +73,7 @@
                                 <strong>Supplier</strong>
                                 <div style="border-top: 2px solid #0E86D4;"></div>
                                 <br/>
-                                 <span>
+                                 <span class="address_font">
                                     <strong><div style="font-size:25px"><t t-esc="doc.partner_id.name"/></div></strong><br/>
                                     <t t-esc="doc.partner_id.street"/>,
                                     <t t-if="doc.partner_id.street2">
