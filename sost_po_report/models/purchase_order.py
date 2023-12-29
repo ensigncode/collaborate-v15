@@ -41,7 +41,7 @@ class PurchaseOrder(models.Model):
 
 	def button_approve(self,force=False):
 		res = super(PurchaseOrder,self).button_approve(force=force)
-		self.approved_by_id = user = self.env.user
+		self.approved_by_id = self.env.user
 		return res
 
 class PurchaseOrderLine(models.Model):

@@ -6,7 +6,7 @@
     "description": '''
             Sost. Merge PO
         ''',
-    "version": "15.0.2.0.0",
+    "version": "15.0.0.0.5",
     "license": "LGPL-3",
     "depends": [
                 "purchase",
