@@ -8,6 +8,7 @@
             <xpath expr="//field[@name='order_line']/tree/field[@name='price_subtotal']" position='after'>
                 <field name="sost_so_id" string="Order" optional="hide"/>
                 <field name="sost_order" string="Order No" optional="hide"/>
+                <field name="po_origin" string="po_origin" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='origin']" position='after'>
                 <field name="order_ids" string="Order" widget="many2many_tags"/>
