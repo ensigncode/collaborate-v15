@@ -39,8 +39,8 @@ class PurchaseOrder(models.Model):
 				merged_lines[key]['notes'].append(line.notes)
 		return merged_lines
 
-	def button_approve(self):
-		res = super().button_approve()
+	def button_approve(self,force=False):
+		res = super(PurchaseOrder,self).button_approve(force=force)
 		self.approved_by_id = user = self.env.user
 		return res
 
