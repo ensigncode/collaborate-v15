@@ -44,6 +44,47 @@ class PurchaseOrder(models.Model):
             'type': 'ir.actions.act_window',
         }
 
+    def get_location_in(self,out_location,storage_category_id):
+        get_location_in = False
+        print('\n\n====out_location====',out_location)
+
+
+
+        get_all_location = {}
+        storage_category_id = self.env['stock.storage.category'].browse(storage_category_id)
+        main_destination_id = self.env['stock.location'].browse(out_location)
+        if main_destination_id:
+            get_all_location.update({main_destination_id.display_name.count('/'):main_destination_id})
+            count = 0
+            while count == 0:
+                if main_destination_id.location_id and main_destination_id.location_id.usage == 'internal':
+                    main_destination_id = main_destination_id.location_id
+                    get_all_location.update({main_destination_id.display_name.count('/'):main_destination_id})
+                else:
+                    get_all_location.update({main_destination_id.display_name.count('/'):main_destination_id})
+                    count = 1
+        count = 0
+        while count == 0:
+            location_id = self.env['stock.location'].search([('location_id','=',main_destination_id.id)])
+            if location_id:
+                get_all_location.update({location_id[0].display_name.count('/'):location_id})
+                main_destination_id = location_id[0]
+            else:
+                count = 1
+
+        print('\n\n=======get_all_location=========',get_all_location)
+        if storage_category_id and storage_category_id.storage_location and get_all_location:
+            find_stock_category = storage_category_id.storage_location - 1
+            
+            if find_stock_category in list(get_all_location.keys()):
+                get_location_in = get_all_location[find_stock_category]
+                get_location_in = get_location_in[-1]
+
+                print('\n\n===222222222====get_location_in======',get_location_in)
+
+        return get_location_in
+
+
     def update_po_product_putaway_rule_data(self):
         line_data = []
         occupied_locations = []
@@ -54,6 +95,9 @@ class PurchaseOrder(models.Model):
         for line in self.order_line:
             product_id = line.product_id
             datas =  product_id.get_rule_lines(location_dest_id,occupied_locations)
+
+            print('\n\n===datas==',datas)
+            
             if datas['create_product_rule']:
                 line.create_product_rule = True
                 if not datas['issue_product_rule']:
@@ -78,6 +122,7 @@ class PurchaseOrder(models.Model):
                 rule_line_data.append((0,0,l_data))
             rule_vals = {'po_id':self.id,'product_putaway_rule_line_ids':rule_line_data}
             rule_id = self.env['product.putaway.rule'].create(rule_vals)
+            # print('\n==11111111======rule_id======',rule_id)
             return {
                 'name': _('Putaway Rule'),
                 'type': 'ir.actions.act_window',
@@ -90,10 +135,16 @@ class PurchaseOrder(models.Model):
         elif line_data:
             for l_data in line_data:
                 l_data.pop('fix_location')
-                l_data.update({'location_in_id':main_destination_id.id})
+                location_in_id = self.get_location_in(l_data['location_out_id'],l_data['storage_category_id'])
+                # print('\n==2222222222======location_in_id======',location_in_id)
+                if location_in_id:
+                    l_data.update({'location_in_id':location_in_id.id})
+                else:
+                    l_data.update({'location_in_id':main_destination_id.id})
                 if 'storage_category_id' in l_data:
                     l_data.pop('storage_category_id')
                 rule_id = self.env['stock.putaway.rule'].create(l_data)
+                # print('\n==2222222222======rule_id======',rule_id)
         self.with_context(update_po=1).button_confirm()
         return True   
 
