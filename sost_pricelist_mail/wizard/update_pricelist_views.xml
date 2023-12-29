@@ -5,19 +5,12 @@
 		<field name="model">update.pricelist</field>
 		<field name="arch" type="xml">
 			<form string="Update Pricelist">
-				<group>
-					<group>
-						<field name="partner_ids" widget="many2many_tags" required="1" options="{'no_create':1}"/>
-					</group>
-					<group></group>
-				</group>
 				<field name="update_pricelist_line_ids" nolabel="1">
 					<tree editable="bottom" create="false">
 						<field name="product_tmpl_id" readonly="1" force_save="1"/>
 						<field name="product_variant_id" readonly="1" force_save="1"/>
 						<field name="currency_id" readonly="1" force_save="1"/>
 						<field name="price_unit"  readonly="1" force_save="1"/>
-						<field name="availablity_message"  readonly="1" force_save="1"/>
 						<field name="start_date"  readonly="1" force_save="1"/>
 						<field name="end_date"  readonly="1" force_save="1"/>
 					</tree>

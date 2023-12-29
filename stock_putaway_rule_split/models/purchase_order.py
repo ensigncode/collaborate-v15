@@ -39,26 +39,47 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
+    def get_putaway_rules(self,destination_location_id):
+        """
+            Filter product putaway rules
+        """
+        return self.product_id.putaway_rule_ids.filtered(
+            lambda p_rule: p_rule.storage_category_id and p_rule.location_in_id.id == destination_location_id
+        )
+
     def _prepare_split_stock_putaway(self, qty):
         """
             Preparing splitting of the stock rules
         """
         dest_location_id = (self.orderpoint_id and not (self.move_ids | self.move_dest_ids)) and self.orderpoint_id.location_id.id or self.order_id._get_destination_location()
-        putaway_rules = self.product_id.putaway_rule_ids.filtered(
-            lambda p_rule: p_rule.storage_category_id and p_rule.location_in_id.id == dest_location_id
-        )
+        putaway_rules = self.get_putaway_rules(dest_location_id)
         quantity_list = []
         qty_to_remaining = qty
-        for location_id in list(set(putaway_rules.mapped('storage_category_id.location_ids'))):
-            product_capacity_lines = location_id.storage_category_id.product_capacity_ids.filtered(
-                lambda pc_line: pc_line.product_id.id == self.product_id.id)
-            for p_cap_line in product_capacity_lines:
-                if qty_to_remaining <= 0:
+        if putaway_rules:
+            while qty_to_remaining > 0:
+                found_capacity = False  # Flag to track if any capacity lines were found
+
+                for storage_category_id in list(set(putaway_rules.mapped('storage_category_id'))):
+                    product_capacity_lines = storage_category_id.product_capacity_ids.filtered(
+                        lambda pc_line: pc_line.product_id.id == self.product_id.id)
+
+                    # Check if there are any product capacity lines
+                    if product_capacity_lines:
+                        found_capacity = True  # Set the flag to True if capacity lines are found
+
+                        for p_cap_line in product_capacity_lines:
+                            if qty_to_remaining <= 0:
+                                break
+
+                            quantity_list.append(
+                                p_cap_line.quantity if p_cap_line.quantity <= qty_to_remaining else qty_to_remaining
+                            )
+                            qty_to_remaining -= p_cap_line.quantity
+
+                # If no capacity lines were found, break out of the while loop
+                if not found_capacity:
                     break
-                quantity_list.append(
-                    p_cap_line.quantity if p_cap_line.quantity <= qty_to_remaining else qty_to_remaining
-                )
-                qty_to_remaining -= p_cap_line.quantity
+
         if qty_to_remaining:
             quantity_list.append(qty_to_remaining)
         return quantity_list

@@ -1,5 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
+    <!-- <record id="c" model="ir.ui.view">
+        <field name="name">view_stock_location_inherit</field>
+        <field name="model">stock.location</field>
+        <field name="inherit_id" ref="stock.view_location_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='usage']" position="after">
+                <field name="is_subcontract"/>                
+            </xpath>
+        </field>
+    </record> -->
+
     <record id="view_picking_type_inherit" model="ir.ui.view">
         <field name="name">view_picking_type_inherit</field>
         <field name="model">stock.picking.type</field>
@@ -8,6 +19,27 @@
             <xpath expr="//field[@name='sequence_id']" position="after">
                 <field name="check_existing_stock"/>                
             </xpath>
+        </field>
+    </record>
+
+    
+    <record id="view_picking_inherit" model="ir.ui.view">
+        <field name="name">view_picking_inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_confirm']" position="after">
+                <button name="update_move_demand_qty" string="Update Demand Qty" 
+                        type="object" class="oe_stat_button" icon="fa-cubes" 
+                        states="assigned"/>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_qty']" position="after">
+                <field name="qty_available" optional="hide"/> 
+                <field name="intial_demand_qty" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="update_demand_qty" invisible="1"/>                
+            </xpath>            
         </field>
     </record>
 </odoo>

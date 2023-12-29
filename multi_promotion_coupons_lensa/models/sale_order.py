@@ -6,6 +6,13 @@ from odoo.tools.misc import formatLang, format_date
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
+    code_promo_program_ids = fields.Many2many(
+        comodel_name='coupon.program', 
+        relation='order_coupon_program_rel',
+        string='Applied Promo Programs'
+        )
+    
+
     def _get_reward_values_percentage_amount(self, program):
         # Invalidate multiline fixed_price discount line as they should apply after % discount
         fixed_price_products = self._get_applied_programs().filtered(
@@ -112,3 +119,22 @@ class SaleOrderLine(models.Model):
                 if results:
                     results[-1]['customer_note'] = sale_line.name
         return results
+
+    def unlink(self):
+        related_program_lines = self.env['sale.order.line']
+        # Reactivate coupons related to unlinked reward line
+        for line in self.filtered(lambda line: line.is_reward_line):
+            coupons_to_reactivate = line.order_id.applied_coupon_ids.filtered(
+                lambda coupon: coupon.program_id.discount_line_product_id == line.product_id
+            )
+            coupons_to_reactivate.write({'state': 'new'})
+            line.order_id.applied_coupon_ids -= coupons_to_reactivate
+            # Remove the program from the order if the deleted line is the reward line of the program
+            # And delete the other lines from this program (It's the case when discount is split per different taxes)
+            related_program = self.env['coupon.program'].search([('discount_line_product_id', '=', line.product_id.id)])
+            if related_program:
+                line.order_id.no_code_promo_program_ids -= related_program
+                line.order_id.code_promo_program_id -= related_program
+                line.order_id.code_promo_program_ids -= related_program
+                related_program_lines |= line.order_id.order_line.filtered(lambda l: l.product_id.id == related_program.discount_line_product_id.id) - line
+        return super(SaleOrderLine, self | related_program_lines).unlink()

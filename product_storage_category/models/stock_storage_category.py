@@ -7,6 +7,7 @@ class StockStorageCategoryCapacity(models.Model):
 	product_tmp_id = fields.Many2one('product.template',string="Template")
 	prod_storage_category_line_id = fields.Many2one('product.storage.category.lines',string="Category Lines")
 	active = fields.Boolean(string="Active",default=True)
+	auto_putaway_rule = fields.Boolean(string="Auto Putaway Rules",related="storage_category_id.auto_putaway_rule")
 
 	# def unlink(self):
 	# 	for record in self:
@@ -14,18 +15,34 @@ class StockStorageCategoryCapacity(models.Model):
 	# 			record.prod_storage_category_line_id.unlink()
 	# 	super(StockStorageCategoryCapacity, self).unlink()
 
+
+	def write(self,vals):
+		res = super(StockStorageCategoryCapacity,self).write(vals)
+		if 'update_prod_storage_category_line_id' in self._context:
+			return res
+		return res 
+
 	@api.model
 	def create(self,vals):
 		res = super(StockStorageCategoryCapacity,self).create(vals)
 		if not res.prod_storage_category_line_id:
 			prod_storage_category_line_id = self.env['product.storage.category.lines'].create({'storage_category_id':res.storage_category_id.id,'storage_capacity':res.quantity,'product_tmp_id':res.product_id.product_tmpl_id.id})
-			res.prod_storage_category_line_id = prod_storage_category_line_id.id
+			
+			# res.prod_storage_category_line_id = prod_storage_category_line_id.id
+			res.with_context(update_prod_storage_category_line_id=1).write({'prod_storage_category_line_id':prod_storage_category_line_id.id})
 		return res
+
+# class StockStorageCategoryCapacity(models.Model):
+# 	_inherit = 'stock.storage.category.capacity'
 	
+# 	auto_putaway_rule = fields.Boolean(string="Auto Putaway Rules",related="storage_category_id.auto_putaway_rule")
+
 class StockStorageCategory(models.Model):
 	_inherit = 'stock.storage.category'
 
 	auto_putaway_rule = fields.Boolean(string="Auto Putaway Rules")
+	storage_location = fields.Integer(string="Storage Location")
+
 
 	def _default_location_id(self):
 		wh = self.env['stock.warehouse'].search([('company_id', '=', self.env.company.id)], limit=1)

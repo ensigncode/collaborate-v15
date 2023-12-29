@@ -1,45 +1,73 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 
+class StockLocation(models.Model):
+    _inherit = "stock.location"
+
+    is_subcontract = fields.Boolean(string="Is Subcontract")
+
+    def update_parent_location(self):
+        main_destination_id = self
+        if main_destination_id:
+            count = 0
+            while count == 0:
+                if main_destination_id.location_id and main_destination_id.location_id.usage == 'internal':
+                    main_destination_id = main_destination_id.location_id
+                    main_destination_id.is_subcontract = self.is_subcontract
+                else:
+                    count = 1
+        return main_destination_id
+
 class StockMove(models.Model):
     _inherit = "stock.move"
 
-    def update_demand_qty(self):
-        if self.picking_id.picking_type_id.check_existing_stock and self.picking_id.origin:
-            location_dest_id = self.picking_id.location_dest_id
-            domain = [
-                ('product_id','=',self.product_id.id),
-                ('location_id','=',location_dest_id.id),
-                ('on_hand','=',True),
-            ]
-            quant_ids = self.env['stock.quant'].search(domain)
-            get_loc_dest_qty = 0
-            if quant_ids:
-                get_loc_dest_qty = sum(quant.inventory_quantity_auto_apply for quant in quant_ids if quant.inventory_quantity_auto_apply > 0)
-            
-            product_uom_qty = self.product_uom_qty
-            remaining_qty = 0
-            if get_loc_dest_qty > product_uom_qty:
-                remaining_qty = 0
-            elif get_loc_dest_qty < product_uom_qty:
-                remaining_qty = product_uom_qty - get_loc_dest_qty
-            self.with_context(update_product_uom_qty=1).update({'product_uom_qty':remaining_qty})
-        return True
+    subcontract_avail_qty = fields.Float(string="Subcontract Available Quantity")
+    subcontract_need_qty = fields.Float(string="Subcontract Need Quantity")
+    intial_demand_qty = fields.Float(string="Intial Demand Qty")
+    qty_available = fields.Float(string="Qty Available")
+
+    @api.model
+    def create(self,vals):
+        res = super(StockMove,self).create(vals)
+        res.intial_demand_qty = res.product_uom_qty
+        return res
 
     def write(self,vals):
         res = super(StockMove,self).write(vals)
-        if 'update_product_uom_qty' in self._context and self._context['update_product_uom_qty']:
+        if 'update_move_product_uom' in self._context:
             return res
-        if 'product_uom_qty' in vals:
+        if 'update_product_uom_qty' in self._context:
+            return res
+        if 'product_uom_qty' in vals and 'update_move_product_uom' not in self._context:
             for move in self:
-                move.update_demand_qty()
+                move.intial_demand_qty = move.product_uom_qty
         return res
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        results = super(StockMove, self).create(vals_list)
-        for res in results:
-            res.update_demand_qty()
-        return results
+class StockPicking(models.Model):
+    _inherit = "stock.picking"
 
-    
+    update_demand_qty = fields.Boolean(string="Update Demand Qty") 
+
+    def update_move_demand_qty(self):
+        location_ids = self.location_dest_id   
+        # location_ids = self.env['stock.location'].search([('is_subcontract','=',True)])
+        if location_ids:
+            for move in self.move_ids_without_package:
+                domain = [
+                    ('product_id','=',move.product_id.id),
+                    ('location_id','in',location_ids.ids),
+                ]
+                quant_ids = self.env['stock.quant'].search(domain)
+                get_loc_dest_qty = 0
+                if quant_ids:
+                    get_loc_dest_qty = sum(quant.available_quantity for quant in quant_ids)
+                product_uom_qty = move.intial_demand_qty
+                remaining_qty = 0
+                if get_loc_dest_qty > product_uom_qty:
+                    remaining_qty = 0
+                elif get_loc_dest_qty < product_uom_qty:
+                    remaining_qty = product_uom_qty - get_loc_dest_qty
+                move.with_context(update_move_product_uom=1).write({'qty_available':get_loc_dest_qty,'subcontract_avail_qty':get_loc_dest_qty,'product_uom_qty':remaining_qty})
+                move._action_assign(force_qty=remaining_qty)
+            self.update_demand_qty = True
+        return True
