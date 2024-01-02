@@ -62,10 +62,10 @@
                                     <t t-if="doc.company_id.partner_id.state_id">
                                         <t t-esc="doc.company_id.partner_id.state_id.name"/>, 
                                     </t>
-                                    <t t-esc="doc.company_id.partner_id.country_id.name"/>
+                                    <t t-if="doc.company_id.partner_id.country_id"><t  t-esc="doc.company_id.partner_id.country_id.name"/></t>
                                     <t t-esc="doc.company_id.partner_id.zip"/><br/>
                                 </span>
-                                <strong>Ph : </strong><t t-esc="doc.company_id.partner_id.phone"/>
+                                <strong><i class="fa fa-phone" aria-hidden="true"></i></strong><span style="padding-left: 8px;"><t t-esc="doc.company_id.partner_id.phone"/></span>
                             </div>
                         </div>
                         <div class="col-6">
@@ -88,7 +88,7 @@
                                     <t t-esc="doc.partner_id.country_id.name"/>
                                     <t t-esc="doc.partner_id.zip"/><br/>
                                 </span>
-                                <strong>Ph : </strong><t t-esc="doc.partner_id.phone"/><br/>
+                                 <strong><i class="fa fa-phone" aria-hidden="true"></i></strong><span style="padding-left: 8px;"><t t-esc="doc.partner_id.phone"/></span>
                                 <strong>VAT : </strong><t t-esc="doc.partner_id.vat"/><br/>
                                 <strong>IBAN : </strong><t t-if="doc.partner_id.bank_ids"><t t-esc="doc.partner_id.bank_ids[0].acc_number"/></t>
                             </div>
