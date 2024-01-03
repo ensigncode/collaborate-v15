@@ -51,7 +51,10 @@ class PurchaseOrderLine(models.Model):
         """
             Preparing splitting of the stock rules
         """
-        dest_location_id = (self.orderpoint_id and not (self.move_ids | self.move_dest_ids)) and self.orderpoint_id.location_id.id or self.order_id._get_destination_location()
+        if self._context.get('dest_loc_id'):
+            dest_location_id = self._context.get('dest_loc_id').id
+        else:
+            dest_location_id = (self.orderpoint_id and not (self.move_ids | self.move_dest_ids)) and self.orderpoint_id.location_id.id or self.order_id._get_destination_location()
         putaway_rules = self.get_putaway_rules(dest_location_id)
         quantity_list = []
         qty_to_remaining = qty
@@ -74,13 +77,13 @@ class PurchaseOrderLine(models.Model):
                             quantity_list.append(
                                 p_cap_line.quantity if p_cap_line.quantity <= qty_to_remaining else qty_to_remaining
                             )
-                            qty_to_remaining -= p_cap_line.quantity
+                            qty_to_remaining -= p_cap_line.quantity > qty_to_remaining and qty_to_remaining or p_cap_line.quantity
 
                 # If no capacity lines were found, break out of the while loop
                 if not found_capacity:
                     break
 
-        if qty_to_remaining:
+        if qty_to_remaining > 0:
             quantity_list.append(qty_to_remaining)
         return quantity_list
 
