@@ -75,10 +75,15 @@ class PurchaseOrderLine(models.Model):
                             for p_cap_line in product_capacity_lines:
                                 if qty_to_remaining <= 0:
                                     break
-
-                                quantity_list.append(
-                                    (location.id,p_cap_line.quantity if p_cap_line.quantity <= qty_to_remaining else qty_to_remaining)
+                                
+                                if self._context.get('prepare_moves'):
+                                    quantity_list.append(
+                                        p_cap_line.quantity if p_cap_line.quantity <= qty_to_remaining else qty_to_remaining
                                 )
+                                else:    
+                                    quantity_list.append(
+                                        (location.id,p_cap_line.quantity if p_cap_line.quantity <= qty_to_remaining else qty_to_remaining)
+                                    )
                                 qty_to_remaining -= p_cap_line.quantity > qty_to_remaining and qty_to_remaining or p_cap_line.quantity
 
                     # If no capacity lines were found, break out of the while loop
@@ -112,7 +117,7 @@ class PurchaseOrderLine(models.Model):
             qty_to_attach = move_dests_initial_demand - qty
             qty_to_push = self.product_qty - move_dests_initial_demand
 
-        qty_to_move = self._prepare_split_stock_putaway(qty_to_push)
+        qty_to_move = self.with_context(prepare_moves=True)._prepare_split_stock_putaway(qty_to_push)
         if float_compare(qty_to_attach, 0.0, precision_rounding=self.product_uom.rounding) > 0:
             product_uom_qty, product_uom = self.product_uom._adjust_uom_quantities(qty_to_attach, self.product_id.uom_id)
             res.append(self._prepare_stock_move_vals(picking, price_unit, product_uom_qty, product_uom))
