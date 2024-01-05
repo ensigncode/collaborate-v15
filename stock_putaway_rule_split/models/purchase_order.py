@@ -59,29 +59,31 @@ class PurchaseOrderLine(models.Model):
         quantity_list = []
         qty_to_remaining = qty
         if putaway_rules:
+            location_dest_id = putaway_rules.location_out_id
             while qty_to_remaining > 0:
                 found_capacity = False  # Flag to track if any capacity lines were found
 
                 for storage_category_id in list(set(putaway_rules.mapped('storage_category_id'))):
-                    product_capacity_lines = storage_category_id.product_capacity_ids.filtered(
-                        lambda pc_line: pc_line.product_id.id == self.product_id.id)
+                    for location in storage_category_id.location_ids.filtered(lambda location: location.location_id.id == location_dest_id.id):
+                        product_capacity_lines = storage_category_id.product_capacity_ids.filtered(
+                            lambda pc_line: pc_line.product_id.id == self.product_id.id)
 
-                    # Check if there are any product capacity lines
-                    if product_capacity_lines:
-                        found_capacity = True  # Set the flag to True if capacity lines are found
+                        # Check if there are any product capacity lines
+                        if product_capacity_lines:
+                            found_capacity = True  # Set the flag to True if capacity lines are found
 
-                        for p_cap_line in product_capacity_lines:
-                            if qty_to_remaining <= 0:
-                                break
+                            for p_cap_line in product_capacity_lines:
+                                if qty_to_remaining <= 0:
+                                    break
 
-                            quantity_list.append(
-                                p_cap_line.quantity if p_cap_line.quantity <= qty_to_remaining else qty_to_remaining
-                            )
-                            qty_to_remaining -= p_cap_line.quantity > qty_to_remaining and qty_to_remaining or p_cap_line.quantity
+                                quantity_list.append(
+                                    (location.id,p_cap_line.quantity if p_cap_line.quantity <= qty_to_remaining else qty_to_remaining)
+                                )
+                                qty_to_remaining -= p_cap_line.quantity > qty_to_remaining and qty_to_remaining or p_cap_line.quantity
 
-                # If no capacity lines were found, break out of the while loop
-                if not found_capacity:
-                    break
+                    # If no capacity lines were found, break out of the while loop
+                    if not found_capacity:
+                        break
 
         if qty_to_remaining > 0:
             quantity_list.append(qty_to_remaining)

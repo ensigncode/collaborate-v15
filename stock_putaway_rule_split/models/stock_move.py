@@ -38,6 +38,7 @@ class StockMove(models.Model):
                     continue
                 new_picking = True
                 picking = Picking.create(moves._get_new_picking_values())
+                moves.with_context(from_putaway_rule=True)._action_confirm(merge=False)
 
             po_id = self.env['purchase.order'].sudo().search([('name', '=', picking.origin)], limit=1)
             po_line_ids = po_id.order_line
@@ -45,8 +46,8 @@ class StockMove(models.Model):
                 po_move_line_id = po_line_ids.filtered(lambda pml: pml.product_id.id == move.product_id.id)
                 if po_move_line_id:
                     qty_list = po_move_line_id[0].with_context(dest_loc_id=move.location_dest_id)._prepare_split_stock_putaway(po_move_line_id[0].product_qty)
-                    for move_id, qty in {index==0 and move or move.copy({'picking_id':picking.id}): qt for index, qt in enumerate(qty_list)}.items():
-                        move_id.write({'product_uom_qty':qty})
+                    for move_id, qty in {index==0 and move or move.copy({'picking_id':picking.id,'state':move.state}): qt for index, qt in enumerate(qty_list)}.items():
+                        move_id.write({'product_uom_qty':qty[1],'location_dest_id':qty[0]})
                 
             moves.write({'picking_id': picking.id})
             moves._assign_picking_post_process(new=new_picking)
