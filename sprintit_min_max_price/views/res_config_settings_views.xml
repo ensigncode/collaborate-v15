@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.sale</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="10"/>
+        <field name="inherit_id" ref="sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='group_product_pricelist']/../.." position="after">
+                <div class="col-12 col-lg-6 o_setting_box"
+                     attrs="{'invisible': [('group_product_pricelist' ,'=', False)]}"
+                     title="Use lowest-highest price from whole chain of price.">
+                    <div class="o_setting_left_pane" attrs="{'invisible': [('max_sales_price' ,'!=', False)]}">
+                        <field name="min_sales_price" widget="upgrade_boolean"/>
+                    </div>
+                    <div class="o_setting_right_pane" attrs="{'invisible': [('max_sales_price' ,'!=', False)]}">
+                        <label for="min_sales_price"/>
+                        <div class="text-muted" id="min_sales_price">
+                            Use lowest price from whole chain of price.
+                        </div>
+                    </div>
+                    <div class="o_setting_left_pane" attrs="{'invisible': [('min_sales_price' ,'!=', False)]}">
+                        <field name="max_sales_price" widget="upgrade_boolean"/>
+                    </div>
+                    <div class="o_setting_right_pane" attrs="{'invisible': [('min_sales_price' ,'!=', False)]}">
+                        <label for="max_sales_price"/>
+                        <div class="text-muted" id="max_sales_price">
+                            Use maximum price from whole chain of price.
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
