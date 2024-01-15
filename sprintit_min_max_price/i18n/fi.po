@@ -1,0 +1,42 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* sprintit_min_max_price
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 12.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-10-11 11:21+0000\n"
+"PO-Revision-Date: 2019-10-11 11:21+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sprintit_min_max_price
+#: model:ir.model.fields,field_description:sprintit_min_max_price.field_res_config_settings__max_sales_price
+msgid "Maximum Sales Price from chain of pricelist"
+msgstr "Suurin myyntihinta hinnastoketjusta"
+
+#. module: sprintit_min_max_price
+#: model:ir.model.fields,field_description:sprintit_min_max_price.field_res_config_settings__min_sales_price
+msgid "Minimum Sales Price from chain of pricelist"
+msgstr "Pienin myyntihinta hinnastoketjusta"
+
+#. module: sprintit_min_max_price
+#: model_terms:ir.ui.view,arch_db:sprintit_min_max_price.res_config_settings_view_form
+msgid "Use lowest price from whole chain of price."
+msgstr "Käytä alhaisinta hintaa koko hintaketjussa."
+
+#. module: sprintit_min_max_price
+#: model_terms:ir.ui.view,arch_db:sprintit_min_max_price.res_config_settings_view_form
+msgid "Use lowest-highest price from whole chain of price."
+msgstr "Käytä alhaisinta hintaa koko hintaketjussa"
+
+#. module: sprintit_min_max_price
+#: model_terms:ir.ui.view,arch_db:sprintit_min_max_price.res_config_settings_view_form
+msgid "Use maximum price from whole chain of price."
+msgstr "Käytä korkeinta hintaa koko hintaketjussa."
+
