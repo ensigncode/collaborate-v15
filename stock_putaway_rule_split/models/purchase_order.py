@@ -65,7 +65,7 @@ class PurchaseOrderLine(models.Model):
 
                 # for storage_category_id in list(set(putaway_rules.mapped('storage_category_id'))):
             storage_category_id = putaway_rules.mapped('storage_category_id')
-            dest_internal_location = storage_category_id.location_ids.filtered(lambda location: location.location_id.id == location_dest_id.id)
+            dest_internal_location = self.env['stock.location'].search([('storage_category_id', 'in', storage_category_id.ids), ('location_id', 'child_of', location_dest_id.id)])
             free_space_loc_ids = dest_internal_location.filtered(lambda x:x.storage_category_id.product_capacity_ids.filtered(lambda line:line.product_id.id == self.product_id.id).quantity > self.env['stock.quant']._get_available_quantity(self.product_id,x))
             for loc in free_space_loc_ids:
                 if qty_to_remaining:
