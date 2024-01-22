@@ -51,36 +51,99 @@ class PurchaseOrderLine(models.Model):
         """
             Preparing splitting of the stock rules
         """
-        dest_location_id = (self.orderpoint_id and not (self.move_ids | self.move_dest_ids)) and self.orderpoint_id.location_id.id or self.order_id._get_destination_location()
+        if self._context.get('dest_loc_id'):
+            dest_location_id = self._context.get('dest_loc_id').id
+        else:
+            dest_location_id = (self.orderpoint_id and not (self.move_ids | self.move_dest_ids)) and self.orderpoint_id.location_id.id or self.order_id._get_destination_location()
         putaway_rules = self.get_putaway_rules(dest_location_id)
         quantity_list = []
         qty_to_remaining = qty
         if putaway_rules:
-            while qty_to_remaining > 0:
-                found_capacity = False  # Flag to track if any capacity lines were found
+            location_dest_id = putaway_rules.location_out_id
+            # while qty_to_remaining > 0:
+                # found_capacity = False  # Flag to track if any capacity lines were found
 
-                for storage_category_id in list(set(putaway_rules.mapped('storage_category_id'))):
-                    product_capacity_lines = storage_category_id.product_capacity_ids.filtered(
-                        lambda pc_line: pc_line.product_id.id == self.product_id.id)
-
-                    # Check if there are any product capacity lines
-                    if product_capacity_lines:
-                        found_capacity = True  # Set the flag to True if capacity lines are found
-
-                        for p_cap_line in product_capacity_lines:
-                            if qty_to_remaining <= 0:
-                                break
-
-                            quantity_list.append(
-                                p_cap_line.quantity if p_cap_line.quantity <= qty_to_remaining else qty_to_remaining
+                # for storage_category_id in list(set(putaway_rules.mapped('storage_category_id'))):
+            storage_category_id = putaway_rules.mapped('storage_category_id')
+            dest_internal_location = self.env['stock.location'].search([('storage_category_id', 'in', storage_category_id.ids), ('location_id', 'child_of', location_dest_id.id)])
+            free_space_loc_ids = dest_internal_location.filtered(lambda x:x.storage_category_id.product_capacity_ids.filtered(lambda line:line.product_id.id == self.product_id.id).quantity > self.env['stock.quant']._get_available_quantity(self.product_id,x))
+            for loc in free_space_loc_ids:
+                if qty_to_remaining:
+                    loc_product_capacity = loc.storage_category_id.product_capacity_ids.filtered(lambda pro:pro.product_id.id == self.product_id.id).quantity
+                    available_stock = self.env['stock.quant']._get_available_quantity(self.product_id,loc)
+                    if self._context.get('prepare_moves'):
+                        quantity_list.append(
+                                    loc_product_capacity if loc_product_capacity <= qty_to_remaining else qty_to_remaining
                             )
-                            qty_to_remaining -= p_cap_line.quantity
+                        qty_to_remaining -= loc_product_capacity
+                    else :
+                        if loc_product_capacity != available_stock:
+                            capable_qty = loc_product_capacity - available_stock
+                            if qty_to_remaining > capable_qty:
+                                quantity_list.append(
+                                            (loc.id,capable_qty)
+                                        )
+                                qty_to_remaining -= capable_qty
+                            else:
+                                quantity_list.append(
+                                                (loc.id,qty_to_remaining)
+                                            )
+                                qty_to_remaining = 0
+            
+            if qty_to_remaining > 0:
+                quantity_list.append(
+                            (dest_location_id,qty_to_remaining)
+                        )
+                qty_to_remaining = 0
+                                # qty_to_remaining -= capable_qty if qty_to_remaining >= capable_qty else qty_to_remaining
+                    
+                    # if qty_to_remaining:
+                    #     quantity_list.append(
+                    #                             (dest_location_id, qty_to_remaining)
+                    #                         )
+                    # for location in storage_category_id.location_ids.filtered(lambda location: location.location_id.id == location_dest_id.id):
+                    #     product_capacity_lines = storage_category_id.product_capacity_ids.filtered(
+                    #         lambda pc_line: pc_line.product_id.id == self.product_id.id)
 
-                # If no capacity lines were found, break out of the while loop
-                if not found_capacity:
-                    break
+                    #     # Check if there are any product capacity lines
+                    #     if product_capacity_lines:
+                    #         found_capacity = True  # Set the flag to True if capacity lines are found
 
-        if qty_to_remaining:
+                    #         for p_cap_line in product_capacity_lines:
+                    #             if qty_to_remaining <= 0:
+                    #                 break
+                                
+                    #             stock_qty = self.env['stock.quant']._get_available_quantity(p_cap_line.product_id,location) 
+                    #             if self._context.get('prepare_moves'):
+                    #                 quantity_list.append(
+                    #                     p_cap_line.quantity if p_cap_line.quantity <= qty_to_remaining else qty_to_remaining
+                    #             )
+                    #             else:    
+                    #                 location_cap_qty = location.storage_category_id.product_capacity_ids.filtered(lambda x:x.product_id.id == self.product_id.id).quantity
+                    #                 applicable_qty = location_cap_qty - stock_qty
+                    #                 # if qty_to_remaining >= p_cap_line.quantity:
+                    #                 if applicable_qty:
+                    #                     quantity_list.append(
+                    #                         (location.id,applicable_qty)
+                    #                     )
+                    #                     qty_to_remaining -= applicable_qty
+                    #                 # else:
+                    #                 #     continue
+                    #                 # quantity_list.append(
+                    #                 #     (location.id,p_cap_line.quantity if p_cap_line.quantity <= qty_to_remaining  else qty_to_remaining)
+                    #                 # )
+                    #                 else:
+                    #                     quantity_list.append(
+                    #                         (dest_location_id,qty_to_remaining)
+                    #                     )
+                    #             qty_to_remaining -= applicable_qty
+                    #             # qty_to_remaining -= p_cap_line.quantity > qty_to_remaining and qty_to_remaining or (stock_qty >= p_cap_line.quantity and p_cap_line.quantity or stock_qty)
+
+                    # # If no capacity lines were found, break out of the while loop
+                    # if not found_capacity:
+                    #     break
+
+        if qty_to_remaining > 0:
             quantity_list.append(qty_to_remaining)
         return quantity_list
 
@@ -107,7 +170,7 @@ class PurchaseOrderLine(models.Model):
             qty_to_attach = move_dests_initial_demand - qty
             qty_to_push = self.product_qty - move_dests_initial_demand
 
-        qty_to_move = self._prepare_split_stock_putaway(qty_to_push)
+        qty_to_move = self.with_context(prepare_moves=True)._prepare_split_stock_putaway(qty_to_push)
         if float_compare(qty_to_attach, 0.0, precision_rounding=self.product_uom.rounding) > 0:
             product_uom_qty, product_uom = self.product_uom._adjust_uom_quantities(qty_to_attach, self.product_id.uom_id)
             res.append(self._prepare_stock_move_vals(picking, price_unit, product_uom_qty, product_uom))
