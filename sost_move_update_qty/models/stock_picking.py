@@ -67,7 +67,10 @@ class StockPicking(models.Model):
                     remaining_qty = 0
                 elif get_loc_dest_qty < product_uom_qty:
                     remaining_qty = product_uom_qty - get_loc_dest_qty
+                # print('\n\n=====get_loc_dest_qty====',get_loc_dest_qty)
+                # print('=====remaining_qty====',remaining_qty)
                 move.with_context(update_move_product_uom=1).write({'qty_available':get_loc_dest_qty,'subcontract_avail_qty':get_loc_dest_qty,'product_uom_qty':remaining_qty})
-                move._action_assign(force_qty=remaining_qty)
+                move._action_assign()
+                # move._action_assign(force_qty=remaining_qty)
             self.update_demand_qty = True
         return True
