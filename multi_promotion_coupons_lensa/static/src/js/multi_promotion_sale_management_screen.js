@@ -5,10 +5,12 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
     const Registries = require('point_of_sale.Registries');
     const { useListener } = require('web.custom_hooks');
     const { useState } = owl.hooks;
+    const concurrency = require('web.concurrency');
     const models = require('point_of_sale.models');
     const { sprintf } = require('web.utils');
     const { parse } = require('web.field_utils');
     var { Gui } = require('point_of_sale.Gui');
+    const dp = new concurrency.DropPrevious();
 
 
     const PromotionSaleOrderManagementScreen = (SaleOrderManagementScreen) =>
@@ -271,10 +273,42 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
         
         var _order_super = models.Order.prototype;
         models.Order = models.Order.extend({
+            initialize: function () {
+                _order_super.initialize.apply(this, arguments);
+                // Overriding the event
+                this.off('update-rewards');
+                this.on(
+                    'update-rewards',
+                    () => {
+                        if (!this.pos.config.use_coupon_programs) return;
+                        dp.add(this._getNewRewardLines()).then((rewardsContainer) => {
+                            this.rewardsContainer = rewardsContainer;
+                            this.trigger('rewards-updated');
+                        }).catch(() => { /* catch the reject of dp when calling `add` to avoid unhandledrejection */ });
+                    },
+                    this
+                );
+                this.on('reset-coupons', this.resetCoupons, this);
+                this._initializePrograms();
+                return this;
+            },
+            _getNewRewardLines: async function () {
+                // Remove the reward lines before recalculation of rewards.
+                this.orderlines.remove(this._getRewardLines());
+                const rewardsContainer = await this._calculateRewards();
+
+                // We set the programs that will generate coupons after validation of this order.
+                // See `_postPushOrderResolve` in the `PaymentScreen`.
+                await this._setProgramIdsToGenerateCoupons(rewardsContainer);
+                // Create reward orderlines here based on the content of `rewardsContainer` field.
+                return rewardsContainer;
+            },
             _getRegularOrderlines: function () {
-                let orderlines = _order_super._getRegularOrderlines.apply(this, arguments);
-                orderlines = orderlines.filter((line) => line.product.id !== this.pos.config.down_payment_product_id[0]);
-                return orderlines;
+                const orderlines = _order_super.get_orderlines.apply(this, arguments);
+                const is_gift_card_product = (line) => this.pos.config.gift_card_product_id && line.product.id === this.pos.config.gift_card_product_id[0];
+                const is_tips_product = (line) => this.pos.config.tip_product_id && line.product.id === this.pos.config.tip_product_id[0];
+                //reward_id is always false unless the line is a reward from pos_loyalty
+                return orderlines.filter((line) => line.product.id !== this.pos.config.down_payment_product_id[0] && !line.refunded_orderline_id && !is_gift_card_product(line) && !is_tips_product(line));
             },
             resetPrograms () {
                 let deactivatedCount = 0;
@@ -315,11 +349,16 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                 const collectRewards = (validPrograms, rewardGetter) => {
                     const allRewards = [];
                     for (let [program, coupon_id] of validPrograms) {
+                        const newRewardsContainer = new CouponPOS.RewardsContainer();
                         const [rewards, reason] = rewardGetter(program, coupon_id);
                         if (reason) {
                             const notAwarded = new CouponPOS.Reward({ awarded: false, reason, program, coupon_id });
                             rewardsContainer.add([notAwarded]);
                         }
+                        newRewardsContainer.add([
+                            ...rewards
+                        ])
+                        this._getLinesToAdd(newRewardsContainer).forEach(line => this.add_orderline(line));
                         allRewards.push(...rewards);
                     }
                     return allRewards;
