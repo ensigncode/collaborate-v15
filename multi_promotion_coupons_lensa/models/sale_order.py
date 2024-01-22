@@ -12,6 +12,8 @@ class SaleOrder(models.Model):
         string='Applied Promo Programs'
         )
     
+    def _create_reward_line(self, program):
+        self.with_context(program_id=program).write({'order_line': [(0, False, value) for value in self._get_reward_line_values(program)]})
 
     def _get_reward_values_percentage_amount(self, program):
         # Invalidate multiline fixed_price discount line as they should apply after % discount
@@ -94,6 +96,20 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
+    @api.onchange('product_uom_qty','price_unit')
+    def _onchange_reward_price_unit(self):
+        for rec in self:
+            if not rec.is_reward_line:
+                non_reward_line_total = sum(self.search([('order_id','=',self.order_id._origin.id),('is_reward_line','=',False),('id','!=',rec._origin.id)]).mapped('price_subtotal'))
+                line_subtotal = rec.price_subtotal
+                non_reward_line_total += line_subtotal
+                for reward_line in self.order_id.order_line.filtered(lambda line:line.is_reward_line):
+                    program_id = self.env['coupon.program'].search([('discount_line_product_id', '=', reward_line.product_id.id)],limit=1)
+                    discounted_price_unit = -non_reward_line_total * (program_id.discount_percentage / 100)
+                    reward_line._origin.price_unit = discounted_price_unit
+                    non_reward_line_total += discounted_price_unit
+
+
     def read_converted(self):
         field_names = ["product_id", "name", "price_unit", "product_uom_qty", "tax_id", "qty_delivered",
                        "is_reward_line", "qty_invoiced", "discount", "qty_to_invoice", "price_total"]
@@ -119,6 +135,24 @@ class SaleOrderLine(models.Model):
                 if results:
                     results[-1]['customer_note'] = sale_line.name
         return results
+    
+    # Calculate reward line price unit for apply discounted price.
+    def update_reward_line_price_unit(self):
+        if self._context.get('unlink'):
+            order_line = self
+            self = self.order_id
+            product_order_line_price_sum = sum(self.order_line.filtered(lambda line: not line.is_reward_line and line.id != order_line.id).mapped('price_subtotal'))
+        elif self._context.get('create'):
+            if self._context.get('price_unit'):
+                product_price_unit = self._context.get('price_unit') 
+            self = self._context.get('order')
+            product_order_line_price_sum = sum(self.order_line.filtered(lambda line: not line.is_reward_line).mapped('price_subtotal'))
+            if product_price_unit:
+                product_order_line_price_sum += product_price_unit 
+        for line in self.order_line.filtered(lambda line: line.is_reward_line):
+            program_id = self.env['coupon.program'].search([('discount_line_product_id', '=', line.product_id.id)],limit=1)
+            line.price_unit = -product_order_line_price_sum * (program_id.discount_percentage / 100)
+            product_order_line_price_sum += -product_order_line_price_sum * (program_id.discount_percentage / 100)
 
     def unlink(self):
         related_program_lines = self.env['sale.order.line']
@@ -137,4 +171,23 @@ class SaleOrderLine(models.Model):
                 line.order_id.code_promo_program_id -= related_program
                 line.order_id.code_promo_program_ids -= related_program
                 related_program_lines |= line.order_id.order_line.filtered(lambda l: l.product_id.id == related_program.discount_line_product_id.id) - line
+        for li in self:
+            li.with_context(unlink=True).update_reward_line_price_unit()
         return super(SaleOrderLine, self | related_program_lines).unlink()
+    
+    def create(self,vals):
+        for val in vals:
+            if val.get('is_reward_line'):
+                if val.get('order_id'):
+                    sale_order = self.env['sale.order'].browse(val.get('order_id'))
+                    product_line_total = sum(sale_order.order_line.filtered(lambda line:not line.is_reward_line).mapped('price_subtotal'))
+                    is_reward_lines = sale_order.order_line.filtered(lambda line: line.is_reward_line)
+                    for reward in is_reward_lines:
+                        product_line_total += reward.price_unit
+                    if self._context.get('program_id'):
+                        price_unit = product_line_total * (self._context.get('program_id').discount_percentage / 100)
+                    val.update({'price_unit':-price_unit})
+            else:
+                self.with_context(create=True,price_unit=val.get('price_unit'),order=self.env['sale.order'].browse(val.get('order_id'))).update_reward_line_price_unit()
+
+        return super(SaleOrderLine,self).create(vals)
