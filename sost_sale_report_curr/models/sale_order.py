@@ -26,7 +26,7 @@ class SaleOrder(models.Model):
                 invoice_no = ','.join(inv.name + str(inv.id) if inv.state == 'draft' else inv.name for inv in order.invoice_ids.filtered(lambda x:x.state != 'cancel'))
             order.invoice_no = invoice_no
 
-    @api.depends('amount_untaxed','partner_id')
+    @api.depends('amount_untaxed','invoice_ids','invoice_ids.state')
     def _compute_untaxed_amount_usd(self):
         for order in self:
             untaxed_amount_usd = 0
@@ -34,21 +34,17 @@ class SaleOrder(models.Model):
             if usd_currency_id and usd_currency_id.active:
                 so_currency_id = order.currency_id
                 amount_currency = order.amount_untaxed
-                untaxed_amount_usd = usd_currency_id._convert(amount_currency, so_currency_id, order.company_id,order.create_date or fields.Date.context_today(self))
-                # untaxed_amount_usd = so_currency_id._convert(amount_currency, usd_currency_id, order.company_id,order.create_date or fields.Date.context_today(self))
+                untaxed_amount_usd = so_currency_id._convert(amount_currency, usd_currency_id, order.company_id,order.create_date or fields.Date.context_today(self))
             order.untaxed_amount_usd = untaxed_amount_usd
 
-    @api.depends('amount_untaxed','partner_id')
+    @api.depends('amount_untaxed','invoice_ids','invoice_ids.state')
     def _compute_untaxed_amount_eur(self):
         for order in self:
             untaxed_amount_eur = 0
             eur_currency_id = self.env['res.currency'].sudo().search([('name','=','EUR')])
             if eur_currency_id and eur_currency_id.active:
-                untaxed_amount_eur = 0
                 so_currency_id = order.currency_id
                 amount_currency = order.amount_untaxed
-                untaxed_amount_eur = eur_currency_id._convert(amount_currency, so_currency_id, order.company_id,order.create_date or fields.Date.context_today(self))
-                # untaxed_amount_eur = so_currency_id._convert(amount_currency, eur_currency_id, order.company_id,order.create_date or fields.Date.context_today(self))
+                untaxed_amount_eur = so_currency_id._convert(amount_currency, eur_currency_id, order.company_id,order.create_date or fields.Date.context_today(self))
             order.untaxed_amount_eur = untaxed_amount_eur
-
             
