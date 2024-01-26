@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
     'name': 'Inv Show Counted Items',
-    'version': '15.1.0.2',
+    'version': '15.1.0.3',
     'category': '',
     'summary': '',
     'description': """
