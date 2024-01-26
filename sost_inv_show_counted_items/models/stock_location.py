@@ -27,7 +27,8 @@ class StockLocation(models.Model):
                 result = super().name_get()
                 final_result = []
                 for res in result:
-                    quant_ids = self.env['stock.quant'].search([('product_id','=',int(product_id)),('location_id','=',res[0])])
+                    # ('product_id','=',int(product_id)),
+                    quant_ids = self.env['stock.quant'].search([('location_id','=',res[0])])
                     available_qty = sum(quant.available_quantity for quant in quant_ids)
                     if available_qty != 0:
                         show_available_qty = str(available_qty).split('.')[0]

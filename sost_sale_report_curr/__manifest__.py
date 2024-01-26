@@ -3,7 +3,7 @@
 
 {
     'name': 'Sale Amount - Curreny Wise',
-    'version': '15.0.0.1',
+    'version': '15.0.0.2',
     'category': 'sale',
     'summary': 'Sale Amount - Curreny Wise',
     'description': 'Sale Amount - Curreny Wise',
