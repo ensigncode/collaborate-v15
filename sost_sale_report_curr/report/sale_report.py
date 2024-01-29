@@ -10,6 +10,8 @@ class SaleReport(models.Model):
     invoice_no = fields.Char(string="Invoice No", readonly=True)
     untaxed_amount_usd = fields.Float(string="Untaxed Amount USD", readonly=True)
     untaxed_amount_eur = fields.Float(string="Untaxed Amount EUR", readonly=True)
+    margin_amount_eur = fields.Float(string="Margin Amount USD", readonly=True)
+    margin_amount_usd = fields.Float(string="Margin Amount EUR", readonly=True)
 
     def _group_by_sale(self, groupby=''):
         res = super()._group_by_sale(groupby)
@@ -20,4 +22,6 @@ class SaleReport(models.Model):
         fields['invoice_no'] = ", s.invoice_no as invoice_no"
         fields['untaxed_amount_usd'] = ", s.untaxed_amount_usd as untaxed_amount_usd"
         fields['untaxed_amount_eur'] = ", s.untaxed_amount_eur as untaxed_amount_eur"
+        fields['margin_amount_eur'] = ", s.margin_amount_eur as margin_amount_eur"
+        fields['margin_amount_usd'] = ", s.margin_amount_usd as margin_amount_usd"
         return super()._select_additional_fields(fields)

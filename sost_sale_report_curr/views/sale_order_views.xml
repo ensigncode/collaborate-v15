@@ -9,6 +9,8 @@
                 <field name="invoice_no" invisible="1"/>
                 <field name="untaxed_amount_usd" invisible="1"/>
                 <field name="untaxed_amount_eur" invisible="1"/>
+                <field name="margin_amount_usd" invisible="1"/>
+                <field name="margin_amount_eur" invisible="1"/>
             </xpath>
        </field>
     </record>
