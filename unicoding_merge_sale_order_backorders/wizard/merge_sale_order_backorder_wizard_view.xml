@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form view of Merge Sale order -->
+    <record id="view_merge_sale_line" model="ir.ui.view">
+        <field name="name">Merge Orders Backorder</field>
+        <field name="model">merge.sale.order.backorder</field>
+        <field name="arch" type="xml">
+             <form string="Sale Order Merge Backorders">
+                <group col="1">
+                    <label for="order_ids" string="Sale Orders quantity will be changed to delivered"/>
+                    <field name="order_ids" nolabel="1"/>
+                    <label for="picking_ids" string="This pickings will be removed"/>
+                    <field name="picking_ids" nolabel="1"/>
+                </group>
+                <footer>
+                    <button name="merge_pciking_create_order" string="Create Order" type="object"
+                        class="btn-primary"/>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action of Merge Sale Order -->
+    <record id="action_view_merge_sale_line" model="ir.actions.act_window">
+        <field name="name">Merge Orders with Backorder</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">merge.sale.order.backorder</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_merge_sale_line"/>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+    </record>
+</odoo>
