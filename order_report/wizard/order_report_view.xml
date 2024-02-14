@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>    
+	<record id="view_order_report_search" model="ir.ui.view">
+        <field name="name">order.report.search</field>
+        <field name="model">order.report</field>
+        <field name="arch" type="xml">
+            <search string="Batch Payment">
+                <group expand="0" string="Group By">
+                    <filter name="group_by_sale_id" string="Sale Order" context="{'group_by':'sale_id'}"/>
+                    <filter name="group_by_purchase_id" string="Purchase Order" context="{'group_by':'purchase_id'}"/>
+                    <filter name="group_by_invoice_id" string="Invoices" context="{'group_by':'invoice_id'}"/>
+                    <filter name="group_by_booking" string="Booking" context="{'group_by':'booking'}"/>
+                    <filter name="group_by_truck_nm" string="Truck" context="{'group_by':'truck_nm'}"/>
+                     <filter name="group_by_port" string="Port" context="{'group_by':'port_id'}"/>
+                    <filter name="group_by_vendor_id" string="Vendor" context="{'group_by':'vendor_id'}"/>
+                    <filter name="group_by_partner_id" string="Customer" context="{'group_by':'partner_id'}"/>
+                    <filter name="group_by_delivery_id" string="Delivery" context="{'group_by':'delivery_id'}"/>
+                    <filter name="group_by_incoterms" string="Incoterms" context="{'group_by':'incoterms'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+	<record id="view_order_report_tree" model="ir.ui.view">
+	<field name="name">view_order_report_tree</field>
+	<field name="model">order.report</field>
+		<field name="arch" type="xml">
+			<tree editable="bottom">
+                <field name="sale_id" />
+                <field name="purchase_id" />
+                <field name="invoice_id" />
+                <field name="date" />
+                <field name="booking" />
+                <field name="truck_nm" />
+                <field name="vendor_id" />
+                <field name="partner_id" />
+                <field name="delivery_id" />
+                <field name="boxes" />
+                <field name="price" />
+                <field name="amount" />
+                <field name="incoterms" />
+                <field name="port_id" />
+                <field name="freight" />
+                <field name="etd" />
+                <field name="eta" />
+                <field name="percentage" widget="percentage"/>
+                <field name="profit" />
+                <field name="claims" />
+			</tree>
+		</field> 
+	</record>
+
+	<record id="view_genrate_report_form" model="ir.ui.view">
+	<field name="name">view_genrate_report_form</field>
+	<field name="model">generate.report</field>
+		<field name="arch" type="xml">
+			<form>
+				<sheet>
+                    <group>
+                        <button string="Generate Report" class="btn-primary" name="generate_report_wizard" type="object"/>
+                    </group>
+				</sheet>
+				<footer>
+                </footer>
+			</form>
+		</field> 
+	</record>
+
+	<record id="action_order_report_form" model="ir.actions.act_window">
+        <field name="name">Order Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">order.report</field>
+        <field name="target">current</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <record id="action_generate_report_form" model="ir.actions.act_window">
+        <field name="name">Generate Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">generate.report</field>
+        <field name="target">new</field>
+        <field name="view_mode">form</field>
+    </record>
+</odoo>

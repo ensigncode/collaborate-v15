@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_order_report"
+        name="Order Report"
+        parent="sale.menu_sale_report"
+        action="order_report.action_generate_report_form"
+        sequence="5"/>
+</odoo>

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+order_report.access_order_report,access_order_report,order_report.model_order_report,base.group_user,1,1,1,1
+order_report.access_generate_report,access_generate_report,order_report.model_generate_report,base.group_user,1,1,1,1
+order_report.access_res_port,access_res_port,order_report.model_res_port,base.group_user,1,1,1,1
