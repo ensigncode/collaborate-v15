@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pos_gift_card_config_view_form_ip" model="ir.ui.view">
+        <field name="name">pos.config.form</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='pos-loyalty']" position="after">
+                <div class="col-12 col-lg-6 o_setting_box"
+                    attrs="{'invisible': [('use_gift_card', '=', False)]}">
+                    <div class="o_setting_right_pane">
+                        <span class="o_form_label">Gift Card Details</span>
+                        <div class="text-muted">
+                            Gift Card details
+                        </div>
+                        <field name="gift_card_details" />
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="pos_gift_card.gift_card_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="header">
+                        <div class="row mb8">
+                            <div class="col-3 mb4">
+                                <img t-if="o.company_id.logo"
+                                    t-att-src="image_data_uri(o.company_id.logo)"
+                                    style="max-height: 100px;" alt="Logo" />
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        style="margin:0px; font-size:24px; font-family:arial, 'helvetica neue', helvetica, sans-serif; line-height:36px; color:#333333; text-align: center">
+                        Here is your gift card!
+                    </div>
+                    <div style="padding-top:20px; padding-bottom:20px">
+                        <img src="/gift_card/static/img/gift_card.png"
+                            style="display:block; border:0; outline:none; text-decoration:none; margin:auto;"
+                            width="300" />
+                    </div>
+                    <div
+                        style="padding:0; margin:0px; padding-top:35px; padding-bottom:35px; text-align:center;">
+                        <h3
+                            style="margin:0px; line-height:48px; font-family:arial, 'helvetica neue', helvetica, sans-serif; font-size:40px; font-style:normal; font-weight:normal; color:#333333; text-align:center">
+                            <strong>
+                                <span t-field="o.initial_amount" />
+                            </strong>
+                        </h3>
+                    </div>
+                    <div
+                        style="padding:0; margin:0px; padding-top:35px; padding-bottom:35px; background-color:#efefef; text-align:center;">
+                        <p
+                            style="margin:0px; font-size:14px;font-family:arial, 'helvetica neue', helvetica, sans-serif; line-height:21px; color:#333333">
+                            <strong>Gift Card Code</strong>
+                        </p>
+                        <p
+                            style="margin:0px; font-size:25px;font-family:arial, 'helvetica neue', helvetica, sans-serif; line-height:38px; color:#A9A9A9">
+                            <span t-field="o.code" />
+                        </p>
+                    </div>
+                    <div
+                        style="padding:0; margin:0px; padding-top:10px; padding-bottom:10px; text-align:center;">
+                        <h3
+                            style="margin:0px; line-height:17px; font-family:arial, 'helvetica neue', helvetica, sans-serif; font-size:14px; font-style:normal; font-weight:normal; color:#A9A9A9; text-align:center">
+                            Card expires <span t-field="o.expired_date" />
+                        </h3>
+                    </div>
+                    <div
+                        style="padding:0; margin:0px; padding-top:10px; padding-bottom:10px; text-align:center;">
+                        <img t-att-src="'/report/barcode/Code128/'+o.code"
+                            style="width:400px;height:75px" alt="Barcode" />
+                    </div>
+                    <div t-attf-class="footer"
+                        style="padding:0; margin:0px;">
+                        <div class="row p-3">
+                            <div class="col-6 address_font" style="background:#f5f5f5">
+                                <span>
+                                    <p style="font-size:20px margin-top:0px; margin-bottom:0px;">
+                                        <t t-esc="o.company_id.partner_id.name" />
+                                    </p>
+                                    <p style="font-size:20px margin-top:0px; margin-bottom:0px;">
+                                        <t t-esc="o.company_id.partner_id.street" />, <t
+                                            t-if="o.company_id.partner_id.street2">
+                                            <t t-esc="o.company_id.partner_id.street2" />, </t>
+                                    </p>
+                                    <p style="font-size:20px margin-top:0px; margin-bottom:0px;">
+                                        <t t-if="o.company_id.partner_id.city">
+                                            <span t-esc="o.company_id.partner_id.city" />
+                                        </t>
+                                        <t t-if="o.company_id.zip">
+                                            <span t-esc="o.company_id.zip" />
+                                            <br />
+                                        </t>
+                                    </p>
+                                    <p style="font-size:20px margin-top:0px; margin-bottom:0px;">
+                                        <span t-esc="o.company_id.partner_id.country_id.name" />
+                                        <t t-if="o.company_id.vat">
+                                            <span t-esc="o.company_id.vat" />
+                                            <br />
+                                        </t>
+                                    </p>
+                                </span>
+                            </div>
+                            <div class="col-2" />
+                            <div class="col-4" name="company_address" style="font-size:12px;">
+                                <t t-set="gift_card_details" t-value="o.get_gift_card_lang()" />
+                                <span t-esc="gift_card_details" />
+                            </div>
+                        </div>
+
+                    </div>
+
+                </t>
+            </t>
+
+        </t>
+    </template>
+</odoo>
