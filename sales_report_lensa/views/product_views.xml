@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
 	<data>
-		<!-- view common to both template and product -->
 		<record id="view_template_brand_product_sales_report" model="ir.ui.view">
 			<field name="name">product.template.brand.sales.report</field>
 			<field name="model">product.template</field>

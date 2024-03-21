@@ -8,7 +8,6 @@
             <field name="arch" type="xml">
                 <xpath expr="//pivot" position="inside">
                     <field name="margin_per" type="measure" />
-                    <field name="total_payment" type="measure" />
                 </xpath>
             </field>
         </record>

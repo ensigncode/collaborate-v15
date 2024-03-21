@@ -11,22 +11,6 @@
                     <field name="total_payment" type="measure" />
                 </xpath>
             </field>
-            </record<?xml version="1.0" encoding="utf-8" ?>
-            <odoo>
-                <data>
-                    <record id="view_report_pos_order_pivot_ip" model="ir.ui.view">
-                        <field name="name">inherit.sales.view.pivot.ip</field>
-                        <field name="model">report.pos.order</field>
-                        <field name="inherit_id" ref="point_of_sale.view_report_pos_order_pivot" />
-                        <field name="arch" type="xml">
-                            <xpath expr="//pivot" position="inside">
-                                <field name="margin_per" type="measure" />
-                                <field name="total_payment" type="measure" />
-                            </xpath>
-                        </field>
-                    </record>
-                </data>
-            </odoo>
-            >
+        </record>
     </data>
 </odoo>
