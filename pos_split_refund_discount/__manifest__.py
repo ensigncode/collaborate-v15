@@ -12,6 +12,7 @@
     ],
     'assets': {
         'point_of_sale.assets': [
+            'pos_split_refund_discount/static/src/js/models.js',
             'pos_split_refund_discount/static/src/js/TicketScreen.js',
         ],
     },
