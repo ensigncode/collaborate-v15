@@ -253,13 +253,13 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                     context: this.env.session.user_context,
                 });
 
-                const saleOrdersAmountUnpaid = await this.rpc({
-                    model: 'sale.order',
-                    method: 'get_order_amount_unpaid',
-                    args: [[id]],
-                    context: this.env.session.user_context,
-                });
-                sale_order[0].amount_unpaid = saleOrdersAmountUnpaid[sale_order[0].id];
+                // const saleOrdersAmountUnpaid = await this.rpc({
+                //     model: 'sale.order',
+                //     method: 'get_order_amount_unpaid',
+                //     args: [[id]],
+                //     context: this.env.session.user_context,
+                // });
+                // sale_order[0].amount_unpaid = saleOrdersAmountUnpaid[sale_order[0].id];
 
                 const sale_lines = await this._getSOLines(sale_order[0].order_line);
                 const promo_products_to_remove = this.env.pos.promo_programs ? this.env.pos.promo_programs.flatMap(program => program.promo_code_usage === 'no_code_needed' ? program.discount_line_product_id[0] : []) : [];

@@ -175,6 +175,7 @@ class SaleOrderLine(models.Model):
             li.with_context(unlink=True).update_reward_line_price_unit()
         return super(SaleOrderLine, self | related_program_lines).unlink()
     
+    @api.model_create_multi
     def create(self,vals):
         for val in vals:
             if val.get('is_reward_line'):
