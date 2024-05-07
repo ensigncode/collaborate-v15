@@ -65,7 +65,7 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                     }
                     if (selectedOption){
                         // settle the order
-                        let lines = sale_order.order_line;
+                        let lines = sale_order.order_line.filter(line => !line.is_reward_line);
                         let product_to_add_in_pos = lines.filter(line => !this.env.pos.db.get_product_by_id(line.product_id[0])).map(line => line.product_id[0]);
                         if (product_to_add_in_pos.length){
                             const { confirmed } = await this.showPopup('ConfirmPopup', {
@@ -156,7 +156,7 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                   else {
                     // apply a downpayment
                     if (this.env.pos.config.down_payment_product_id){
-                        let lines = sale_order.order_line.filter(line => !line.is_reward_line);
+                        let lines = sale_order.order_line;
                         let tab = [];
 
                         for (let i=0; i<lines.length; i++) {
@@ -181,17 +181,8 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                             down_payment = sale_order.amount_total;
                         }
 
-                        // Get product lines and sum of that product price.
-                        const rewardLines = sale_order.order_line.filter(line => !line.is_reward_line);
-                        const sumOfPriceTotal = rewardLines.reduce((sum, line) => sum + line.price_total, 0);
-
-						// Little hack to add the reward amount(negative)
-                        // down_payment -= sale_order.reward_amount;
-                        down_payment = sumOfPriceTotal;
-
-
                         const { confirmed, payload } = await this.showPopup('NumberPopup', {
-                            title: sprintf(this.env._t("Percentage of %s"), this.env.pos.format_currency(sale_order.amount_total)),
+                            title: sprintf(this.env._t("Percentage of %s"), this.env.pos.format_currency(down_payment)),
                             startingValue: 0,
                         });
                         if (confirmed){
@@ -238,7 +229,6 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
                       }
                   }
                   order.trigger('change');
-                  order.trigger('update-rewards');
 
                   this.close();
                 }
@@ -269,8 +259,8 @@ odoo.define('multi_promotion_coupons_lensa.multi_promotion_sale_management_scree
             }
 
         }
-        
-        
+
+
         var _order_super = models.Order.prototype;
         models.Order = models.Order.extend({
             initialize: function () {
